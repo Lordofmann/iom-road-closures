@@ -1,0 +1,308 @@
+"""
+Daily updater for the Isle of Man road race closures site.
+
+What it does:
+  1. Fetches the latest TT news headlines from Manx Radio.
+  2. Fetches the official iomttraces.com schedule page.
+  3. Hashes the schedule content and compares to a stored baseline.
+  4. Patches index.html:
+     - Updates the "Last updated" timestamp.
+     - Injects the latest news between the AUTO_NEWS markers.
+     - Adds a high-visibility banner if the official schedule appears to have changed.
+  5. Writes the new baseline hash to data/baseline.json if the change was acknowledged.
+  6. Exits cleanly if nothing changed (no commit needed).
+
+Designed to fail gracefully: if any single source can't be fetched, the script
+continues with what it has rather than blowing up the whole site.
+
+Run locally: python scripts/update.py
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import re
+import sys
+from datetime import datetime
+from pathlib import Path
+
+try:
+    import requests
+    from bs4 import BeautifulSoup
+except ImportError as e:
+    print(f"Missing dependency: {e}. Run: pip install -r requirements.txt", file=sys.stderr)
+    sys.exit(1)
+
+
+# ----------------------------------------------------------------------------
+# Configuration
+# ----------------------------------------------------------------------------
+
+ROOT = Path(__file__).resolve().parent.parent
+HTML_PATH = ROOT / "index.html"
+DATA_DIR = ROOT / "data"
+BASELINE_PATH = DATA_DIR / "baseline.json"
+NEWS_PATH = DATA_DIR / "news.json"
+
+USER_AGENT = (
+    "Mozilla/5.0 (compatible; IOM-RoadClosures-Bot/1.0; "
+    "+https://github.com/your-username/iom-road-closures)"
+)
+
+MANX_RADIO_TT_URL = "https://www.manxradio.com/news/tt-news/"
+IOMTT_SCHEDULE_URL = "https://www.iomttraces.com/racing/page/schedule/"
+
+REQUEST_TIMEOUT = 30
+MAX_HEADLINES = 5
+
+
+# ----------------------------------------------------------------------------
+# Helpers
+# ----------------------------------------------------------------------------
+
+def log(msg: str) -> None:
+    """Print with a timestamp so workflow logs are readable."""
+    print(f"[{datetime.utcnow().isoformat(timespec='seconds')}Z] {msg}", flush=True)
+
+
+def fetch(url: str) -> str | None:
+    """GET a URL with a polite User-Agent. Returns text or None on any failure."""
+    try:
+        r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=REQUEST_TIMEOUT)
+        r.raise_for_status()
+        return r.text
+    except Exception as e:
+        log(f"  FAILED to fetch {url}: {e}")
+        return None
+
+
+def short_hash(s: str) -> str:
+    return hashlib.sha256(s.encode("utf-8")).hexdigest()[:16]
+
+
+# ----------------------------------------------------------------------------
+# Manx Radio: extract latest TT news headlines
+# ----------------------------------------------------------------------------
+
+def parse_manx_radio_headlines(html: str) -> list[dict]:
+    """Extract recent TT news items from Manx Radio.
+
+    The exact CSS selectors will need adjusting if their template changes;
+    we try multiple fallback strategies and return what we can.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    items: list[dict] = []
+
+    # Strategy 1: look for article cards / list items with a link inside
+    for art in soup.find_all(["article", "li", "div"], limit=200):
+        link = art.find("a", href=True)
+        if not link:
+            continue
+        href = link["href"]
+        title = link.get_text(strip=True)
+        # Manx Radio article URLs typically include "/news/" and a slug
+        if "/news/" not in href or len(title) < 12:
+            continue
+        # Look for a date near the link
+        date_text = ""
+        for tag in art.find_all(["time", "span", "div"]):
+            t = tag.get_text(strip=True)
+            if re.search(r"\b(20\d\d|today|yesterday|hour|min|ago)\b", t, re.I):
+                date_text = t
+                break
+        # Make URL absolute
+        if href.startswith("/"):
+            href = "https://www.manxradio.com" + href
+        items.append({"title": title, "url": href, "date": date_text})
+        if len(items) >= MAX_HEADLINES * 3:
+            break
+
+    # Deduplicate by URL, keep first occurrence
+    seen = set()
+    unique: list[dict] = []
+    for it in items:
+        if it["url"] in seen:
+            continue
+        seen.add(it["url"])
+        # Skip nav/category links that aren't actual articles
+        if it["url"].rstrip("/").endswith("tt-news"):
+            continue
+        unique.append(it)
+        if len(unique) >= MAX_HEADLINES:
+            break
+    return unique
+
+
+# ----------------------------------------------------------------------------
+# iomttraces.com: hash the schedule content to detect changes
+# ----------------------------------------------------------------------------
+
+def extract_schedule_content(html: str) -> str | None:
+    """Return a normalised string representing the schedule content.
+
+    We look for the SCHEDULE heading and grab the surrounding tables.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    # Look for the heading then collect tables that follow
+    target = None
+    for h in soup.find_all(["h1", "h2", "h3"]):
+        if "schedule" in h.get_text(strip=True).lower():
+            target = h
+            break
+    if not target:
+        return None
+    pieces: list[str] = []
+    for sib in target.find_all_next():
+        if sib.name in ("h1", "h2") and sib is not target:
+            break
+        if sib.name == "table":
+            pieces.append(sib.get_text(" ", strip=True))
+    if not pieces:
+        return None
+    # Normalise whitespace
+    return re.sub(r"\s+", " ", " ".join(pieces)).strip()
+
+
+# ----------------------------------------------------------------------------
+# HTML patching
+# ----------------------------------------------------------------------------
+
+NEWS_BLOCK_RE = re.compile(
+    r"(<!-- AUTO_NEWS_START -->)(.*?)(<!-- AUTO_NEWS_END -->)",
+    re.DOTALL,
+)
+LAST_UPDATED_RE = re.compile(
+    r"(<!-- LAST_UPDATED -->)(.*?)(<!-- /LAST_UPDATED -->)",
+    re.DOTALL,
+)
+
+
+def render_news_block(items: list[dict], schedule_changed: bool) -> str:
+    """Build the HTML to insert between the AUTO_NEWS markers."""
+    parts: list[str] = ["<!-- AUTO_NEWS_START -->"]
+
+    if schedule_changed:
+        parts.append(
+            '<div class="schedule-changed">'
+            "<strong>Heads-up: the official schedule on iomttraces.com may have changed since this page was last verified.</strong> "
+            'Cross-check the dates and times below against '
+            '<a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">the official source</a> '
+            'or call the Road Information Hotline on <strong>01624&nbsp;685888</strong>.'
+            "</div>"
+        )
+
+    if items:
+        parts.append('<div class="auto-news">')
+        parts.append("<h3>Latest TT news from Manx Radio</h3>")
+        parts.append("<ul>")
+        for it in items:
+            title = (it.get("title") or "").replace("<", "&lt;").replace(">", "&gt;")
+            url = it.get("url") or "#"
+            date = (it.get("date") or "").replace("<", "&lt;").replace(">", "&gt;")
+            date_html = f' <span class="meta">&middot; {date}</span>' if date else ""
+            parts.append(
+                f'<li><a href="{url}" target="_blank" rel="noopener">{title}</a>{date_html}</li>'
+            )
+        parts.append("</ul>")
+        parts.append(
+            '<p class="meta" style="margin-top:8px;">'
+            "Headlines fetched automatically. For live, definitive road status call "
+            "<strong>01624&nbsp;685888</strong>."
+            "</p>"
+        )
+        parts.append("</div>")
+
+    parts.append("<!-- AUTO_NEWS_END -->")
+    return "\n".join(parts)
+
+
+def patch_html(html: str, news_html: str, timestamp: str) -> str:
+    """Replace the AUTO_NEWS block and the LAST_UPDATED stamp."""
+    new_html = NEWS_BLOCK_RE.sub(news_html, html)
+    new_html = LAST_UPDATED_RE.sub(
+        f"<!-- LAST_UPDATED -->{timestamp}<!-- /LAST_UPDATED -->",
+        new_html,
+    )
+    return new_html
+
+
+# ----------------------------------------------------------------------------
+# Main
+# ----------------------------------------------------------------------------
+
+def main() -> int:
+    if not HTML_PATH.exists():
+        log(f"index.html not found at {HTML_PATH}")
+        return 1
+
+    DATA_DIR.mkdir(exist_ok=True)
+    original_html = HTML_PATH.read_text(encoding="utf-8")
+
+    # --- 1. News headlines ---
+    log("Fetching Manx Radio TT news...")
+    headlines: list[dict] = []
+    page = fetch(MANX_RADIO_TT_URL)
+    if page:
+        try:
+            headlines = parse_manx_radio_headlines(page)
+            log(f"  found {len(headlines)} headlines")
+        except Exception as e:
+            log(f"  parse error: {e}")
+
+    # --- 2. Schedule change detection ---
+    log("Fetching official schedule for change detection...")
+    schedule_changed = False
+    schedule_text = None
+    page = fetch(IOMTT_SCHEDULE_URL)
+    if page:
+        try:
+            schedule_text = extract_schedule_content(page)
+            if schedule_text:
+                current_hash = short_hash(schedule_text)
+                log(f"  schedule hash: {current_hash}")
+                baseline = {}
+                if BASELINE_PATH.exists():
+                    try:
+                        baseline = json.loads(BASELINE_PATH.read_text())
+                    except Exception:
+                        baseline = {}
+                if baseline.get("schedule_hash") and baseline["schedule_hash"] != current_hash:
+                    schedule_changed = True
+                    log(f"  CHANGE DETECTED (baseline was {baseline['schedule_hash']})")
+                elif not baseline:
+                    # First run: establish baseline silently
+                    log("  no baseline yet — establishing one")
+                    BASELINE_PATH.write_text(
+                        json.dumps({"schedule_hash": current_hash, "first_seen": datetime.utcnow().isoformat()}, indent=2)
+                    )
+        except Exception as e:
+            log(f"  schedule parse error: {e}")
+
+    # --- 3. Build the news block ---
+    news_html = render_news_block(headlines, schedule_changed)
+
+    # --- 4. Patch HTML ---
+    timestamp = datetime.utcnow().strftime("%d %B %Y, %H:%M UTC")
+    new_html = patch_html(original_html, news_html, timestamp)
+
+    # Always write the news cache so we know what was injected
+    NEWS_PATH.write_text(
+        json.dumps(
+            {"timestamp": timestamp, "headlines": headlines, "schedule_changed": schedule_changed},
+            indent=2,
+        )
+    )
+
+    if new_html == original_html:
+        log("No changes to write. Done.")
+        return 0
+
+    HTML_PATH.write_text(new_html, encoding="utf-8")
+    log(f"index.html updated at {timestamp}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

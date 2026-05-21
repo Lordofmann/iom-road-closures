@@ -1,0 +1,1086 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Isle of Man Road Race Closures 2026 — When are the roads closed?</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A clear, day-by-day guide to road closures on the Isle of Man for the 2026 TT, Pre-TT Classic, Southern 100 and Manx Grand Prix. Find out which roads are closed, when they reopen, and whether you can get from A to B.">
+<meta name="keywords" content="Isle of Man TT 2026, road closures, Mountain Course, Manx Grand Prix, Southern 100, Pre-TT Classic, Billown, when are roads closed">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Isle of Man Road Race Closures 2026">
+<meta property="og:description" content="A clear, day-by-day guide to road closures on the Isle of Man during the TT, Pre-TT, Southern 100 and Manx Grand Prix.">
+<meta property="og:locale" content="en_GB">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Isle of Man Road Race Closures 2026">
+<meta name="twitter:description" content="Day-by-day road closures for the 2026 Isle of Man road racing season, in plain English with a route checker.">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23b30000'/%3E%3Crect x='0' y='0' width='25' height='25' fill='white'/%3E%3Crect x='50' y='0' width='25' height='25' fill='white'/%3E%3Crect x='25' y='25' width='25' height='25' fill='white'/%3E%3Crect x='75' y='25' width='25' height='25' fill='white'/%3E%3Crect x='0' y='50' width='25' height='25' fill='white'/%3E%3Crect x='50' y='50' width='25' height='25' fill='white'/%3E%3Crect x='25' y='75' width='25' height='25' fill='white'/%3E%3Crect x='75' y='75' width='25' height='25' fill='white'/%3E%3C/svg%3E">
+
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --panel: #f6f7f9;
+    --panel-2: #eef1f6;
+    --ink: #16202a;
+    --muted: #5a6573;
+    --line: #d9dee5;
+    --accent: #b30000;
+    --accent-soft: #fde7e7;
+    --open: #1f7a44;
+    --open-soft: #e3f3ea;
+    --warn: #b56500;
+    --warn-soft: #fdf0dc;
+    --tt: #b30000;
+    --pretttt: #6a4f00;
+    --s100: #1a4f8a;
+    --mgp: #5e2d8a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.45; }
+  body { padding: 14px 18px 60px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.55rem; margin: 4px 0 2px; }
+  h2 { font-size: 1.15rem; margin: 28px 0 10px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  h3 { font-size: 1rem; margin: 16px 0 8px; }
+  p { margin: 6px 0; }
+  .subtitle { color: var(--muted); font-size: 0.92rem; margin-bottom: 12px; }
+  .nav { display: flex; gap: 4px; flex-wrap: wrap; margin: 12px 0 18px; padding: 4px; background: var(--panel-2); border-radius: 10px; }
+  .nav button { background: transparent; border: 0; padding: 7px 12px; border-radius: 7px; font-size: 0.88rem; color: var(--ink); cursor: pointer; font-weight: 500; }
+  .nav button:hover { background: rgba(0,0,0,0.05); }
+  .nav button.active { background: var(--bg); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin: 8px 0; }
+  .panel.warn { background: var(--warn-soft); border-color: #e6c391; }
+  .panel.closed { background: var(--accent-soft); border-color: #e9a3a3; }
+  .panel.open { background: var(--open-soft); border-color: #a3d3b6; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+  .pill.tt { background: var(--tt); color: white; }
+  .pill.pre-tt { background: var(--pretttt); color: white; }
+  .pill.s100 { background: var(--s100); color: white; }
+  .pill.mgp { background: var(--mgp); color: white; }
+  .pill.closed { background: var(--accent); color: white; }
+  .pill.open { background: var(--open); color: white; }
+  .pill.warn { background: var(--warn); color: white; }
+  .pill.muted { background: var(--panel-2); color: var(--muted); }
+  .day-card { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; margin: 8px 0; background: var(--bg); }
+  .day-card.today { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(179,0,0,0.12); }
+  .day-card .date { font-weight: 600; font-size: 0.95rem; }
+  .day-card .date small { display: block; color: var(--muted); font-weight: 400; font-size: 0.78rem; }
+  .day-card .times { font-size: 0.9rem; }
+  .day-card .times .row { display: flex; justify-content: space-between; padding: 2px 0; }
+  .day-card .times .row span:first-child { color: var(--muted); }
+  .day-card .activity { color: var(--ink); font-size: 0.88rem; margin-top: 4px; }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+  .filters button { background: var(--bg); border: 1px solid var(--line); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
+  .filters button.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 8px 0; background: var(--bg); }
+  table th, table td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  table th { background: var(--panel-2); font-weight: 600; }
+  .checker { background: var(--bg); border: 1px solid var(--line); padding: 14px; border-radius: 10px; display: grid; gap: 10px; }
+  .checker .row { display: grid; grid-template-columns: 100px 1fr; gap: 8px; align-items: center; }
+  .checker select, .checker input { padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.95rem; background: var(--bg); color: var(--ink); width: 100%; }
+  .checker button { padding: 10px 16px; border-radius: 6px; border: 0; background: var(--ink); color: var(--bg); font-size: 0.95rem; cursor: pointer; font-weight: 500; }
+  .result { margin-top: 12px; padding: 14px; border-radius: 8px; }
+  .result.closed { background: var(--accent-soft); border-left: 4px solid var(--accent); }
+  .result.open { background: var(--open-soft); border-left: 4px solid var(--open); }
+  .result.warn { background: var(--warn-soft); border-left: 4px solid var(--warn); }
+  .result strong { display: block; font-size: 1.05rem; margin-bottom: 6px; }
+  .result .alt { margin-top: 8px; font-size: 0.9rem; color: var(--muted); }
+  .glossary { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .gloss-card { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .gloss-card .name { font-weight: 600; color: var(--accent); }
+  .gloss-card .road { font-size: 0.78rem; color: var(--muted); margin: 2px 0 4px; }
+  .gloss-card .desc { font-size: 0.85rem; }
+  .map-wrap { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+  .map-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.82rem; margin: 8px 0 0; }
+  .legend-swatch { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+  .live-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+  .live-card { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .live-card .title { font-weight: 600; }
+  .live-card .desc { color: var(--muted); font-size: 0.82rem; margin: 2px 0 6px; }
+  .live-card a { color: var(--s100); text-decoration: none; font-size: 0.88rem; }
+  .live-card a:hover { text-decoration: underline; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .note { font-size: 0.82rem; color: var(--muted); font-style: italic; margin: 6px 0; }
+  .live-refresh { padding: 10px; background: var(--panel); border-radius: 8px; margin: 10px 0; font-size: 0.9rem; }
+  .live-refresh button { background: var(--ink); color: var(--bg); border: 0; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-left: 8px; }
+  .live-refresh.loading { opacity: 0.7; }
+  .live-content { margin-top: 10px; font-size: 0.88rem; white-space: pre-wrap; }
+  .footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; text-align: center; }
+  .auto-news { margin: 10px 0; padding: 12px 14px; background: #eaf2fa; border-left: 4px solid var(--s100); border-radius: 6px; }
+  .auto-news h3 { margin: 0 0 6px; font-size: 0.95rem; color: var(--s100); }
+  .auto-news ul { margin: 6px 0 0; padding-left: 20px; font-size: 0.88rem; }
+  .auto-news li { margin: 3px 0; }
+  .auto-news a { color: var(--s100); text-decoration: none; }
+  .auto-news a:hover { text-decoration: underline; }
+  .auto-news .meta { font-size: 0.78rem; color: var(--muted); }
+  .schedule-changed { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; margin: 10px 0; }
+  @media (max-width: 640px) {
+    body { padding: 10px 12px 50px; }
+    .day-card { grid-template-columns: 1fr; }
+    .checker .row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Isle of Man Road Race Closures 2026</h1>
+<p class="subtitle">A clear, day-by-day guide to when roads are closed on the Isle of Man during the TT, Pre-TT Classic, Southern 100 and Manx Grand Prix. With a route checker and a glossary of section names.</p>
+
+<div class="panel warn" style="margin: 10px 0;">
+  <strong>Always verify before you set off.</strong> This page summarises the published 2026 schedule, but sessions are routinely shifted by weather and incidents. For live, official status call the <strong>Road Information Hotline on 01624&nbsp;685888</strong>, or check <a href="https://www.manxradio.com/news/tt-news/" target="_blank" rel="noopener">Manx Radio TT News</a>. This page is an unofficial guide and is not affiliated with the organisers.
+</div>
+
+<div id="now-banner"></div>
+
+<!-- AUTO_NEWS_START -->
+<!-- AUTO_NEWS_END -->
+
+<div class="nav">
+  <button class="active" data-tab="now">Now &amp; today</button>
+  <button data-tab="schedule">Full schedule</button>
+  <button data-tab="map">Map &amp; sections</button>
+  <button data-tab="alternatives">Alternatives</button>
+  <button data-tab="route">Route checker</button>
+  <button data-tab="live">Live updates</button>
+</div>
+
+<!-- ========== NOW & TODAY ========== -->
+<section id="tab-now" class="section active">
+  <h2>Today's status</h2>
+  <div id="today-detail"></div>
+
+  <h2>Coming up next</h2>
+  <div id="upcoming"></div>
+
+  <div class="panel warn" style="margin-top: 20px;">
+    <strong>Mountain Road one-way operation</strong>
+    <p style="margin: 6px 0;">The A18 Snaefell Mountain Road operates as a <strong>one-way system</strong> in the racing direction (Ramsey Hairpin &rarr; the Bungalow &rarr; Creg-ny-Baa) from <strong>4:30pm Friday 22 May until 9:30am Tuesday 9 June 2026</strong>. You cannot drive up the Mountain from Douglas / Creg-ny-Baa during this entire period, even when the course is technically open.</p>
+    <p style="margin: 6px 0;"><strong>Extra full-closure windows for setup &amp; teardown:</strong> The A18 is also <em>fully closed</em> (no traffic at all) from <strong>9:30am to 4:30pm on Friday 22 May</strong> for cone and signage setup, and from <strong>9:30am to 4:30pm on Tuesday 9 June</strong> for sign removal. These are short maintenance windows on top of the one-way and racing closures.</p>
+  </div>
+</section>
+
+<!-- ========== FULL SCHEDULE ========== -->
+<section id="tab-schedule" class="section">
+  <h2>Full 2026 schedule</h2>
+  <div class="filters" id="filters">
+    <button class="active" data-event="all">All events</button>
+    <button data-event="pre-tt">Pre-TT Classic</button>
+    <button data-event="tt">TT 2026</button>
+    <button data-event="s100">Southern 100</button>
+    <button data-event="mgp">Manx GP / Classic TT</button>
+  </div>
+  <div id="schedule-list"></div>
+</section>
+
+<!-- ========== MAP & SECTIONS ========== -->
+<section id="tab-map" class="section">
+  <h2>The Mountain Course (37.73 miles, clockwise)</h2>
+  <p>Used by the TT, Manx Grand Prix, and Classic TT. Closure means the <strong>entire 37.73-mile loop</strong> shuts simultaneously, plus a slightly larger zone around the start/finish in Douglas.</p>
+  <div class="map-wrap">
+    <svg viewBox="0 0 700 580" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+      <!-- Sea -->
+      <rect width="700" height="580" fill="#e8f1f7"/>
+
+      <!-- Isle of Man outline (rough approximation) -->
+      <path d="M 250 80 Q 320 60 380 90 Q 440 130 460 200 Q 490 280 470 360 Q 450 440 400 490 Q 340 530 280 510 Q 220 480 200 410 Q 180 330 200 250 Q 220 160 250 80 Z"
+            fill="#dfead5" stroke="#9aa890" stroke-width="2"/>
+
+      <!-- Mountain Course (red loop) -->
+      <!-- Douglas (start) -> Quarterbridge -> Crosby -> Ballacraine -->
+      <path d="M 370 410 L 360 400 L 345 395 L 320 392 L 295 388 L 275 380"
+            fill="none" stroke="#b30000" stroke-width="4" stroke-linecap="round"/>
+      <!-- Ballacraine north to Kirk Michael, Ballaugh, Sulby, Ramsey -->
+      <path d="M 275 380 L 260 360 L 245 320 L 240 280 L 250 240 L 270 210 L 300 180 L 340 165 L 380 175"
+            fill="none" stroke="#b30000" stroke-width="4" stroke-linecap="round"/>
+      <!-- Ramsey through Mountain to Creg-ny-Baa -->
+      <path d="M 380 175 L 405 195 L 420 230 L 420 280 L 410 320 L 395 360 L 380 390"
+            fill="none" stroke="#b30000" stroke-width="4" stroke-linecap="round"/>
+      <!-- Back into Douglas -->
+      <path d="M 380 390 L 375 405 L 370 410"
+            fill="none" stroke="#b30000" stroke-width="4" stroke-linecap="round"/>
+
+      <!-- Towns/Markers -->
+      <g font-size="11" font-family="system-ui" fill="#16202a">
+        <!-- Douglas -->
+        <circle cx="370" cy="410" r="5" fill="#b30000"/>
+        <text x="380" y="414" font-weight="600">Douglas (start)</text>
+
+        <!-- Quarterbridge -->
+        <circle cx="345" cy="395" r="3" fill="#b30000"/>
+        <text x="320" y="385" font-size="9">Quarterbridge</text>
+
+        <!-- Union Mills / Crosby -->
+        <circle cx="320" cy="392" r="3" fill="#b30000"/>
+        <text x="295" y="404" font-size="9">Crosby</text>
+
+        <!-- Ballacraine (turn) -->
+        <circle cx="275" cy="380" r="5" fill="#b30000"/>
+        <text x="200" y="385" font-weight="600" font-size="10">Ballacraine</text>
+
+        <!-- Glen Helen -->
+        <circle cx="260" cy="360" r="3" fill="#b30000"/>
+        <text x="200" y="365" font-size="9">Glen Helen</text>
+
+        <!-- Cronk-y-Voddy -->
+        <text x="200" y="325" font-size="9">Cronk-y-Voddy</text>
+
+        <!-- Kirk Michael -->
+        <circle cx="245" cy="295" r="3" fill="#b30000"/>
+        <text x="195" y="298" font-size="9">Kirk Michael</text>
+
+        <!-- Ballaugh -->
+        <circle cx="245" cy="255" r="3" fill="#b30000"/>
+        <text x="200" y="258" font-size="9">Ballaugh</text>
+
+        <!-- Sulby -->
+        <circle cx="285" cy="195" r="3" fill="#b30000"/>
+        <text x="250" y="190" font-size="9">Sulby</text>
+
+        <!-- Ramsey -->
+        <circle cx="380" cy="175" r="5" fill="#b30000"/>
+        <text x="390" y="178" font-weight="600">Ramsey</text>
+        <text x="390" y="190" font-size="9" fill="#5a6573">Ramsey Hairpin</text>
+
+        <!-- Bungalow / Snaefell -->
+        <circle cx="420" cy="280" r="3" fill="#b30000"/>
+        <text x="430" y="265" font-size="9">The Bungalow</text>
+        <text x="430" y="277" font-size="9" fill="#5a6573">(Snaefell summit)</text>
+
+        <!-- Creg-ny-Baa -->
+        <circle cx="395" cy="360" r="3" fill="#b30000"/>
+        <text x="410" y="365" font-size="9">Creg-ny-Baa</text>
+
+        <!-- Onchan -->
+        <text x="395" y="395" font-size="9" fill="#5a6573">Hillberry / Signpost</text>
+      </g>
+
+      <!-- Billown Circuit (south, small loop) -->
+      <g>
+        <ellipse cx="335" cy="475" rx="35" ry="20" fill="none" stroke="#1a4f8a" stroke-width="3"/>
+        <circle cx="335" cy="475" r="3" fill="#1a4f8a"/>
+        <text x="285" y="510" font-size="10" fill="#1a4f8a" font-weight="600">Billown (Castletown)</text>
+        <text x="285" y="522" font-size="9" fill="#5a6573">Pre-TT, Southern 100</text>
+      </g>
+
+      <!-- Other towns (no closure) -->
+      <g font-size="9" fill="#5a6573">
+        <circle cx="190" cy="380" r="2.5" fill="#5a6573"/>
+        <text x="160" y="395" font-size="9">Peel</text>
+
+        <circle cx="270" cy="500" r="2.5" fill="#5a6573"/>
+        <text x="240" y="515" font-size="9">Port Erin</text>
+
+        <circle cx="410" cy="335" r="2.5" fill="#5a6573"/>
+        <text x="415" y="338" font-size="9">Laxey</text>
+
+        <text x="380" y="80" font-size="9">North coast</text>
+      </g>
+
+      <!-- Compass -->
+      <g transform="translate(620, 60)">
+        <circle r="22" fill="white" stroke="#9aa890"/>
+        <text y="-4" text-anchor="middle" font-size="11" font-weight="600">N</text>
+        <path d="M 0 -14 L -5 4 L 0 0 L 5 4 Z" fill="#16202a"/>
+      </g>
+    </svg>
+    <div class="map-legend">
+      <span><span class="legend-swatch" style="background: #b30000;"></span>Mountain Course (TT &amp; Manx GP)</span>
+      <span><span class="legend-swatch" style="background: #1a4f8a;"></span>Billown Circuit (Pre-TT, Southern 100)</span>
+      <span><span class="legend-swatch" style="background: #5a6573;"></span>Towns not on the course (drivable)</span>
+    </div>
+    <p class="note">Simplified diagram. Position of towns and curves is approximate and not to scale.</p>
+  </div>
+
+  <h2>What each "section" actually means</h2>
+  <p class="subtitle">Race reports and closure notices use these names. Here's what road they correspond to.</p>
+  <div class="glossary" id="glossary"></div>
+</section>
+
+<!-- ========== ALTERNATIVES ========== -->
+<section id="tab-alternatives" class="section">
+  <h2>Getting around when the roads are closed</h2>
+  <p>Even when the Mountain Course is fully closed to cars, several alternatives keep running. These are real options, not just tourist novelties.</p>
+
+  <div class="panel" style="border-left: 4px solid var(--s100); background: #eaf2fa;">
+    <h3 style="margin-top: 0; color: var(--s100);">Manx Electric Tramway &mdash; Douglas to Ramsey via the coast</h3>
+    <p>The historic electric tramway runs along the east coast from Derby Castle (north end of Douglas Promenade) through Onchan, Laxey and Dhoon to Ramsey. <strong>It is not affected by Mountain Course closures.</strong> If you need to get between Douglas and Ramsey during a TT closure, this is your real option. It is also the easiest way to reach Laxey and the Snaefell Mountain Railway.</p>
+    <p class="note">Journey time roughly 75-90 minutes Douglas to Ramsey. Buy tickets on board with cash, contactless, or a Go Card.</p>
+  </div>
+
+  <div class="panel" style="border-left: 4px solid var(--tt); background: #fdf0f0;">
+    <h3 style="margin-top: 0; color: var(--tt);">Snaefell Mountain Railway &mdash; access to the Mountain section</h3>
+    <p>From Laxey (reachable by Manx Electric Tramway), the Snaefell Mountain Railway climbs to the Bungalow and the summit of Snaefell. <strong>It runs during the TT.</strong> This is the only way onto the Mountain section when the A18 is closed for racing, and a popular way to watch the racing at the Bungalow.</p>
+  </div>
+
+  <div class="panel" style="border-left: 4px solid var(--pretttt); background: #faf6e8;">
+    <h3 style="margin-top: 0; color: var(--pretttt);">Steam Railway &mdash; Douglas to Port Erin</h3>
+    <p>The historic steam railway runs from Douglas station (10 minutes from the Sea Terminal) south to Castletown, Port St Mary and Port Erin. <strong>It is not affected by Mountain Course closures.</strong> It is briefly affected by Billown closures right at the Castletown end (the line crosses the circuit), so check timetables during Pre-TT and Southern 100 weekends.</p>
+  </div>
+
+  <h3>Special TT shuttle bus services (race fortnight only)</h3>
+  <p>Bus Vannin runs additional spectator services during the TT, dropping fans off before closures and collecting them after. Useful if you want to be at a viewing point without worrying about parking inside the closure zone.</p>
+  <div class="glossary">
+    <div class="gloss-card">
+      <div class="name">TT1</div>
+      <div class="desc">South (Port St Mary, Port Erin, Castletown) to the Grandstand in Douglas.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="name">TT3</div>
+      <div class="desc">Grandstand to Creg-ny-Baa and Hillberry viewing areas. Runs before closures to drop off, after closures to collect.</div>
+    </div>
+    <div class="gloss-card">
+      <div class="name">TT6</div>
+      <div class="desc">Grandstand to Quarterbridge, Glen Vine, Crosby, Ballacraine, Laurel Bank, Cronk-y-Voddy, Kirk Michael, Ballaugh, Sulby and Ramsey. Covers the full course on the west and north side.</div>
+    </div>
+  </div>
+
+  <h3>The Spring Valley / Glen Darragh local diversion</h3>
+  <p>During Mountain Course closures, Bus Vannin services 5 and 6 between Douglas and Peel divert via Quarterbridge, Spring Valley and Glen Darragh Road. This diversion is also open to private cars and is useful if you live in the south-west Douglas suburbs and need to get around the closed sections.</p>
+  <p class="note">During these closures the buses do not serve Nobles Hospital, Strang, Union Mills or Ballagarey because those are all on the course. If you need to reach one of those areas during closure, you cannot.</p>
+
+  <h3>Important caveat: the &quot;no later than&quot; clause</h3>
+  <p>Every published reopening time is a <strong>maximum</strong>, not a guarantee. If a session ends ahead of schedule with no incidents, roads can and do reopen earlier. Conversely, an incident on course can extend a closure beyond the published time. Always check the Road Information Hotline (<strong>01624&nbsp;685888</strong>) before assuming a road is open or closed.</p>
+</section>
+
+<!-- ========== ROUTE CHECKER ========== -->
+<section id="tab-route" class="section">
+  <h2>Can I drive from A to B?</h2>
+  <p class="subtitle">Pick a route and a date/time, and I'll tell you if the course is closed and suggest an alternative.</p>
+
+  <div class="checker">
+    <div class="row">
+      <label for="from">From</label>
+      <select id="from"></select>
+    </div>
+    <div class="row">
+      <label for="to">To</label>
+      <select id="to"></select>
+    </div>
+    <div class="row">
+      <label for="date">Date</label>
+      <input type="date" id="date" min="2026-05-22" max="2026-08-28" value="2026-05-25">
+    </div>
+    <div class="row">
+      <label for="time">Time</label>
+      <input type="time" id="time" value="11:00">
+    </div>
+    <button onclick="checkRoute()">Check route</button>
+  </div>
+
+  <div id="route-result"></div>
+
+  <p class="note" style="margin-top: 18px;">The checker uses the published 2026 schedule. Always confirm with the gov.im road information line on <strong>01624 685888</strong> or Manx Radio before setting off, especially when weather may have shifted sessions.</p>
+</section>
+
+<!-- ========== LIVE UPDATES ========== -->
+<section id="tab-live" class="section">
+  <h2>Live updates &amp; official sources</h2>
+  <p>The schedule above is the published plan. The actual on-the-day status depends on weather, incidents, and operational decisions. These are the authoritative places to check on the day.</p>
+
+  <div class="live-links">
+    <div class="live-card">
+      <div class="title">Road Information Hotline</div>
+      <div class="desc">Department of Infrastructure. Recorded message updated live.</div>
+      <a href="tel:01624685888">01624 685888</a>
+    </div>
+    <div class="live-card">
+      <div class="title">Manx Radio TT News</div>
+      <div class="desc">Live race coverage and immediate road status updates.</div>
+      <a href="https://www.manxradio.com/news/tt-news/" target="_blank" rel="noopener">manxradio.com/news/tt-news</a>
+    </div>
+    <div class="live-card">
+      <div class="title">gov.im road events page</div>
+      <div class="desc">Official Department of Infrastructure listing of upcoming roadworks &amp; events.</div>
+      <a href="https://www.gov.im/about-the-government/departments/infrastructure/highway-services/upcoming-roadworks-and-events-on-roads/" target="_blank" rel="noopener">gov.im roadworks</a>
+    </div>
+    <div class="live-card">
+      <div class="title">TT Infoline</div>
+      <div class="desc">Official TT schedule and changes.</div>
+      <a href="https://www.iomttraces.com/ttinfoline/" target="_blank" rel="noopener">iomttraces.com/ttinfoline</a>
+    </div>
+    <div class="live-card">
+      <div class="title">Southern 100 Infoline</div>
+      <div class="desc">WhatsApp infoline for Southern 100 and Pre-TT updates.</div>
+      <a href="https://southern100.com/" target="_blank" rel="noopener">southern100.com</a>
+    </div>
+    <div class="live-card">
+      <div class="title">Manx Grand Prix</div>
+      <div class="desc">Manx Motor Cycle Club's MGP / Classic TT official site.</div>
+      <a href="https://manxgrandprix.co.uk/" target="_blank" rel="noopener">manxgrandprix.co.uk</a>
+    </div>
+  </div>
+
+  <div class="live-refresh" id="live-refresh">
+    <strong>Pull latest TT news headlines</strong> <button onclick="refreshLive()">Refresh</button>
+    <div class="live-content" id="live-content"></div>
+  </div>
+</section>
+
+<div class="footer">
+  <p>Data compiled from <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a>, <a href="https://southern100.com/" target="_blank" rel="noopener">southern100.com</a>, <a href="https://manxgrandprix.co.uk/" target="_blank" rel="noopener">manxgrandprix.co.uk</a>, <a href="https://www.gov.im/about-the-government/departments/infrastructure/highway-services/upcoming-roadworks-and-events-on-roads/" target="_blank" rel="noopener">gov.im</a> and <a href="https://www.iomtoday.co.im/topic/tt" target="_blank" rel="noopener">iomtoday.co.im</a>. Schedules are provisional and subject to change without notice. This is an unofficial guide; always verify with the Road Information Hotline (01624&nbsp;685888) before setting off.</p>
+  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->21 May 2026<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
+</div>
+
+<script>
+"use strict";
+
+// ====== DATA ======
+// Note: each entry represents one closure window. Mountain Course events list both
+// "mountainCloses" (Mountain section only) and "fullCloses" (entire course).
+// Billown Circuit events list close/reopen directly.
+
+const closures = [
+  // ===== PRE-TT CLASSIC (Billown) =====
+  { event: 'pre-tt', course: 'billown', date: '2026-05-22',
+    windows: [{ close: '18:00', reopen: '21:30' }],
+    activity: 'Pre-TT Classic practice (Day 1)' },
+  { event: 'pre-tt', course: 'billown', date: '2026-05-23',
+    windows: [{ close: '12:30', reopen: '16:30' }, { close: '18:00', reopen: '21:30' }],
+    activity: 'Pre-TT Classic qualifying + Races 1-4' },
+  { event: 'pre-tt', course: 'billown', date: '2026-05-24',
+    windows: [{ close: '13:00', reopen: '18:00' }],
+    activity: 'Pre-TT Classic Race Day (final)' },
+
+  // ===== TT 2026 (Mountain Course) =====
+  { event: 'tt', course: 'mountain', date: '2026-05-25',
+    mountainCloses: '08:45', fullCloses: '10:00', reopen: '21:30',
+    activity: 'Free Practice &amp; Qualifying 1', day: 'Mon (Bank Holiday)' },
+  { event: 'tt', course: 'mountain', date: '2026-05-26',
+    mountainCloses: '16:45', fullCloses: '18:00', reopen: '21:30',
+    activity: 'Qualifying 2 (evening)', day: 'Tue' },
+  { event: 'tt', course: 'mountain', date: '2026-05-27',
+    mountainCloses: '11:15', fullCloses: '12:30', reopen: '16:30',
+    secondMountain: 'stays closed', secondFull: '18:00', secondReopen: '21:30',
+    activity: 'Qualifying 3 (afternoon) &amp; Qualifying 4 (evening)', day: 'Wed' },
+  { event: 'tt', course: 'mountain', date: '2026-05-28',
+    activity: 'Rest day (contingency only)', day: 'Thu', restDay: true },
+  { event: 'tt', course: 'mountain', date: '2026-05-29',
+    mountainCloses: '08:45', fullCloses: '10:00', reopen: '16:30',
+    activity: 'Qualifying 5 &amp; Qualifying 6', day: 'Fri' },
+  { event: 'tt', course: 'mountain', date: '2026-05-30',
+    mountainCloses: '09:00', fullCloses: '10:00', reopen: '21:30',
+    activity: 'Superstock TT Race 1 (10:45) + Sidecar TT Race 1 (13:30)', day: 'Sat — Race Day 1' },
+  { event: 'tt', course: 'mountain', date: '2026-05-31',
+    mountainCloses: '11:00', fullCloses: '12:30', reopen: '18:30',
+    activity: 'Superbike TT (13:30, 6 laps)', day: 'Sun — Race Day 2' },
+  { event: 'tt', course: 'mountain', date: '2026-06-01',
+    activity: 'Rest day (contingency only)', day: 'Mon', restDay: true },
+  { event: 'tt', course: 'mountain', date: '2026-06-02',
+    mountainCloses: '09:00', fullCloses: '10:00', reopen: '17:00',
+    activity: 'Supersport TT 1 (10:45) + Sportbike TT 1 (14:15) + Solo Practice', day: 'Tue — Race Day 3' },
+  { event: 'tt', course: 'mountain', date: '2026-06-03',
+    mountainCloses: '09:00', fullCloses: '10:00', reopen: '17:00',
+    activity: 'Sidecar TT 2 (10:45) + Superstock TT 2 (13:30) + Solo Practice', day: 'Wed — Race Day 4' },
+  { event: 'tt', course: 'mountain', date: '2026-06-04',
+    activity: 'Rest day (contingency only)', day: 'Thu', restDay: true },
+  { event: 'tt', course: 'mountain', date: '2026-06-05',
+    mountainCloses: '09:00', fullCloses: '10:00', reopen: '21:30',
+    activity: 'Supersport TT 2 (10:45) + Sportbike TT 2 (14:00) + Senior Practice (16:00)', day: 'Fri — Race Day 5 (TT Bank Holiday)' },
+  { event: 'tt', course: 'mountain', date: '2026-06-06',
+    mountainCloses: '09:00', fullCloses: '10:00', reopen: '21:30',
+    activity: 'Senior TT (11:00, 6 laps) — festival finale', day: 'Sat — Race Day 6' },
+  { event: 'tt', course: 'mountain', date: '2026-06-07',
+    activity: 'Contingency day — only used if rescheduling needed', day: 'Sun', contingency: true },
+
+  // ===== SOUTHERN 100 (Billown) =====
+  { event: 's100', course: 'billown', date: '2026-07-06',
+    windows: [{ close: '18:00', reopen: '21:40' }],
+    activity: 'Newcomer familiarisation + qualifying (evening)' },
+  { event: 's100', course: 'billown', date: '2026-07-07',
+    windows: [{ close: '18:00', reopen: '21:40' }],
+    activity: 'Qualifying + Races 1-2 (evening)' },
+  { event: 's100', course: 'billown', date: '2026-07-08',
+    windows: [{ close: '09:45', reopen: '11:50' }, { close: '18:00', reopen: '21:40' }],
+    activity: 'Morning qualifying + Races 3-5 (evening)' },
+  { event: 's100', course: 'billown', date: '2026-07-09',
+    windows: [{ close: '09:30', reopen: '12:45' }, { close: '13:30', reopen: '16:45' }],
+    activity: 'Championship Day — finals (with lunch break 12:45-13:30)' },
+
+  // ===== MANX GP / CLASSIC TT (Mountain Course, Aug 2026) =====
+  // Detailed daily times not yet published; window is Aug 16-28.
+  { event: 'mgp', course: 'mountain', date: '2026-08-16',
+    pending: true, activity: 'MGP practice begins — exact times TBC', day: 'Sun' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-17',
+    pending: true, activity: 'MGP practice — exact times TBC', day: 'Mon (Bank Holiday)' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-18',
+    pending: true, activity: 'MGP practice — exact times TBC', day: 'Tue' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-19',
+    pending: true, activity: 'MGP practice + Classic TT begins — exact times TBC', day: 'Wed' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-20',
+    pending: true, activity: 'MGP / Classic TT practice — exact times TBC', day: 'Thu' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-21',
+    pending: true, activity: 'MGP / Classic TT practice — exact times TBC', day: 'Fri' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-22',
+    pending: true, activity: 'MGP race day — exact times TBC', day: 'Sat' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-24',
+    pending: true, activity: 'MGP final race day — exact times TBC', day: 'Mon' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-26',
+    pending: true, activity: 'Classic TT race day — exact times TBC', day: 'Wed' },
+  { event: 'mgp', course: 'mountain', date: '2026-08-28',
+    pending: true, activity: 'Classic TT final race day — exact times TBC', day: 'Fri' }
+];
+
+const eventMeta = {
+  'pre-tt': { name: 'Pre-TT Classic', short: 'Pre-TT', cls: 'pre-tt', course: 'Billown Circuit (Castletown/Ballabeg)' },
+  'tt':     { name: 'Isle of Man TT 2026', short: 'TT', cls: 'tt', course: 'Snaefell Mountain Course (37.73 mi)' },
+  's100':   { name: 'Southern 100', short: 'S100', cls: 's100', course: 'Billown Circuit (Castletown/Ballabeg)' },
+  'mgp':    { name: 'Manx Grand Prix / Classic TT', short: 'MGP', cls: 'mgp', course: 'Snaefell Mountain Course (37.73 mi)' },
+  'tt-setup': { name: 'A18 Mountain Road maintenance', short: 'Setup', cls: 'tt', course: 'A18 Snaefell Mountain Road only' }
+};
+
+// ====== SECTION GLOSSARY ======
+const sections = [
+  { name: 'Glencrutchery Road', road: 'A2, Douglas', desc: 'The start/finish straight, by the TT Grandstand. Closure of this short stretch shuts most of north-west Douglas.' },
+  { name: 'Bray Hill', road: 'A2, Douglas', desc: 'The very fast descent out of Douglas, just south of the start. Famous flat-out drop.' },
+  { name: 'Quarterbridge', road: 'A1/A5 junction, Douglas', desc: 'Big roundabout west of Douglas centre. The course turns right here onto the Peel road.' },
+  { name: 'Braddan Bridge', road: 'A1, west of Douglas', desc: 'Just past Quarterbridge, where the A1 crosses the river.' },
+  { name: 'Union Mills', road: 'A1', desc: 'Village on the Douglas-Peel road, about 2 miles west of Douglas.' },
+  { name: 'Glen Vine / Crosby', road: 'A1', desc: 'Villages between Douglas and Peel on the A1.' },
+  { name: 'Greeba', road: 'A1', desc: 'Long fast stretch west of Crosby, before Ballacraine.' },
+  { name: 'Ballacraine', road: 'A1/A3 junction', desc: 'Where the course turns right (north) at the Highlander pub. Critical junction — closing it cuts most Peel-Ramsey traffic.' },
+  { name: 'Glen Helen', road: 'A3, near St John\'s', desc: 'Tight wooded valley after Ballacraine, includes Sarah\'s Cottage and Creg Willy\'s Hill.' },
+  { name: 'Cronk-y-Voddy', road: 'A3', desc: 'Long undulating straight (the "helter skelter") between Glen Helen and Kirk Michael.' },
+  { name: 'Kirk Michael', road: 'A3', desc: 'Village on the north-west coast that the course threads through at high speed.' },
+  { name: 'Ballaugh Bridge', road: 'A3', desc: 'Humpback bridge where bikes launch into the air. Centre of Ballaugh village.' },
+  { name: 'Sulby Straight', road: 'A3', desc: 'The fastest section of the course — top riders exceed 200 mph here.' },
+  { name: 'Ramsey (Parliament Sq, May Hill, Ramsey Hairpin)', road: 'A3/A18', desc: 'The course crosses Ramsey town centre and turns up the mountain at Ramsey Hairpin.' },
+  { name: 'Mountain Mile / Bungalow', road: 'A18 Mountain Road', desc: 'High moorland section past Snaefell summit. The Bungalow is the highest point on the course.' },
+  { name: 'Brandywell / 32nd / 33rd', road: 'A18', desc: 'Bends on the descent off the mountain toward Creg-ny-Baa.' },
+  { name: 'Creg-ny-Baa', road: 'A18', desc: 'Famous viewing pub at the foot of the mountain. End of the one-way Mountain Road operation.' },
+  { name: 'Brandish / Hillberry', road: 'A18, near Onchan', desc: 'Fast bends coming back into the Douglas suburbs.' },
+  { name: 'Cronk-ny-Mona / Signpost Corner / Bedstead', road: 'Local roads, Onchan/Douglas', desc: 'Final corners as the course winds through Onchan back toward the grandstand.' },
+  { name: 'Governor\'s Bridge', road: 'A2, Douglas', desc: 'Last corner before the start/finish straight — a tight hairpin.' },
+  { name: 'Billown Circuit', road: 'A5/A7 around Castletown &amp; Ballabeg', desc: 'A 4.25-mile loop on public roads through the south of the island. Used by Pre-TT and Southern 100.' },
+  { name: 'Castletown Bypass', road: 'A5', desc: 'Part of the Billown circuit. Closure cuts the main south-coast route to Castletown / Port Erin.' }
+];
+
+// ====== ROUTE CHECKER DATA ======
+const places = [
+  'Douglas', 'Onchan', 'Laxey', 'Ramsey',
+  'Peel', 'St John\'s', 'Kirk Michael', 'Ballaugh', 'Sulby',
+  'Castletown', 'Ballasalla', 'Port Erin', 'Port St Mary',
+  'Airport (Ronaldsway)', 'Foxdale', 'The Bungalow / Mountain'
+];
+
+// Which 'segments' of the Mountain Course a route uses
+const mountainSegments = {
+  A1_DouglasPeel:     ['Douglas','Onchan','Quarterbridge','Union Mills','Crosby','Greeba','Ballacraine'],
+  A3_BallacraineRamsey: ['Ballacraine','Glen Helen','Kirk Michael','Ballaugh','Sulby','Ramsey'],
+  A18_MountainRoad:   ['Ramsey','Bungalow','Mountain','Creg-ny-Baa','Onchan','Douglas']
+};
+
+// A route definition: which course segments must be open to drive it
+const routeRules = {
+  // Mountain Course routes (closed during TT and MGP closures)
+  'Douglas|Peel':       { segments: ['mountain_A1'], detour: 'No clean alternative when A1 is closed — south route via Castletown / Foxdale is very long.' },
+  'Peel|Douglas':       { segments: ['mountain_A1'], detour: 'No clean alternative when A1 is closed — south route via Castletown / Foxdale is very long.' },
+  'Douglas|Ramsey':     { segments: ['mountain_A18'], detour: 'When the Mountain Road is closed but the rest of the course is open, you cannot get to Ramsey from Douglas. When the whole course is closed there is no road option.', alternative: 'Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey &rarr; Ramsey throughout closures (unaffected by racing). About 75-90 minutes.' },
+  'Ramsey|Douglas':     { segments: ['mountain_A18'], detour: 'Same as Douglas to Ramsey: blocked when the course is closed.', alternative: 'Manx Electric Tramway runs Ramsey &rarr; Laxey &rarr; Douglas throughout closures. When Mountain Road is open (one-way only), you can drive Ramsey&rarr;Douglas via the Mountain.' },
+  'Peel|Ramsey':        { segments: ['mountain_A3'], detour: 'No alternative through the north — the A3 is the only road. Wait for course to reopen.' },
+  'Ramsey|Peel':        { segments: ['mountain_A3'], detour: 'No alternative through the north — the A3 is the only road. Wait for course to reopen.' },
+  'Douglas|Kirk Michael':  { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
+  'Kirk Michael|Douglas':  { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
+  'Douglas|Ballaugh':   { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
+  'Ballaugh|Douglas':   { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
+  'Douglas|Sulby':      { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
+  'Sulby|Douglas':      { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
+  'Douglas|Laxey':      { segments: ['mountain_A18_lower'], detour: 'A2 coast road from Douglas to Laxey IS open during course closures (it\'s east of the course, parallel to but not on the course). Confirm with hotline.' },
+  'Laxey|Douglas':      { segments: ['mountain_A18_lower'], detour: 'A2 coast road from Douglas to Laxey IS open during course closures. Confirm with hotline.' },
+  'Laxey|Ramsey':       { segments: ['mountain_A2_north'], detour: 'A2 coast road continues north to Ramsey and is generally open during Mountain Course closures (though Ramsey town centre itself is on the course).' },
+  'Ramsey|Laxey':       { segments: ['mountain_A2_north'], detour: 'A2 coast road south from Ramsey is generally open, but the very centre of Ramsey is on the course.' },
+  'The Bungalow / Mountain|Douglas': { segments: ['mountain_A18'], detour: 'The Mountain Road is one-way Ramsey&rarr;Creg-ny-Baa for the entire TT fortnight, even when open.' },
+  'Douglas|The Bungalow / Mountain': { segments: ['mountain_A18'], detour: 'Cannot drive UP the Mountain from Douglas &mdash; the A18 is one-way the other direction for the entire TT fortnight.', alternative: 'Take the Manx Electric Tramway to Laxey, then the Snaefell Mountain Railway to the Bungalow or summit. This works even when the road is fully closed for racing.' },
+
+  // Billown routes (closed during Pre-TT and S100)
+  // Douglas-Castletown: workaround exists via Ronaldsway Airport + Farrant's Way (buses use this)
+  'Douglas|Castletown': { segments: ['billown'], severity: 'partial', detour: 'The Castletown bypass (A5) is on the circuit, but you can still reach Castletown Square by coming south on the A5 to Ballasalla, then routing via Ronaldsway Airport and Farrant\'s Way. Buses use this detour throughout the closures, so cars can too. Slower than usual but possible.', alternative: 'The Steam Railway runs Douglas &rarr; Castletown. The line crosses the Billown circuit at Castletown station, so timetables may be affected during racing but typically resumes during the breaks.' },
+  'Castletown|Douglas': { segments: ['billown'], severity: 'partial', detour: 'Leave Castletown via Farrant\'s Way and Ronaldsway Airport to rejoin the A5 north of Ballasalla. Buses use this detour throughout closures. Adds a few minutes.', alternative: 'The Steam Railway runs Castletown &rarr; Douglas, with the same Billown caveat at the Castletown end.' },
+  // Port Erin/Port St Mary-Castletown: no workaround, A7 is the circuit
+  'Castletown|Port Erin': { segments: ['billown'], detour: 'No workaround — the A7 between Castletown and Port Erin/Port St Mary IS the circuit on that side. Bus Vannin confirms no service runs between Castletown and Port Erin during closures. Wait for reopening.' },
+  'Port Erin|Castletown': { segments: ['billown'], detour: 'No workaround — the A7 is the circuit on that side. Wait for the reopening (between qualifying and racing on Sat, after racing finishes on Sun).' },
+  // Douglas-Port Erin: blocked because even with the airport detour, the southern leg is on the circuit
+  'Douglas|Port Erin':  { segments: ['billown'], detour: 'No through route during closures. You can reach Castletown via the Ronaldsway Airport detour, but you cannot continue south to Port Erin because the A7 is on the circuit.', alternative: 'The Steam Railway runs Douglas &rarr; Castletown &rarr; Port St Mary &rarr; Port Erin and is unaffected by Mountain Course closures. During Billown events it may be affected only briefly at the Castletown end &mdash; check timetables.' },
+  'Port Erin|Douglas':  { segments: ['billown'], detour: 'No through route during closures &mdash; Port Erin to Castletown is blocked, so you cannot reach the Douglas-bound A5 either.', alternative: 'The Steam Railway runs Port Erin &rarr; Castletown &rarr; Douglas. Unaffected by Mountain Course closures, only briefly affected by Billown events.' },
+  'Castletown|Ballasalla': { segments: [], detour: 'Short hop just north of Castletown — typically not affected.' },
+  'Ballasalla|Castletown': { segments: [], detour: 'Short hop — typically not affected.' },
+  'Ballasalla|Douglas': { segments: [], detour: 'A5 from Ballasalla to Douglas is open during Billown closures (the closure is to the south of Ballasalla).' },
+  'Douglas|Ballasalla': { segments: [], detour: 'A5 from Douglas to Ballasalla is open during Billown closures.' },
+  'Airport (Ronaldsway)|Douglas': { segments: [], detour: 'A5 from the airport to Douglas is OPEN — the airport sits just north of Castletown but Ronaldsway access road is not on the circuit. Check hotline if Billown is closed for racing.' },
+  'Douglas|Airport (Ronaldsway)': { segments: [], detour: 'A5 from Douglas to the airport is OPEN.' },
+
+  // Cross-island routes that mostly avoid the courses
+  'Peel|Castletown':    { segments: ['billown'], detour: 'Peel-Castletown via A27 Foxdale road avoids the Mountain Course entirely. Only the Billown closure affects the very last few miles into Castletown.' },
+  'Castletown|Peel':    { segments: ['billown'], detour: 'Castletown-Peel via A27 Foxdale road avoids the Mountain Course entirely. Billown closure blocks the southern end only.' },
+  'Peel|Port Erin':     { segments: ['billown'], detour: 'Peel-Port Erin via A27/A36/A7 mostly avoids the Mountain Course but must enter the Billown area near Port Erin.' },
+  'Port Erin|Peel':     { segments: ['billown'], detour: 'Port Erin-Peel must exit through the Billown area; blocked during S100/Pre-TT closures.' },
+  'Ramsey|Castletown':  { segments: ['mountain_A3','billown'], detour: 'The northern leg (Ramsey-Ballacraine) is on the Mountain Course; the southern end touches Billown. During TT, this route is impossible.' },
+  'Castletown|Ramsey':  { segments: ['mountain_A3','billown'], detour: 'Same as Ramsey-Castletown — affected by both courses depending on event.' },
+  'Onchan|Peel':        { segments: ['mountain_A1'], detour: 'Onchan must exit through Douglas which feeds into the A1 to Peel. Same closure rules as Douglas-Peel.' },
+  'Peel|Onchan':        { segments: ['mountain_A1'], detour: 'Same closure rules as Peel-Douglas.' },
+  'Onchan|Ramsey':      { segments: ['mountain_A18'], detour: 'Onchan can use the A2 coast road via Laxey to reach Ramsey, avoiding the Mountain Road. This is generally open during TT closures.' },
+  'Ramsey|Onchan':      { segments: ['mountain_A18'], detour: 'Use A2 coast road via Laxey, generally open during Mountain Course closures.' },
+  'St John\'s|Peel':    { segments: [], detour: 'Short hop between St John\'s and Peel — typically not affected by the course (the course passes nearby at Ballacraine but not through Peel itself).' },
+  'Peel|St John\'s':    { segments: [], detour: 'Generally clear — Peel itself is not on the course.' },
+  'St John\'s|Douglas': { segments: ['mountain_A1'], detour: 'St John\'s to Douglas uses the A1 via Ballacraine — fully on the course during TT.' },
+  'Douglas|St John\'s': { segments: ['mountain_A1'], detour: 'Same rule as Douglas-Peel: blocked when course closed.' },
+  'Foxdale|Douglas':    { segments: ['mountain_A1'], detour: 'Foxdale-Douglas can use the B22 to Crosby and then onto the A1 — both feed into the closed course.' },
+  'Douglas|Foxdale':    { segments: ['mountain_A1'], detour: 'Same as Foxdale-Douglas.' },
+  'Port St Mary|Douglas': { segments: ['billown'], detour: 'A5 north out of Port St Mary passes the Billown circuit. Blocked during Pre-TT/Southern 100.' },
+  'Douglas|Port St Mary': { segments: ['billown'], detour: 'Same as Douglas-Port Erin.' }
+};
+
+// ====== HELPERS ======
+
+function fmtDate(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
+function fmtDateLong(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function timeToMin(t) {
+  if (!t) return null;
+  const [h,m] = t.split(':').map(Number);
+  return h*60+m;
+}
+
+function todayISO() {
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+
+function nowMin() {
+  const d = new Date();
+  return d.getHours()*60 + d.getMinutes();
+}
+
+// Is the course closed at given iso date + time?
+function statusAt(iso, mins) {
+  // Mountain Road one-way operation period
+  const oneWayStart = new Date('2026-05-22T16:30:00');
+  const oneWayEnd = new Date('2026-06-09T09:30:00');
+  const checkDate = new Date(iso + 'T' + String(Math.floor(mins/60)).padStart(2,'0') + ':' + String(mins%60).padStart(2,'0') + ':00');
+  const mountainOneWay = checkDate >= oneWayStart && checkDate <= oneWayEnd;
+
+  // Mountain Road full-closure windows for cone/sign setup and removal
+  // Fri 22 May 09:30 - 16:30 (setup), Tue 9 June 09:30 - 16:30 (removal)
+  const setupStart = new Date('2026-05-22T09:30:00');
+  const setupEnd = new Date('2026-05-22T16:30:00');
+  const teardownStart = new Date('2026-06-09T09:30:00');
+  const teardownEnd = new Date('2026-06-09T16:30:00');
+  const mountainSetupClosed =
+    (checkDate >= setupStart && checkDate < setupEnd) ||
+    (checkDate >= teardownStart && checkDate < teardownEnd);
+
+  const todays = closures.filter(c => c.date === iso);
+  if (!todays.length && !mountainSetupClosed) {
+    return { closed: false, oneWay: mountainOneWay, items: [] };
+  }
+  if (mountainSetupClosed) {
+    const which = checkDate < oneWayStart ? 'cone setup before TT' : 'sign removal after TT';
+    return {
+      closed: false, // not the whole course, just the A18
+      oneWay: mountainOneWay,
+      mountainSetup: true,
+      items: [{ event: 'tt-setup', course: 'mountain-a18-only', status: 'closed', activity: `A18 Mountain Road fully closed for ${which}`, reopen: '16:30' }]
+    };
+  }
+
+  const result = { closed: false, oneWay: mountainOneWay, items: [], partial: false };
+  for (const c of todays) {
+    if (c.restDay || c.pending) {
+      result.items.push({ event: c.event, status: c.restDay ? 'rest' : 'pending', activity: c.activity });
+      continue;
+    }
+    if (c.course === 'billown' && c.windows) {
+      for (const w of c.windows) {
+        const cm = timeToMin(w.close);
+        const rm = timeToMin(w.reopen);
+        if (mins >= cm && mins < rm) {
+          result.closed = true;
+          result.items.push({ event: c.event, course: 'billown', status: 'closed', close: w.close, reopen: w.reopen, activity: c.activity });
+        }
+      }
+    }
+    if (c.course === 'mountain' && c.mountainCloses) {
+      const mcm = timeToMin(c.mountainCloses);
+      const fcm = timeToMin(c.fullCloses);
+      const rm = timeToMin(c.reopen);
+      // Wednesday May 27 has a second closure
+      const fcm2 = c.secondFull ? timeToMin(c.secondFull) : null;
+      const rm2 = c.secondReopen ? timeToMin(c.secondReopen) : null;
+
+      if (mins >= mcm && mins < fcm) {
+        result.items.push({ event: c.event, course: 'mountain', status: 'mountain-closing', close: c.mountainCloses, reopen: c.reopen, activity: c.activity });
+        result.partial = true;
+      } else if (mins >= fcm && mins < rm) {
+        result.closed = true;
+        result.items.push({ event: c.event, course: 'mountain', status: 'closed', close: c.fullCloses, reopen: c.reopen, activity: c.activity });
+      } else if (fcm2 && mins >= rm && mins < fcm2) {
+        result.items.push({ event: c.event, course: 'mountain', status: 'mountain-stays-closed', activity: c.activity });
+        result.partial = true;
+      } else if (fcm2 && mins >= fcm2 && mins < rm2) {
+        result.closed = true;
+        result.items.push({ event: c.event, course: 'mountain', status: 'closed', close: c.secondFull, reopen: c.secondReopen, activity: c.activity });
+      }
+    }
+  }
+  return result;
+}
+
+// Return upcoming closures/reopenings within `windowMinutes` of the queried time
+// that affect the given route segments. Used to surface "closing in 90 minutes" alerts.
+function upcomingChanges(iso, mins, segments, windowMinutes) {
+  windowMinutes = windowMinutes || 120;
+  const changes = [];
+  const todays = closures.filter(c => c.date === iso);
+  const matchesMountain = segments.some(x => x.startsWith('mountain'));
+  const matchesA18 = segments.includes('mountain_A18');
+  const matchesBillown = segments.includes('billown');
+
+  function pushIfInWindow(time, kind, label) {
+    if (!time) return;
+    const t = timeToMin(time);
+    const diff = t - mins;
+    if (diff > 0 && diff <= windowMinutes) {
+      changes.push({ at: time, kind: kind, minsAway: diff, label: label });
+    }
+  }
+
+  for (const c of todays) {
+    if (c.course === 'mountain' && matchesMountain && !c.restDay && !c.pending && !c.contingency) {
+      pushIfInWindow(c.mountainCloses, 'mountain-closing', `Mountain section starts closing (${c.activity})`);
+      pushIfInWindow(c.fullCloses, 'closing', `Full Mountain Course closes (${c.activity})`);
+      pushIfInWindow(c.reopen, 'opening', `Mountain Course reopens after ${c.activity}`);
+      pushIfInWindow(c.secondFull, 'closing', `Course closes again for evening ${c.activity}`);
+      pushIfInWindow(c.secondReopen, 'opening', `Course reopens after evening session`);
+    }
+    if (c.course === 'billown' && matchesBillown && c.windows) {
+      for (const w of c.windows) {
+        pushIfInWindow(w.close, 'closing', `Billown circuit closes (${c.activity})`);
+        pushIfInWindow(w.reopen, 'opening', `Billown circuit reopens after ${c.activity}`);
+      }
+    }
+  }
+
+  // Mountain Road one-way start/end on the specific changeover days
+  if (matchesA18) {
+    if (iso === '2026-05-22') {
+      pushIfInWindow('09:30', 'closing', 'A18 Mountain Road closes for cone setup');
+      pushIfInWindow('16:30', 'partial-reopening', 'A18 reopens with one-way system (Ramsey→Creg-ny-Baa only)');
+    }
+    if (iso === '2026-06-09') {
+      pushIfInWindow('09:30', 'closing', 'A18 closes for sign removal');
+      pushIfInWindow('16:30', 'opening', 'A18 fully reopens (both directions)');
+    }
+  }
+
+  changes.sort(function(a, b) { return a.minsAway - b.minsAway; });
+  return changes;
+}
+
+function formatMinsAway(m) {
+  if (m < 60) return m + ' min';
+  const h = Math.floor(m / 60);
+  const r = m % 60;
+  return r === 0 ? h + 'h' : h + 'h ' + r + 'm';
+}
+
+function renderUpcomingBlock(iso, mins, segments) {
+  const ups = upcomingChanges(iso, mins, segments, 120);
+  if (!ups.length) return '';
+  const items = ups.map(function(u) {
+    const kindLabel = u.kind === 'closing' || u.kind === 'mountain-closing'
+      ? '<strong>Heads-up &mdash; closure imminent:</strong>'
+      : (u.kind === 'partial-reopening'
+        ? '<strong>Heads-up &mdash; partial reopening:</strong>'
+        : '<strong>Heads-up &mdash; reopening:</strong>');
+    return '<p style="margin: 4px 0;">' + kindLabel + ' ' + u.label + ' at <strong>' + u.at + '</strong> (in ' + formatMinsAway(u.minsAway) + ').</p>';
+  }).join('');
+  return '<div class="alt" style="margin-top: 10px; padding: 10px 12px; background: var(--warn-soft); border-left: 3px solid var(--warn); border-radius: 4px;">' + items + '</div>';
+}
+
+function isCourseClosedForRoute(iso, mins, segments) {
+  const s = statusAt(iso, mins);
+
+  // Mountain Road one-way restriction (applies even when course is "open")
+  for (const seg of segments) {
+    if (seg === 'mountain_A18' && s.oneWay && !s.closed) {
+      // The Mountain Road is one-way; this affects only Douglas->Bungalow direction. We use this as a soft warning, route checker will warn.
+    }
+  }
+
+  for (const it of s.items) {
+    if (it.status === 'closed') {
+      if (it.course === 'mountain' && segments.some(x => x.startsWith('mountain'))) {
+        return { closed: true, info: it };
+      }
+      if (it.course === 'billown' && segments.includes('billown')) {
+        return { closed: true, info: it };
+      }
+      // Mountain Road setup/teardown — only the A18 affected
+      if (it.course === 'mountain-a18-only' && segments.includes('mountain_A18')) {
+        return { closed: true, info: it };
+      }
+    }
+    // Wed May 27 window: A18 Mountain section stays closed even when A1/A3 reopen
+    if (it.status === 'mountain-stays-closed' && segments.includes('mountain_A18')) {
+      return { closed: true, info: { event: it.event, activity: it.activity, reopen: '18:00 (then again until 21:30 for evening qualifying)' } };
+    }
+    if (it.status === 'pending') {
+      // MGP pending — flag as warning
+      if (it.event === 'mgp' && segments.some(x => x.startsWith('mountain'))) {
+        return { warn: true, info: it };
+      }
+    }
+  }
+  return { closed: false, oneWay: s.oneWay };
+}
+
+// ====== RENDER: now / today ======
+function renderNow() {
+  const t = todayISO();
+  const minutes = nowMin();
+  const today = closures.filter(c => c.date === t);
+  const banner = document.getElementById('now-banner');
+  const detail = document.getElementById('today-detail');
+
+  // Right-now banner
+  const st = statusAt(t, minutes);
+  let bannerCls = 'open', bannerTxt = '<strong>All race roads currently open.</strong>';
+  if (st.closed) {
+    bannerCls = 'closed';
+    const items = st.items.filter(i => i.status === 'closed').map(i => {
+      const courseLabel = i.course === 'mountain' ? 'Mountain Course' : (i.course === 'billown' ? 'Billown' : 'A18 Mountain Road');
+      return `${eventMeta[i.event].name}: ${courseLabel} closed until ${i.reopen}`;
+    }).join(' &middot; ');
+    bannerTxt = `<strong>ROADS CLOSED NOW.</strong> ${items}`;
+  } else if (st.mountainSetup) {
+    bannerCls = 'warn';
+    const which = st.items[0].activity;
+    bannerTxt = `<strong>A18 Mountain Road fully closed today.</strong> ${which} (until 4:30pm). The rest of the island's roads are unaffected.`;
+  } else if (st.partial) {
+    bannerCls = 'warn';
+    bannerTxt = '<strong>Mountain section closure in progress.</strong> Full course closure imminent.';
+  } else if (st.oneWay) {
+    bannerCls = 'warn';
+    bannerTxt = '<strong>Mountain Road is one-way</strong> (Ramsey &rarr; Creg-ny-Baa). You cannot drive up the Mountain from Douglas right now.';
+  }
+  banner.innerHTML = `<div class="panel ${bannerCls}">${bannerTxt}</div>`;
+
+  // Today's schedule
+  if (!today.length) {
+    detail.innerHTML = '<div class="panel">No race road closures scheduled for today.</div>';
+    return;
+  }
+  detail.innerHTML = today.map(c => dayCardHTML(c, true)).join('');
+}
+
+// ====== RENDER: schedule ======
+function dayCardHTML(c, isToday) {
+  const m = eventMeta[c.event];
+  let times = '';
+  if (c.course === 'mountain') {
+    if (c.restDay) {
+      times = `<div class="row"><span>Status</span><span><span class="pill open">Rest day</span></span></div>`;
+    } else if (c.pending) {
+      times = `<div class="row"><span>Status</span><span><span class="pill warn">Times TBC</span></span></div>`;
+    } else if (c.contingency) {
+      times = `<div class="row"><span>Status</span><span><span class="pill muted">Contingency only</span></span></div>`;
+    } else {
+      times = `<div class="row"><span>Mountain section</span><span>${c.mountainCloses}</span></div>` +
+              `<div class="row"><span>Full course</span><span>${c.fullCloses}</span></div>` +
+              `<div class="row"><span>Roads reopen by</span><span>${c.reopen}</span></div>`;
+      if (c.secondFull) {
+        times += `<div class="row" style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px;"><span>Mountain stays closed</span><span>after ${c.reopen}</span></div>` +
+                 `<div class="row"><span>Full course (2nd)</span><span>${c.secondFull}</span></div>` +
+                 `<div class="row"><span>Roads reopen by</span><span>${c.secondReopen}</span></div>`;
+      }
+    }
+  } else if (c.course === 'billown') {
+    times = c.windows.map(w => `<div class="row"><span>Closed</span><span>${w.close} &mdash; ${w.reopen}</span></div>`).join('');
+  }
+  return `<div class="day-card${isToday ? ' today' : ''}">
+    <div class="date">${fmtDate(c.date)}<small><span class="pill ${m.cls}">${m.short}</span></small>${c.day ? '<small>'+c.day+'</small>' : ''}</div>
+    <div>
+      <div class="times">${times}</div>
+      <div class="activity">${c.activity}</div>
+    </div>
+  </div>`;
+}
+
+let activeFilter = 'all';
+function renderSchedule() {
+  const list = document.getElementById('schedule-list');
+  const filtered = activeFilter === 'all' ? closures : closures.filter(c => c.event === activeFilter);
+  list.innerHTML = filtered.map(c => dayCardHTML(c, c.date === todayISO())).join('');
+}
+
+document.getElementById('filters').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  activeFilter = e.target.dataset.event;
+  document.querySelectorAll('#filters button').forEach(b => b.classList.toggle('active', b === e.target));
+  renderSchedule();
+});
+
+// ====== RENDER: glossary ======
+function renderGlossary() {
+  document.getElementById('glossary').innerHTML = sections.map(s => `
+    <div class="gloss-card">
+      <div class="name">${s.name}</div>
+      <div class="road">${s.road}</div>
+      <div class="desc">${s.desc}</div>
+    </div>
+  `).join('');
+}
+
+// ====== ROUTE CHECKER ======
+function renderRouteSelectors() {
+  const f = document.getElementById('from');
+  const t = document.getElementById('to');
+  for (const p of places) {
+    f.innerHTML += `<option value="${p}">${p}</option>`;
+    t.innerHTML += `<option value="${p}">${p}</option>`;
+  }
+  t.value = 'Peel';
+}
+
+function checkRoute() {
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const date = document.getElementById('date').value;
+  const time = document.getElementById('time').value;
+  const mins = timeToMin(time);
+  const result = document.getElementById('route-result');
+
+  if (from === to) {
+    result.innerHTML = `<div class="result warn"><strong>Same start and end</strong>Pick two different places.</div>`;
+    return;
+  }
+  const key = from + '|' + to;
+  const rule = routeRules[key];
+
+  if (!rule) {
+    result.innerHTML = `<div class="result warn">
+      <strong>Route not pre-mapped</strong>
+      I don't have an explicit rule for "${from} &rarr; ${to}". The common race-affected pairs are: Douglas&harr;Peel, Douglas&harr;Ramsey (Mountain Road), Peel&harr;Ramsey, Douglas&harr;Castletown, Castletown&harr;Port Erin. Check the schedule above and the Road Information Hotline (01624 685888) for less common routes.
+    </div>`;
+    return;
+  }
+
+  const check = isCourseClosedForRoute(date, mins, rule.segments);
+  const st = statusAt(date, mins);
+
+  if (check.closed) {
+    const info = check.info;
+    const eventName = eventMeta[info.event].name;
+    const altBlock = rule.alternative
+      ? `<div class="alt" style="margin-top: 10px; padding: 8px 10px; background: #eaf2fa; border-left: 3px solid var(--s100); border-radius: 4px;"><strong>Non-driving option:</strong> ${rule.alternative}</div>`
+      : '';
+    const noLaterBlock = `<p class="note" style="margin-top: 6px;">Reopening time is a "no later than" maximum &mdash; roads may reopen earlier. Verify with the hotline (01624&nbsp;685888) before assuming.</p>`;
+    const upcomingBlock = renderUpcomingBlock(date, mins, rule.segments);
+    if (rule.severity === 'partial') {
+      result.innerHTML = `<div class="result warn">
+        <strong>POSSIBLE with a detour</strong>
+        <p>${from} to ${to} on ${fmtDateLong(date)} at ${time}: the direct route is blocked but a workaround exists.</p>
+        <p><strong>Reason:</strong> ${eventName} &mdash; ${info.activity}.</p>
+        <p><strong>Direct route reopens:</strong> ${info.reopen}.</p>
+        <div class="alt"><strong>Workaround:</strong> ${rule.detour}</div>
+        ${altBlock}
+        ${upcomingBlock}
+        ${noLaterBlock}
+      </div>`;
+    } else {
+      result.innerHTML = `<div class="result closed">
+        <strong>NO &mdash; road is closed</strong>
+        <p>${from} to ${to} on ${fmtDateLong(date)} at ${time} is blocked.</p>
+        <p><strong>Reason:</strong> ${eventName} &mdash; ${info.activity}.</p>
+        <p><strong>Closed until:</strong> ${info.reopen}.</p>
+        <div class="alt"><strong>Alternative:</strong> ${rule.detour}</div>
+        ${altBlock}
+        ${upcomingBlock}
+        ${noLaterBlock}
+      </div>`;
+    }
+  } else if (check.warn) {
+    result.innerHTML = `<div class="result warn">
+      <strong>POSSIBLY — exact times not yet published</strong>
+      <p>${fmtDateLong(date)} falls within the Manx Grand Prix / Classic TT period (16-28 August 2026). The detailed daily schedule isn't published yet. Historical pattern: Mountain Course typically closes for evening practice (around 6pm-10pm on weekdays) and full days for race days (Saturdays and the final Monday).</p>
+      <div class="alt">Check <strong>manxgrandprix.co.uk</strong> closer to the date for confirmed times, or call <strong>01624 685888</strong>.</div>
+    </div>`;
+  } else if (st.oneWay && rule.segments.includes('mountain_A18')) {
+    // One-way Mountain Road during TT fortnight
+    if ((from === 'Douglas' && to === 'Ramsey') ||
+        (from === 'Douglas' && to === 'The Bungalow / Mountain') ||
+        (from === 'Onchan' && to === 'Ramsey')) {
+      result.innerHTML = `<div class="result warn">
+        <strong>NO direct route via Mountain Road &mdash; one-way wrong direction</strong>
+        <p>The A18 Mountain Road operates one-way (Ramsey &rarr; Creg-ny-Baa) from 4:30pm Fri 22 May until 9:30am Tue 9 June 2026, so you cannot drive UP from Douglas/Creg-ny-Baa to Ramsey on the A18 during the entire TT fortnight, even when the course is "open".</p>
+        <div class="alt"><strong>By road:</strong> Use the A2 coast road via Onchan &rarr; Laxey &rarr; Ramsey instead. About 17 miles vs 14 over the Mountain.</div>
+        <div class="alt" style="margin-top: 10px; padding: 8px 10px; background: #eaf2fa; border-left: 3px solid var(--s100); border-radius: 4px;"><strong>By rail:</strong> Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey &rarr; Ramsey throughout the TT period. ${(from === 'Douglas' && to === 'The Bungalow / Mountain') ? 'For the Bungalow specifically, change at Laxey for the Snaefell Mountain Railway to the summit.' : ''}</div>
+        ${renderUpcomingBlock(date, mins, rule.segments)}
+      </div>`;
+      return;
+    }
+    result.innerHTML = `<div class="result open">
+      <strong>YES &mdash; you can drive</strong>
+      <p>${from} to ${to} on ${fmtDateLong(date)} at ${time} is clear.</p>
+      <p><em>Note: the A18 Mountain Road remains one-way (Ramsey &rarr; Creg-ny-Baa direction) throughout TT fortnight.</em></p>
+      ${renderUpcomingBlock(date, mins, rule.segments)}
+    </div>`;
+  } else {
+    result.innerHTML = `<div class="result open">
+      <strong>YES &mdash; you can drive</strong>
+      <p>${from} to ${to} on ${fmtDateLong(date)} at ${time} is clear of race closures.</p>
+      <p class="alt">Always confirm closer to the time &mdash; weather can shift sessions.</p>
+      ${renderUpcomingBlock(date, mins, rule.segments)}
+    </div>`;
+  }
+}
+
+// ====== TAB NAVIGATION ======
+document.querySelectorAll('.nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === 'tab-' + btn.dataset.tab));
+  });
+});
+
+// ====== LIVE REFRESH (best-effort, optional) ======
+async function refreshLive() {
+  const box = document.getElementById('live-content');
+  const wrap = document.getElementById('live-refresh');
+  box.textContent = 'Fetching...';
+  wrap.classList.add('loading');
+  try {
+    if (window.cowork && window.cowork.callMcpTool) {
+      const res = await window.cowork.callMcpTool('mcp__workspace__web_fetch', {
+        url: 'https://www.manxradio.com/news/tt-news/',
+        prompt: 'List the 5 most recent TT 2026 news headlines with their dates. Just the headlines and dates.'
+      });
+      box.textContent = typeof res === 'string' ? res : JSON.stringify(res, null, 2);
+    } else {
+      box.innerHTML = 'Live headlines require the source page directly. Open <a href="https://www.manxradio.com/news/tt-news/" target="_blank" rel="noopener">Manx Radio TT News</a> in a new tab.';
+    }
+  } catch (e) {
+    box.textContent = 'Could not fetch live updates: ' + (e.message || e);
+  }
+  wrap.classList.remove('loading');
+}
+
+// ====== INIT ======
+renderNow();
+renderSchedule();
+renderGlossary();
+renderRouteSelectors();
+</script>
+
+</body>
+</html>
