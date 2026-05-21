@@ -68,10 +68,10 @@
   .hero {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1d24 100%);
     color: white;
-    padding: 56px 24px 46px;
+    padding: 56px 24px 40px;
     position: relative;
     overflow: hidden;
-    border-bottom: 4px solid var(--tt-red);
+    /* No border-bottom: the nav (also dark) sits flush below and provides the red separator */
   }
   .hero::before {
     content: '';
@@ -147,28 +147,23 @@
   .subtitle { color: var(--muted); font-size: 0.92rem; margin-bottom: 14px; }
   a { color: var(--tt-red); }
 
-  /* ============ NAV (sticky, dark racing-team style) ============ */
+  /* ============ NAV (sticky, dark racing-team style, attached to hero) ============ */
   .nav-wrap {
     position: sticky;
     top: 0;
     z-index: 50;
     background: var(--tt-black);
-    margin: 26px -24px 30px;
-    padding: 0 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     border-bottom: 3px solid var(--tt-red);
-    box-shadow: 0 4px 12px rgba(10, 10, 10, 0.12);
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 4px 12px rgba(10, 10, 10, 0.18);
+    overflow: hidden;
   }
-  .nav-wrap::-webkit-scrollbar { display: none; }
   .nav {
     display: flex;
     gap: 0;
-    min-width: max-content;
     margin: 0 auto;
     max-width: var(--maxw);
+    padding: 0 24px;
   }
   .nav button {
     background: transparent;
@@ -184,6 +179,7 @@
     white-space: nowrap;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    flex: 0 0 auto;
   }
   .nav button:hover {
     color: white;
@@ -196,7 +192,7 @@
   .nav button.active::after {
     content: '';
     position: absolute;
-    bottom: -3px;
+    bottom: 0;
     left: 0;
     right: 0;
     height: 3px;
@@ -536,16 +532,36 @@
 
   /* ============ RESPONSIVE ============ */
   @media (max-width: 640px) {
-    .hero { padding: 40px 18px 36px; }
+    .hero { padding: 36px 18px 30px; }
     .hero h1 { font-size: 1.7rem; }
-    .hero-subtitle { font-size: 0.95rem; }
-    .hero-meta { gap: 14px; font-size: 0.7rem; letter-spacing: 0.06em; }
+    .hero-subtitle { font-size: 0.93rem; }
+    .hero-meta { gap: 14px; font-size: 0.68rem; letter-spacing: 0.06em; margin-top: 16px; }
     main { padding: 16px 14px 50px; }
-    .nav-wrap { margin: 14px -14px 18px; padding: 8px 14px 0; }
+
+    /* 2x2 grid nav on phones — all 4 tabs visible, no horizontal scrolling */
+    .nav {
+      flex-wrap: wrap;
+      padding: 0;
+    }
+    .nav button {
+      flex: 1 1 50%;
+      text-align: center;
+      padding: 13px 8px 14px;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .nav button:nth-child(2n) { border-right: 0; }
+    .nav button:nth-last-child(-n+2) { border-bottom: 0; }
+
     .day-card { grid-template-columns: 1fr; gap: 8px; }
     .day-card .date small { display: inline; margin-left: 8px; }
     .checker .row { grid-template-columns: 1fr; }
     .footer { padding: 28px 18px 24px; }
+  }
+  @media (max-width: 380px) {
+    .nav button { font-size: 0.62rem; letter-spacing: 0.04em; padding: 12px 4px 13px; }
   }
 </style>
 </head>
@@ -563,13 +579,6 @@
   </div>
 </header>
 
-<main>
-
-<div id="now-banner"></div>
-
-<!-- AUTO_NEWS_START -->
-<!-- AUTO_NEWS_END -->
-
 <div class="nav-wrap">
   <div class="nav">
     <button class="active" data-tab="now">Now &amp; today</button>
@@ -578,6 +587,13 @@
     <button data-tab="map">Map &amp; sections</button>
   </div>
 </div>
+
+<main>
+
+<div id="now-banner"></div>
+
+<!-- AUTO_NEWS_START -->
+<!-- AUTO_NEWS_END -->
 
 <!-- ========== NOW & TODAY ========== -->
 <section id="tab-now" class="section active">
