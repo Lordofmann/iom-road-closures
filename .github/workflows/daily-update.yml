@@ -12,6 +12,9 @@ on:
 permissions:
   contents: write  # Required to commit changes back to the repo
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   update:
     runs-on: ubuntu-latest
