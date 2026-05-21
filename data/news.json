@@ -1,31 +1,5 @@
 {
-  "timestamp": "21 May 2026, 17:01 UTC",
-  "headlines": [
-    {
-      "title": "Isle of Man News",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/",
-      "date": ""
-    },
-    {
-      "title": "IOM Features & Analysis",
-      "url": "https://www.manxradio.com/news/features-and-analysis/",
-      "date": ""
-    },
-    {
-      "title": "Manx Weather",
-      "url": "https://www.manxradio.com/news/weather/",
-      "date": ""
-    },
-    {
-      "title": "Manx Radio Sports Hub",
-      "url": "https://www.manxradio.com/news/manx-radio-sport/",
-      "date": ""
-    },
-    {
-      "title": "General Election 26",
-      "url": "https://www.manxradio.com/news/general-election-2026/",
-      "date": ""
-    }
-  ],
+  "timestamp": "21 May 2026, 18:01 UTC",
+  "headlines": [],
   "schedule_changed": false
 }
