@@ -25,7 +25,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 try:
@@ -55,7 +55,9 @@ MANX_RADIO_TT_URL = "https://www.manxradio.com/news/tt-news/"
 IOMTT_SCHEDULE_URL = "https://www.iomttraces.com/racing/page/schedule/"
 
 REQUEST_TIMEOUT = 30
-MAX_HEADLINES = 5
+MAX_HEADLINES = 5      # How many headlines to actually display
+CACHE_SIZE = 20        # How many historical headlines to keep on disk
+CACHE_MAX_DAYS = 30    # Drop cached items older than this many days
 
 
 # ----------------------------------------------------------------------------
@@ -80,6 +82,79 @@ def fetch(url: str) -> str | None:
 
 def short_hash(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()[:16]
+
+
+# ----------------------------------------------------------------------------
+# News cache (rolling): persists across runs so the panel never empties
+# ----------------------------------------------------------------------------
+
+def load_news_cache() -> list[dict]:
+    """Load the rolling news cache from disk, tolerating older file formats."""
+    if not NEWS_PATH.exists():
+        return []
+    try:
+        data = json.loads(NEWS_PATH.read_text())
+        items = data.get("headlines", [])
+        # Only keep entries that have the new-format `first_seen` field.
+        return [it for it in items if isinstance(it, dict) and "first_seen" in it and "url" in it]
+    except Exception:
+        return []
+
+
+def merge_into_cache(cache: list[dict], fresh: list[dict], now: datetime) -> list[dict]:
+    """Add any unseen fresh items to the cache, dedupe by URL, trim, and sort."""
+    existing_urls = {it["url"] for it in cache}
+    for item in fresh:
+        if item.get("url") in existing_urls:
+            continue
+        cache.append({
+            "title": item.get("title", ""),
+            "url": item["url"],
+            "first_seen": now.isoformat(timespec="seconds") + "Z",
+            "source_date": item.get("date", ""),
+        })
+        existing_urls.add(item["url"])
+
+    # Drop anything older than CACHE_MAX_DAYS
+    cutoff = now - timedelta(days=CACHE_MAX_DAYS)
+    cache = [it for it in cache if _parse_iso(it.get("first_seen", "")) >= cutoff]
+
+    # Sort newest first and trim
+    cache.sort(key=lambda x: x.get("first_seen", ""), reverse=True)
+    return cache[:CACHE_SIZE]
+
+
+def _parse_iso(s: str) -> datetime:
+    """Parse our ISO timestamps; return epoch if unparseable."""
+    if not s:
+        return datetime(1970, 1, 1)
+    try:
+        if s.endswith("Z"):
+            s = s[:-1]
+        return datetime.fromisoformat(s)
+    except Exception:
+        return datetime(1970, 1, 1)
+
+
+def format_relative_age(first_seen_iso: str, now: datetime) -> str:
+    """Human-readable relative age, computed at scraper run time."""
+    seen = _parse_iso(first_seen_iso)
+    delta = now - seen
+    seconds = int(delta.total_seconds())
+    if seconds < 3600:
+        return "just now"
+    if seconds < 86400:
+        h = seconds // 3600
+        return f"{h}h ago"
+    days = delta.days
+    if days == 1:
+        return "yesterday"
+    if days < 7:
+        return f"{days} days ago"
+    if days < 30:
+        weeks = days // 7
+        return f"{weeks} week{'s' if weeks > 1 else ''} ago"
+    return seen.strftime("%d %b")
 
 
 # ----------------------------------------------------------------------------
@@ -116,17 +191,12 @@ def parse_manx_radio_headlines(html: str) -> list[dict]:
         if not href.startswith("https://www.manxradio.com/"):
             rejected_offsite += 1
             continue
-        # Real article URLs look like /news/<category>/<slug>/ → 3+ path segments.
-        # Category pages like /news/weather/ → 2 segments.
         path_parts = [p for p in href.replace("https://www.manxradio.com", "").split("/") if p]
         if len(path_parts) < 3 or path_parts[0] != "news":
             rejected_path += 1
             continue
 
-        # Prefer the link's own text. If it's empty/too short, try sibling/child headings.
-        # Use " " as separator and collapse whitespace so concatenated children don't run together.
         title = re.sub(r"\s+", " ", link.get_text(" ", strip=True)).strip()
-        # Strip trailing date fragments that often live inside the link itself.
         title = re.sub(r"\s+\d{1,2}\s+\w+\s+20\d{2}\s*$", "", title)
         title = re.sub(r"\s+\d+\s+(hours?|mins?|minutes?|days?)\s+ago\s*$", "", title, flags=re.I)
         title = re.sub(r"\s+(today|yesterday)\s*$", "", title, flags=re.I)
@@ -142,7 +212,6 @@ def parse_manx_radio_headlines(html: str) -> list[dict]:
             rejected_title += 1
             continue
 
-        # Hunt for a date near the link (look up to 4 levels up the DOM)
         date_text = ""
         ctx = link.parent
         for _ in range(4):
@@ -159,7 +228,6 @@ def parse_manx_radio_headlines(html: str) -> list[dict]:
 
         items.append({"title": title, "url": href, "date": date_text})
 
-    # Deduplicate by URL, preserving order
     seen = set()
     unique: list[dict] = []
     for it in items:
@@ -170,7 +238,6 @@ def parse_manx_radio_headlines(html: str) -> list[dict]:
         if len(unique) >= MAX_HEADLINES:
             break
 
-    # Visible in the workflow log to help diagnose if zero items came back
     print(
         f"  parser stats: total_links={total_links} "
         f"offsite={rejected_offsite} bad_path={rejected_path} "
@@ -190,7 +257,6 @@ def extract_schedule_content(html: str) -> str | None:
     We look for the SCHEDULE heading and grab the surrounding tables.
     """
     soup = BeautifulSoup(html, "html.parser")
-    # Look for the heading then collect tables that follow
     target = None
     for h in soup.find_all(["h1", "h2", "h3"]):
         if "schedule" in h.get_text(strip=True).lower():
@@ -206,7 +272,6 @@ def extract_schedule_content(html: str) -> str | None:
             pieces.append(sib.get_text(" ", strip=True))
     if not pieces:
         return None
-    # Normalise whitespace
     return re.sub(r"\s+", " ", " ".join(pieces)).strip()
 
 
@@ -224,7 +289,7 @@ LAST_UPDATED_RE = re.compile(
 )
 
 
-def render_news_block(items: list[dict], schedule_changed: bool) -> str:
+def render_news_block(items: list[dict], schedule_changed: bool, now: datetime) -> str:
     """Build the HTML to insert between the AUTO_NEWS markers."""
     parts: list[str] = ["<!-- AUTO_NEWS_START -->"]
 
@@ -245,7 +310,12 @@ def render_news_block(items: list[dict], schedule_changed: bool) -> str:
         for it in items:
             title = (it.get("title") or "").replace("<", "&lt;").replace(">", "&gt;")
             url = it.get("url") or "#"
-            date = (it.get("date") or "").replace("<", "&lt;").replace(">", "&gt;")
+            first_seen = it.get("first_seen")
+            if first_seen:
+                date = format_relative_age(first_seen, now)
+            else:
+                date = (it.get("source_date") or it.get("date") or "")
+            date = date.replace("<", "&lt;").replace(">", "&gt;")
             date_html = f' <span class="meta">&middot; {date}</span>' if date else ""
             parts.append(
                 f'<li><a href="{url}" target="_blank" rel="noopener">{title}</a>{date_html}</li>'
@@ -284,17 +354,25 @@ def main() -> int:
 
     DATA_DIR.mkdir(exist_ok=True)
     original_html = HTML_PATH.read_text(encoding="utf-8")
+    now = datetime.utcnow()
 
-    # --- 1. News headlines ---
+    # --- 1. News headlines (rolling cache) ---
     log("Fetching Manx Radio TT news...")
-    headlines: list[dict] = []
+    fresh: list[dict] = []
     page = fetch(MANX_RADIO_TT_URL)
     if page:
         try:
-            headlines = parse_manx_radio_headlines(page)
-            log(f"  found {len(headlines)} headlines")
+            fresh = parse_manx_radio_headlines(page)
+            log(f"  found {len(fresh)} fresh headlines")
         except Exception as e:
             log(f"  parse error: {e}")
+
+    cache = load_news_cache()
+    log(f"  cache had {len(cache)} headlines before merge")
+    cache = merge_into_cache(cache, fresh, now)
+    log(f"  cache has {len(cache)} headlines after merge")
+
+    headlines = cache[:MAX_HEADLINES]
 
     # --- 2. Schedule change detection ---
     log("Fetching official schedule for change detection...")
@@ -317,7 +395,6 @@ def main() -> int:
                     schedule_changed = True
                     log(f"  CHANGE DETECTED (baseline was {baseline['schedule_hash']})")
                 elif not baseline:
-                    # First run: establish baseline silently
                     log("  no baseline yet — establishing one")
                     BASELINE_PATH.write_text(
                         json.dumps({"schedule_hash": current_hash, "first_seen": datetime.utcnow().isoformat()}, indent=2)
@@ -326,16 +403,19 @@ def main() -> int:
             log(f"  schedule parse error: {e}")
 
     # --- 3. Build the news block ---
-    news_html = render_news_block(headlines, schedule_changed)
+    news_html = render_news_block(headlines, schedule_changed, now)
 
     # --- 4. Patch HTML ---
-    timestamp = datetime.utcnow().strftime("%d %B %Y, %H:%M UTC")
+    timestamp = now.strftime("%d %B %Y, %H:%M UTC")
     new_html = patch_html(original_html, news_html, timestamp)
 
-    # Always write the news cache so we know what was injected
     NEWS_PATH.write_text(
         json.dumps(
-            {"timestamp": timestamp, "headlines": headlines, "schedule_changed": schedule_changed},
+            {
+                "last_fetch": now.isoformat(timespec="seconds") + "Z",
+                "schedule_changed": schedule_changed,
+                "headlines": cache,
+            },
             indent=2,
         )
     )
