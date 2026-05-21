@@ -1,31 +1,36 @@
 {
-  "timestamp": "21 May 2026, 18:36 UTC",
+  "last_fetch": "2026-05-21T20:19:27Z",
+  "schedule_changed": false,
   "headlines": [
     {
       "title": "Drone ban in force at Billown Course",
       "url": "https://www.manxradio.com/news/tt-news/drone-ban-in-force-at-billown-course/",
-      "date": "UGGLY & CO Racing making debut at 2026 event"
+      "first_seen": "2026-05-21T20:19:27Z",
+      "source_date": "UGGLY & CO Racing making debut at 2026 event"
     },
     {
       "title": "TT electronic flag system being tested tomorrow morning",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-electronic-flag-system-being-tested-tomorrow-morning/",
-      "date": "UGGLY & CO Racing making debut at 2026 event"
+      "first_seen": "2026-05-21T20:19:27Z",
+      "source_date": "UGGLY & CO Racing making debut at 2026 event"
     },
     {
       "title": "Dean Harrison 'relaxed' and 'strong' for 2026",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-relaxed-and-strong-for-2026/",
-      "date": "UGGLY & CO Racing making debut at 2026 event"
+      "first_seen": "2026-05-21T20:19:27Z",
+      "source_date": "UGGLY & CO Racing making debut at 2026 event"
     },
     {
       "title": "Marshal numbers 'looking pretty healthy' heading into TT 2026",
       "url": "https://www.manxradio.com/news/isle-of-man-news/marshal-numbers-looking-pretty-healthy-heading-into-tt-2026/",
-      "date": "UGGLY & CO Racing making debut at 2026 event"
+      "first_seen": "2026-05-21T20:19:27Z",
+      "source_date": "UGGLY & CO Racing making debut at 2026 event"
     },
     {
       "title": "TT 2026: Josh Brookes to ride for new team in Supersport class",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/tt-2026-josh-brookes-to-ride-for-new-team-in-supersport-class/",
-      "date": "UGGLY & CO Racing making debut at 2026 event"
+      "first_seen": "2026-05-21T20:19:27Z",
+      "source_date": "UGGLY & CO Racing making debut at 2026 event"
     }
-  ],
-  "schedule_changed": false
+  ]
 }
