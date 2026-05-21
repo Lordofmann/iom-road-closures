@@ -22,40 +22,196 @@
 <style>
   :root {
     color-scheme: light;
-    --bg: #ffffff;
-    --panel: #f6f7f9;
-    --panel-2: #eef1f6;
+    /* Brand palette inspired by iomttraces.com */
+    --tt-red: #d8232a;
+    --tt-red-dark: #a51b21;
+    --tt-black: #0a0a0a;
+    --tt-charcoal: #1a1d24;
     --ink: #16202a;
     --muted: #5a6573;
-    --line: #d9dee5;
-    --accent: #b30000;
-    --accent-soft: #fde7e7;
-    --open: #1f7a44;
-    --open-soft: #e3f3ea;
-    --warn: #b56500;
-    --warn-soft: #fdf0dc;
-    --tt: #b30000;
-    --pretttt: #6a4f00;
+    --line: #e2e6ec;
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --panel-2: #f4f6fa;
+    --panel-3: #eef1f6;
+    /* status */
+    --accent: #d8232a;
+    --accent-soft: #fde8e9;
+    --open: #1e7a3d;
+    --open-soft: #e1f3e8;
+    --warn: #c46a08;
+    --warn-soft: #fdf0db;
+    /* event colors */
+    --tt: #d8232a;
+    --pretttt: #8c6f1a;
     --s100: #1a4f8a;
     --mgp: #5e2d8a;
+    /* layout */
+    --radius: 8px;
+    --radius-lg: 12px;
+    --maxw: 1080px;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.45; }
-  body { padding: 14px 18px 60px; max-width: 1100px; margin: 0 auto; }
-  h1 { font-size: 1.55rem; margin: 4px 0 2px; }
-  h2 { font-size: 1.15rem; margin: 28px 0 10px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
-  h3 { font-size: 1rem; margin: 16px 0 8px; }
-  p { margin: 6px 0; }
-  .subtitle { color: var(--muted); font-size: 0.92rem; margin-bottom: 12px; }
-  .nav { display: flex; gap: 4px; flex-wrap: wrap; margin: 12px 0 18px; padding: 4px; background: var(--panel-2); border-radius: 10px; }
-  .nav button { background: transparent; border: 0; padding: 7px 12px; border-radius: 7px; font-size: 0.88rem; color: var(--ink); cursor: pointer; font-weight: 500; }
-  .nav button:hover { background: rgba(0,0,0,0.05); }
-  .nav button.active { background: var(--bg); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin: 8px 0; }
-  .panel.warn { background: var(--warn-soft); border-color: #e6c391; }
-  .panel.closed { background: var(--accent-soft); border-color: #e9a3a3; }
-  .panel.open { background: var(--open-soft); border-color: #a3d3b6; }
-  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-feature-settings: "kern", "liga";
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1d24 100%);
+    color: white;
+    padding: 56px 24px 46px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 4px solid var(--tt-red);
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+    background:
+      radial-gradient(circle at 88% 28%, rgba(216, 35, 42, 0.16) 0%, transparent 42%),
+      repeating-linear-gradient(135deg, transparent 0, transparent 38px, rgba(255,255,255,0.018) 38px, rgba(255,255,255,0.018) 76px);
+    pointer-events: none;
+  }
+  .hero-inner { max-width: var(--maxw); margin: 0 auto; position: relative; z-index: 1; }
+  .hero h1 {
+    font-size: clamp(1.75rem, 4.8vw, 2.85rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.04;
+    margin: 0 0 14px;
+    text-transform: uppercase;
+  }
+  .hero h1 .accent { color: var(--tt-red); }
+  .hero-subtitle {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 720px;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .hero-meta {
+    margin-top: 22px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .hero-meta span::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--tt-red);
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* ============ MAIN ============ */
+  main { max-width: var(--maxw); margin: 0 auto; padding: 22px 24px 60px; }
+
+  /* ============ TYPOGRAPHY ============ */
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 34px 0 14px;
+    padding: 0;
+    border: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  h2::before {
+    content: '';
+    width: 4px;
+    height: 22px;
+    background: var(--tt-red);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  h3 { font-size: 1rem; font-weight: 700; margin: 18px 0 8px; }
+  p { margin: 8px 0; }
+  .subtitle { color: var(--muted); font-size: 0.92rem; margin-bottom: 14px; }
+  a { color: var(--tt-red); }
+
+  /* ============ NAV (sticky, underline-style) ============ */
+  .nav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    margin: 20px -24px 24px;
+    padding: 10px 24px 0;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-wrap::-webkit-scrollbar { display: none; }
+  .nav {
+    display: flex;
+    gap: 2px;
+    min-width: max-content;
+    margin: 0 auto;
+    max-width: var(--maxw);
+  }
+  .nav button {
+    background: transparent;
+    border: 0;
+    padding: 11px 14px 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.15s ease;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .nav button:hover { color: var(--ink); }
+  .nav button.active { color: var(--ink); }
+  .nav button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 14px; right: 14px;
+    height: 3px;
+    background: var(--tt-red);
+  }
+
+  /* ============ PANELS ============ */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin: 12px 0;
+    box-shadow: 0 1px 2px rgba(10, 10, 10, 0.03);
+  }
+  .panel.warn { background: var(--warn-soft); border-color: rgba(196, 106, 8, 0.25); border-left: 4px solid var(--warn); }
+  .panel.closed { background: var(--accent-soft); border-color: rgba(216, 35, 42, 0.25); border-left: 4px solid var(--accent); }
+  .panel.open { background: var(--open-soft); border-color: rgba(30, 122, 61, 0.25); border-left: 4px solid var(--open); }
+
+  /* ============ PILLS ============ */
+  .pill {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
   .pill.tt { background: var(--tt); color: white; }
   .pill.pre-tt { background: var(--pretttt); color: white; }
   .pill.s100 { background: var(--s100); color: white; }
@@ -63,72 +219,297 @@
   .pill.closed { background: var(--accent); color: white; }
   .pill.open { background: var(--open); color: white; }
   .pill.warn { background: var(--warn); color: white; }
-  .pill.muted { background: var(--panel-2); color: var(--muted); }
-  .day-card { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; margin: 8px 0; background: var(--bg); }
-  .day-card.today { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(179,0,0,0.12); }
-  .day-card .date { font-weight: 600; font-size: 0.95rem; }
-  .day-card .date small { display: block; color: var(--muted); font-weight: 400; font-size: 0.78rem; }
-  .day-card .times { font-size: 0.9rem; }
-  .day-card .times .row { display: flex; justify-content: space-between; padding: 2px 0; }
+  .pill.muted { background: var(--panel-3); color: var(--muted); }
+
+  /* ============ DAY CARDS ============ */
+  .day-card {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 18px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin: 8px 0;
+    background: var(--bg);
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+  }
+  .day-card:hover {
+    box-shadow: 0 4px 14px rgba(10, 10, 10, 0.06);
+    transform: translateY(-1px);
+  }
+  .day-card.today {
+    border-color: var(--tt-red);
+    box-shadow: inset 4px 0 0 var(--tt-red), 0 0 0 1px rgba(216, 35, 42, 0.15);
+  }
+  .day-card .date { font-weight: 700; font-size: 1rem; line-height: 1.3; }
+  .day-card .date small { display: block; color: var(--muted); font-weight: 500; font-size: 0.78rem; margin-top: 4px; }
+  .day-card .times { font-size: 0.88rem; }
+  .day-card .times .row { display: flex; justify-content: space-between; padding: 3px 0; }
   .day-card .times .row span:first-child { color: var(--muted); }
-  .day-card .activity { color: var(--ink); font-size: 0.88rem; margin-top: 4px; }
-  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
-  .filters button { background: var(--bg); border: 1px solid var(--line); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
-  .filters button.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 8px 0; background: var(--bg); }
-  table th, table td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
-  table th { background: var(--panel-2); font-weight: 600; }
-  .checker { background: var(--bg); border: 1px solid var(--line); padding: 14px; border-radius: 10px; display: grid; gap: 10px; }
-  .checker .row { display: grid; grid-template-columns: 100px 1fr; gap: 8px; align-items: center; }
-  .checker select, .checker input { padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.95rem; background: var(--bg); color: var(--ink); width: 100%; }
-  .checker button { padding: 10px 16px; border-radius: 6px; border: 0; background: var(--ink); color: var(--bg); font-size: 0.95rem; cursor: pointer; font-weight: 500; }
-  .result { margin-top: 12px; padding: 14px; border-radius: 8px; }
+  .day-card .times .row span:last-child { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .day-card .activity { color: var(--ink); font-size: 0.88rem; margin-top: 6px; }
+
+  /* ============ FILTERS ============ */
+  .filters {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin: 12px 0 16px;
+    padding: 4px;
+    background: var(--panel-2);
+    border-radius: var(--radius);
+  }
+  .filters button {
+    background: transparent;
+    border: 0;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: var(--muted);
+    font-weight: 500;
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s;
+  }
+  .filters button:hover { color: var(--ink); }
+  .filters button.active { background: var(--tt-black); color: white; }
+
+  /* ============ ROUTE CHECKER ============ */
+  .checker {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    display: grid;
+    gap: 12px;
+    box-shadow: 0 1px 2px rgba(10, 10, 10, 0.03);
+  }
+  .checker .row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+  .checker label { font-weight: 600; font-size: 0.9rem; color: var(--muted); }
+  .checker select, .checker input {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: var(--bg);
+    color: var(--ink);
+    width: 100%;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .checker select:focus, .checker input:focus {
+    outline: none;
+    border-color: var(--tt-red);
+    box-shadow: 0 0 0 3px rgba(216, 35, 42, 0.1);
+  }
+  .checker button {
+    padding: 12px 22px;
+    border-radius: 6px;
+    border: 0;
+    background: var(--tt-black);
+    color: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: inherit;
+    transition: background 0.18s ease;
+    justify-self: start;
+  }
+  .checker button:hover { background: var(--tt-red); }
+
+  /* ============ RESULT ============ */
+  .result {
+    margin-top: 14px;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    font-size: 0.93rem;
+  }
   .result.closed { background: var(--accent-soft); border-left: 4px solid var(--accent); }
   .result.open { background: var(--open-soft); border-left: 4px solid var(--open); }
   .result.warn { background: var(--warn-soft); border-left: 4px solid var(--warn); }
-  .result strong { display: block; font-size: 1.05rem; margin-bottom: 6px; }
-  .result .alt { margin-top: 8px; font-size: 0.9rem; color: var(--muted); }
+  .result strong { display: block; font-size: 1.08rem; margin-bottom: 8px; }
+  .result .alt { margin-top: 10px; font-size: 0.88rem; color: var(--muted); }
+
+  /* ============ GLOSSARY ============ */
   .glossary { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
-  .gloss-card { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
-  .gloss-card .name { font-weight: 600; color: var(--accent); }
-  .gloss-card .road { font-size: 0.78rem; color: var(--muted); margin: 2px 0 4px; }
-  .gloss-card .desc { font-size: 0.85rem; }
-  .map-wrap { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
-  .map-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.82rem; margin: 8px 0 0; }
+  .gloss-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+  }
+  .gloss-card:hover {
+    box-shadow: 0 4px 14px rgba(10, 10, 10, 0.06);
+    transform: translateY(-1px);
+  }
+  .gloss-card .name { font-weight: 700; color: var(--tt-red); font-size: 0.95rem; }
+  .gloss-card .road { font-size: 0.72rem; color: var(--muted); margin: 2px 0 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .gloss-card .desc { font-size: 0.88rem; line-height: 1.5; }
+
+  /* ============ MAP ============ */
+  .map-wrap {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(10, 10, 10, 0.03);
+  }
+  .map-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.82rem; margin: 12px 0 0; padding: 0 6px; }
   .legend-swatch { display: inline-block; width: 14px; height: 4px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
-  .live-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
-  .live-card { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
-  .live-card .title { font-weight: 600; }
-  .live-card .desc { color: var(--muted); font-size: 0.82rem; margin: 2px 0 6px; }
-  .live-card a { color: var(--s100); text-decoration: none; font-size: 0.88rem; }
+
+  /* ============ LIVE LINKS ============ */
+  .live-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .live-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+  }
+  .live-card:hover {
+    box-shadow: 0 4px 14px rgba(10, 10, 10, 0.06);
+    transform: translateY(-1px);
+    border-color: rgba(216, 35, 42, 0.3);
+  }
+  .live-card .title { font-weight: 700; font-size: 0.95rem; }
+  .live-card .desc { color: var(--muted); font-size: 0.82rem; margin: 4px 0 8px; line-height: 1.5; }
+  .live-card a { color: var(--tt-red); text-decoration: none; font-size: 0.88rem; font-weight: 600; }
   .live-card a:hover { text-decoration: underline; }
+
+  /* ============ SECTIONS ============ */
   .section { display: none; }
   .section.active { display: block; }
   .note { font-size: 0.82rem; color: var(--muted); font-style: italic; margin: 6px 0; }
-  .live-refresh { padding: 10px; background: var(--panel); border-radius: 8px; margin: 10px 0; font-size: 0.9rem; }
-  .live-refresh button { background: var(--ink); color: var(--bg); border: 0; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-left: 8px; }
+
+  /* ============ LIVE REFRESH ============ */
+  .live-refresh {
+    padding: 12px 14px;
+    background: var(--panel-2);
+    border-radius: var(--radius);
+    margin: 14px 0;
+    font-size: 0.9rem;
+  }
+  .live-refresh button {
+    background: var(--tt-black);
+    color: white;
+    border: 0;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 8px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .live-refresh button:hover { background: var(--tt-red); }
   .live-refresh.loading { opacity: 0.7; }
   .live-content { margin-top: 10px; font-size: 0.88rem; white-space: pre-wrap; }
-  .footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; text-align: center; }
-  .auto-news { margin: 10px 0; padding: 12px 14px; background: #eaf2fa; border-left: 4px solid var(--s100); border-radius: 6px; }
-  .auto-news h3 { margin: 0 0 6px; font-size: 0.95rem; color: var(--s100); }
-  .auto-news ul { margin: 6px 0 0; padding-left: 20px; font-size: 0.88rem; }
-  .auto-news li { margin: 3px 0; }
-  .auto-news a { color: var(--s100); text-decoration: none; }
-  .auto-news a:hover { text-decoration: underline; }
-  .auto-news .meta { font-size: 0.78rem; color: var(--muted); }
-  .schedule-changed { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; margin: 10px 0; }
+
+  /* ============ FOOTER (dark) ============ */
+  .footer {
+    margin: 60px 0 0;
+    padding: 36px 24px 30px;
+    background: var(--tt-black);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.82rem;
+    text-align: center;
+    border-top: 4px solid var(--tt-red);
+  }
+  .footer p { max-width: 800px; margin: 8px auto; line-height: 1.6; }
+  .footer a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    transition: border-color 0.15s;
+  }
+  .footer a:hover { border-color: var(--tt-red); }
+  .footer strong { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+
+  /* ============ AUTO NEWS (dark, branded) ============ */
+  .auto-news {
+    margin: 16px 0;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1d24 100%);
+    border-left: 4px solid var(--tt-red);
+    border-radius: var(--radius);
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .auto-news h3 {
+    margin: 0 0 10px;
+    font-size: 0.82rem;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+  }
+  .auto-news h3::before {
+    content: '\25CF';
+    color: var(--tt-red);
+    margin-right: 8px;
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  .auto-news ul { margin: 6px 0 0; padding-left: 18px; font-size: 0.88rem; }
+  .auto-news li { margin: 5px 0; }
+  .auto-news a {
+    color: rgba(255, 255, 255, 0.95);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    transition: border-color 0.15s;
+  }
+  .auto-news a:hover { border-color: var(--tt-red); }
+  .auto-news .meta { font-size: 0.78rem; color: rgba(255, 255, 255, 0.55); }
+
+  .schedule-changed {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    margin: 12px 0;
+  }
+
+  /* ============ RESPONSIVE ============ */
   @media (max-width: 640px) {
-    body { padding: 10px 12px 50px; }
-    .day-card { grid-template-columns: 1fr; }
+    .hero { padding: 40px 18px 36px; }
+    .hero h1 { font-size: 1.7rem; }
+    .hero-subtitle { font-size: 0.95rem; }
+    .hero-meta { gap: 14px; font-size: 0.7rem; letter-spacing: 0.06em; }
+    main { padding: 16px 14px 50px; }
+    .nav-wrap { margin: 14px -14px 18px; padding: 8px 14px 0; }
+    .day-card { grid-template-columns: 1fr; gap: 8px; }
+    .day-card .date small { display: inline; margin-left: 8px; }
     .checker .row { grid-template-columns: 1fr; }
+    .footer { padding: 28px 18px 24px; }
   }
 </style>
 </head>
 <body>
 
-<h1>Isle of Man Road Race Closures 2026</h1>
-<p class="subtitle">A clear, day-by-day guide to when roads are closed on the Isle of Man during the TT, Pre-TT Classic, Southern 100 and Manx Grand Prix. With a route checker and a glossary of section names.</p>
+<header class="hero">
+  <div class="hero-inner">
+    <h1>Isle of Man <span class="accent">Road Closures</span> 2026</h1>
+    <p class="hero-subtitle">Day-by-day guide to road closures during the TT, Pre-TT Classic, Southern 100 and Manx Grand Prix. With a route checker and glossary of section names.</p>
+    <div class="hero-meta">
+      <span>4 race events</span>
+      <span>22 May &rarr; 28 Aug 2026</span>
+      <span>Auto-updated twice daily</span>
+    </div>
+  </div>
+</header>
+
+<main>
 
 <div class="panel warn" style="margin: 10px 0;">
   <strong>Always verify before you set off.</strong> This page summarises the published 2026 schedule, but sessions are routinely shifted by weather and incidents. For live, official status call the <strong>Road Information Hotline on 01624&nbsp;685888</strong>, or check <a href="https://www.manxradio.com/news/tt-news/" target="_blank" rel="noopener">Manx Radio TT News</a>. This page is an unofficial guide and is not affiliated with the organisers.
@@ -137,26 +518,17 @@
 <div id="now-banner"></div>
 
 <!-- AUTO_NEWS_START -->
-<div class="auto-news">
-<h3>Latest TT news from Manx Radio</h3>
-<ul>
-<li><a href="https://www.manxradio.com/news/tt-news/drone-ban-in-force-at-billown-course/" target="_blank" rel="noopener">Drone ban in force at Billown Course</a> <span class="meta">&middot; UGGLY & CO Racing making debut at 2026 event</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/tt-electronic-flag-system-being-tested-tomorrow-morning/" target="_blank" rel="noopener">TT electronic flag system being tested tomorrow morning</a> <span class="meta">&middot; UGGLY & CO Racing making debut at 2026 event</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-relaxed-and-strong-for-2026/" target="_blank" rel="noopener">Dean Harrison 'relaxed' and 'strong' for 2026</a> <span class="meta">&middot; UGGLY & CO Racing making debut at 2026 event</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/marshal-numbers-looking-pretty-healthy-heading-into-tt-2026/" target="_blank" rel="noopener">Marshal numbers 'looking pretty healthy' heading into TT 2026</a> <span class="meta">&middot; UGGLY & CO Racing making debut at 2026 event</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-sport/tt-2026-josh-brookes-to-ride-for-new-team-in-supersport-class/" target="_blank" rel="noopener">TT 2026: Josh Brookes to ride for new team in Supersport class</a> <span class="meta">&middot; UGGLY & CO Racing making debut at 2026 event</span></li>
-</ul>
-<p class="meta" style="margin-top:8px;">Headlines fetched automatically. For live, definitive road status call <strong>01624&nbsp;685888</strong>.</p>
-</div>
 <!-- AUTO_NEWS_END -->
 
-<div class="nav">
-  <button class="active" data-tab="now">Now &amp; today</button>
-  <button data-tab="schedule">Full schedule</button>
-  <button data-tab="route">Route checker</button>
-  <button data-tab="map">Map &amp; sections</button>
-  <button data-tab="alternatives">Alternatives</button>
-  <button data-tab="live">Live updates</button>
+<div class="nav-wrap">
+  <div class="nav">
+    <button class="active" data-tab="now">Now &amp; today</button>
+    <button data-tab="schedule">Full schedule</button>
+    <button data-tab="route">Route checker</button>
+    <button data-tab="map">Map &amp; sections</button>
+    <button data-tab="alternatives">Alternatives</button>
+    <button data-tab="live">Live updates</button>
+  </div>
 </div>
 
 <!-- ========== NOW & TODAY ========== -->
@@ -431,10 +803,12 @@
   </div>
 </section>
 
-<div class="footer">
+</main>
+
+<footer class="footer">
   <p>Data compiled from <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a>, <a href="https://southern100.com/" target="_blank" rel="noopener">southern100.com</a>, <a href="https://manxgrandprix.co.uk/" target="_blank" rel="noopener">manxgrandprix.co.uk</a>, <a href="https://www.gov.im/about-the-government/departments/infrastructure/highway-services/upcoming-roadworks-and-events-on-roads/" target="_blank" rel="noopener">gov.im</a> and <a href="https://www.iomtoday.co.im/topic/tt" target="_blank" rel="noopener">iomtoday.co.im</a>. Schedules are provisional and subject to change without notice. This is an unofficial guide; always verify with the Road Information Hotline (01624&nbsp;685888) before setting off.</p>
-  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->21 May 2026, 18:36 UTC<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
-</div>
+  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->21 May 2026<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
+</footer>
 
 <script>
 "use strict";
