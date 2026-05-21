@@ -37,10 +37,12 @@
     /* status */
     --accent: #d8232a;
     --accent-soft: #fde8e9;
-    --open: #1e7a3d;
-    --open-soft: #e1f3e8;
+    --open: #00a651;
+    --open-soft: #dcf5e6;
+    --open-dark: #007a3d;
     --warn: #c46a08;
     --warn-soft: #fdf0db;
+    --racing-yellow: #ffd600;
     /* event colors */
     --tt: #d8232a;
     --pretttt: #8c6f1a;
@@ -145,15 +147,17 @@
   .subtitle { color: var(--muted); font-size: 0.92rem; margin-bottom: 14px; }
   a { color: var(--tt-red); }
 
-  /* ============ NAV (sticky, underline-style) ============ */
+  /* ============ NAV (sticky, dark racing-team style) ============ */
   .nav-wrap {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--bg);
-    margin: 20px -24px 24px;
-    padding: 10px 24px 0;
-    border-bottom: 1px solid var(--line);
+    background: var(--tt-black);
+    margin: 26px -24px 30px;
+    padding: 0 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 3px solid var(--tt-red);
+    box-shadow: 0 4px 12px rgba(10, 10, 10, 0.12);
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -161,7 +165,7 @@
   .nav-wrap::-webkit-scrollbar { display: none; }
   .nav {
     display: flex;
-    gap: 2px;
+    gap: 0;
     min-width: max-content;
     margin: 0 auto;
     max-width: var(--maxw);
@@ -169,24 +173,35 @@
   .nav button {
     background: transparent;
     border: 0;
-    padding: 11px 14px 14px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--muted);
+    padding: 16px 22px 18px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.58);
     cursor: pointer;
     position: relative;
-    transition: color 0.15s ease;
+    transition: color 0.18s ease, background 0.18s ease;
     font-family: inherit;
     white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
-  .nav button:hover { color: var(--ink); }
-  .nav button.active { color: var(--ink); }
+  .nav button:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .nav button.active {
+    color: white;
+    background: rgba(216, 35, 42, 0.12);
+  }
   .nav button.active::after {
     content: '';
     position: absolute;
-    bottom: -1px; left: 14px; right: 14px;
+    bottom: -3px;
+    left: 0;
+    right: 0;
     height: 3px;
     background: var(--tt-red);
+    box-shadow: 0 0 12px rgba(216, 35, 42, 0.5);
   }
 
   /* ============ PANELS ============ */
@@ -200,7 +215,37 @@
   }
   .panel.warn { background: var(--warn-soft); border-color: rgba(196, 106, 8, 0.25); border-left: 4px solid var(--warn); }
   .panel.closed { background: var(--accent-soft); border-color: rgba(216, 35, 42, 0.25); border-left: 4px solid var(--accent); }
-  .panel.open { background: var(--open-soft); border-color: rgba(30, 122, 61, 0.25); border-left: 4px solid var(--open); }
+  .panel.open { background: var(--open-soft); border-color: rgba(0, 166, 81, 0.3); border-left: 4px solid var(--open); }
+
+  /* Status banner (focal point) gets a bold racing-flag treatment */
+  #now-banner .panel {
+    border-radius: var(--radius-lg);
+    padding: 18px 22px;
+    font-size: 1rem;
+    box-shadow: 0 4px 14px rgba(10, 10, 10, 0.08);
+    border: 0;
+  }
+  #now-banner .panel strong {
+    color: white;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  }
+  #now-banner .panel.open {
+    background: linear-gradient(135deg, #00b85c 0%, #007a3d 100%);
+    border-left: 5px solid var(--racing-yellow);
+    color: white;
+  }
+  #now-banner .panel.warn {
+    background: linear-gradient(135deg, #ee9b14 0%, #c46a08 100%);
+    border-left: 5px solid var(--tt-black);
+    color: white;
+  }
+  #now-banner .panel.closed {
+    background: linear-gradient(135deg, #e02d34 0%, #a51b21 100%);
+    border-left: 5px solid var(--tt-black);
+    color: white;
+  }
 
   /* ============ PILLS ============ */
   .pill {
@@ -520,24 +565,9 @@
 
 <main>
 
-<div class="panel warn" style="margin: 10px 0;">
-  <strong>Always verify before you set off.</strong> This page summarises the published 2026 schedule, but sessions are routinely shifted by weather and incidents. For live, official status call the <strong>Road Information Hotline on 01624&nbsp;685888</strong>, or check <a href="https://www.manxradio.com/news/tt-news/" target="_blank" rel="noopener">Manx Radio TT News</a>. This page is an unofficial guide and is not affiliated with the organisers.
-</div>
-
 <div id="now-banner"></div>
 
 <!-- AUTO_NEWS_START -->
-<div class="auto-news">
-<h3>Latest TT news from Manx Radio</h3>
-<ul>
-<li><a href="https://www.manxradio.com/news/tt-news/drone-ban-in-force-at-billown-course/" target="_blank" rel="noopener">Drone ban in force at Billown Course</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/tt-electronic-flag-system-being-tested-tomorrow-morning/" target="_blank" rel="noopener">TT electronic flag system being tested tomorrow morning</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-relaxed-and-strong-for-2026/" target="_blank" rel="noopener">Dean Harrison 'relaxed' and 'strong' for 2026</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/marshal-numbers-looking-pretty-healthy-heading-into-tt-2026/" target="_blank" rel="noopener">Marshal numbers 'looking pretty healthy' heading into TT 2026</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-sport/tt-2026-josh-brookes-to-ride-for-new-team-in-supersport-class/" target="_blank" rel="noopener">TT 2026: Josh Brookes to ride for new team in Supersport class</a> <span class="meta">&middot; just now</span></li>
-</ul>
-<p class="meta" style="margin-top:8px;">Headlines fetched automatically. For live, definitive road status call <strong>01624&nbsp;685888</strong>.</p>
-</div>
 <!-- AUTO_NEWS_END -->
 
 <div class="nav-wrap">
@@ -546,8 +576,6 @@
     <button data-tab="schedule">Full schedule</button>
     <button data-tab="route">Route checker</button>
     <button data-tab="map">Map &amp; sections</button>
-    <button data-tab="alternatives">Alternatives</button>
-    <button data-tab="live">Live updates</button>
   </div>
 </div>
 
@@ -703,52 +731,6 @@
   <div class="glossary" id="glossary"></div>
 </section>
 
-<!-- ========== ALTERNATIVES ========== -->
-<section id="tab-alternatives" class="section">
-  <h2>Getting around when the roads are closed</h2>
-  <p>Even when the Mountain Course is fully closed to cars, several alternatives keep running. These are real options, not just tourist novelties.</p>
-
-  <div class="panel" style="border-left: 4px solid var(--s100); background: #eaf2fa;">
-    <h3 style="margin-top: 0; color: var(--s100);">Manx Electric Tramway &mdash; Douglas to Ramsey via the coast</h3>
-    <p>The historic electric tramway runs along the east coast from Derby Castle (north end of Douglas Promenade) through Onchan, Laxey and Dhoon to Ramsey. <strong>It is not affected by Mountain Course closures.</strong> If you need to get between Douglas and Ramsey during a TT closure, this is your real option. It is also the easiest way to reach Laxey and the Snaefell Mountain Railway.</p>
-    <p class="note">Journey time roughly 75-90 minutes Douglas to Ramsey. Buy tickets on board with cash, contactless, or a Go Card.</p>
-  </div>
-
-  <div class="panel" style="border-left: 4px solid var(--tt); background: #fdf0f0;">
-    <h3 style="margin-top: 0; color: var(--tt);">Snaefell Mountain Railway &mdash; access to the Mountain section</h3>
-    <p>From Laxey (reachable by Manx Electric Tramway), the Snaefell Mountain Railway climbs to the Bungalow and the summit of Snaefell. <strong>It runs during the TT.</strong> This is the only way onto the Mountain section when the A18 is closed for racing, and a popular way to watch the racing at the Bungalow.</p>
-  </div>
-
-  <div class="panel" style="border-left: 4px solid var(--pretttt); background: #faf6e8;">
-    <h3 style="margin-top: 0; color: var(--pretttt);">Steam Railway &mdash; Douglas to Port Erin</h3>
-    <p>The historic steam railway runs from Douglas station (10 minutes from the Sea Terminal) south to Castletown, Port St Mary and Port Erin. <strong>It is not affected by Mountain Course closures.</strong> It is briefly affected by Billown closures right at the Castletown end (the line crosses the circuit), so check timetables during Pre-TT and Southern 100 weekends.</p>
-  </div>
-
-  <h3>Special TT shuttle bus services (race fortnight only)</h3>
-  <p>Bus Vannin runs additional spectator services during the TT, dropping fans off before closures and collecting them after. Useful if you want to be at a viewing point without worrying about parking inside the closure zone.</p>
-  <div class="glossary">
-    <div class="gloss-card">
-      <div class="name">TT1</div>
-      <div class="desc">South (Port St Mary, Port Erin, Castletown) to the Grandstand in Douglas.</div>
-    </div>
-    <div class="gloss-card">
-      <div class="name">TT3</div>
-      <div class="desc">Grandstand to Creg-ny-Baa and Hillberry viewing areas. Runs before closures to drop off, after closures to collect.</div>
-    </div>
-    <div class="gloss-card">
-      <div class="name">TT6</div>
-      <div class="desc">Grandstand to Quarterbridge, Glen Vine, Crosby, Ballacraine, Laurel Bank, Cronk-y-Voddy, Kirk Michael, Ballaugh, Sulby and Ramsey. Covers the full course on the west and north side.</div>
-    </div>
-  </div>
-
-  <h3>The Spring Valley / Glen Darragh local diversion</h3>
-  <p>During Mountain Course closures, Bus Vannin services 5 and 6 between Douglas and Peel divert via Quarterbridge, Spring Valley and Glen Darragh Road. This diversion is also open to private cars and is useful if you live in the south-west Douglas suburbs and need to get around the closed sections.</p>
-  <p class="note">During these closures the buses do not serve Nobles Hospital, Strang, Union Mills or Ballagarey because those are all on the course. If you need to reach one of those areas during closure, you cannot.</p>
-
-  <h3>Important caveat: the &quot;no later than&quot; clause</h3>
-  <p>Every published reopening time is a <strong>maximum</strong>, not a guarantee. If a session ends ahead of schedule with no incidents, roads can and do reopen earlier. Conversely, an incident on course can extend a closure beyond the published time. Always check the Road Information Hotline (<strong>01624&nbsp;685888</strong>) before assuming a road is open or closed.</p>
-</section>
-
 <!-- ========== ROUTE CHECKER ========== -->
 <section id="tab-route" class="section">
   <h2>Can I drive from A to B?</h2>
@@ -779,55 +761,11 @@
   <p class="note" style="margin-top: 18px;">The checker uses the published 2026 schedule. Always confirm with the gov.im road information line on <strong>01624 685888</strong> or Manx Radio before setting off, especially when weather may have shifted sessions.</p>
 </section>
 
-<!-- ========== LIVE UPDATES ========== -->
-<section id="tab-live" class="section">
-  <h2>Live updates &amp; official sources</h2>
-  <p>The schedule above is the published plan. The actual on-the-day status depends on weather, incidents, and operational decisions. These are the authoritative places to check on the day.</p>
-
-  <div class="live-links">
-    <div class="live-card">
-      <div class="title">Road Information Hotline</div>
-      <div class="desc">Department of Infrastructure. Recorded message updated live.</div>
-      <a href="tel:01624685888">01624 685888</a>
-    </div>
-    <div class="live-card">
-      <div class="title">Manx Radio TT News</div>
-      <div class="desc">Live race coverage and immediate road status updates.</div>
-      <a href="https://www.manxradio.com/news/tt-news/" target="_blank" rel="noopener">manxradio.com/news/tt-news</a>
-    </div>
-    <div class="live-card">
-      <div class="title">gov.im road events page</div>
-      <div class="desc">Official Department of Infrastructure listing of upcoming roadworks &amp; events.</div>
-      <a href="https://www.gov.im/about-the-government/departments/infrastructure/highway-services/upcoming-roadworks-and-events-on-roads/" target="_blank" rel="noopener">gov.im roadworks</a>
-    </div>
-    <div class="live-card">
-      <div class="title">TT Infoline</div>
-      <div class="desc">Official TT schedule and changes.</div>
-      <a href="https://www.iomttraces.com/ttinfoline/" target="_blank" rel="noopener">iomttraces.com/ttinfoline</a>
-    </div>
-    <div class="live-card">
-      <div class="title">Southern 100 Infoline</div>
-      <div class="desc">WhatsApp infoline for Southern 100 and Pre-TT updates.</div>
-      <a href="https://southern100.com/" target="_blank" rel="noopener">southern100.com</a>
-    </div>
-    <div class="live-card">
-      <div class="title">Manx Grand Prix</div>
-      <div class="desc">Manx Motor Cycle Club's MGP / Classic TT official site.</div>
-      <a href="https://manxgrandprix.co.uk/" target="_blank" rel="noopener">manxgrandprix.co.uk</a>
-    </div>
-  </div>
-
-  <div class="live-refresh" id="live-refresh">
-    <strong>Pull latest TT news headlines</strong> <button onclick="refreshLive()">Refresh</button>
-    <div class="live-content" id="live-content"></div>
-  </div>
-</section>
-
 </main>
 
 <footer class="footer">
   <p>Data compiled from <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a>, <a href="https://southern100.com/" target="_blank" rel="noopener">southern100.com</a>, <a href="https://manxgrandprix.co.uk/" target="_blank" rel="noopener">manxgrandprix.co.uk</a>, <a href="https://www.gov.im/about-the-government/departments/infrastructure/highway-services/upcoming-roadworks-and-events-on-roads/" target="_blank" rel="noopener">gov.im</a> and <a href="https://www.iomtoday.co.im/topic/tt" target="_blank" rel="noopener">iomtoday.co.im</a>. Schedules are provisional and subject to change without notice. This is an unofficial guide; always verify with the Road Information Hotline (01624&nbsp;685888) before setting off.</p>
-  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->21 May 2026, 20:19 UTC<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:oli@ebusiness.im?subject=IoM road closures correction">Let me know</a>.</p>
+  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->21 May 2026<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
   <p class="credit">
     <em>Built by someone who would rather code an entire App than ever again try to find and understand the local Manx information.</em><br>
     You can find me at <a href="mailto:oli@ebusiness.im">oli@ebusiness.im</a>
