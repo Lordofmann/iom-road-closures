@@ -5,12 +5,11 @@ What it does:
   1. Fetches the latest TT news headlines from Manx Radio.
   2. Fetches the official iomttraces.com schedule page.
   3. Hashes the schedule content and compares to a stored baseline.
-  4. Patches index.html:
-     - Updates the "Last updated" timestamp.
-     - Injects the latest news between the AUTO_NEWS markers.
-     - Adds a high-visibility banner if the official schedule appears to have changed.
-  5. Writes the new baseline hash to data/baseline.json if the change was acknowledged.
-  6. Exits cleanly if nothing changed (no commit needed).
+  4. ONLY rewrites index.html (and thus triggers a deploy) when the page
+     visitors see would actually look different. This prevents the bot from
+     burning Netlify credits on uneventful runs.
+  5. Always updates the rolling news cache (data/news.json) when it changes,
+     so the cache survives quiet-news days.
 
 Designed to fail gracefully: if any single source can't be fetched, the script
 continues with what it has rather than blowing up the whole site.
@@ -55,9 +54,9 @@ MANX_RADIO_TT_URL = "https://www.manxradio.com/news/tt-news/"
 IOMTT_SCHEDULE_URL = "https://www.iomttraces.com/racing/page/schedule/"
 
 REQUEST_TIMEOUT = 30
-MAX_HEADLINES = 5      # How many headlines to actually display
-CACHE_SIZE = 20        # How many historical headlines to keep on disk
-CACHE_MAX_DAYS = 30    # Drop cached items older than this many days
+MAX_HEADLINES = 5
+CACHE_SIZE = 20
+CACHE_MAX_DAYS = 30
 
 
 # ----------------------------------------------------------------------------
@@ -65,12 +64,10 @@ CACHE_MAX_DAYS = 30    # Drop cached items older than this many days
 # ----------------------------------------------------------------------------
 
 def log(msg: str) -> None:
-    """Print with a timestamp so workflow logs are readable."""
     print(f"[{datetime.utcnow().isoformat(timespec='seconds')}Z] {msg}", flush=True)
 
 
 def fetch(url: str) -> str | None:
-    """GET a URL with a polite User-Agent. Returns text or None on any failure."""
     try:
         r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=REQUEST_TIMEOUT)
         r.raise_for_status()
@@ -85,29 +82,28 @@ def short_hash(s: str) -> str:
 
 
 # ----------------------------------------------------------------------------
-# News cache (rolling): persists across runs so the panel never empties
+# News cache (rolling)
 # ----------------------------------------------------------------------------
 
 def load_news_cache() -> list[dict]:
-    """Load the rolling news cache from disk, tolerating older file formats."""
     if not NEWS_PATH.exists():
         return []
     try:
         data = json.loads(NEWS_PATH.read_text())
         items = data.get("headlines", [])
-        # Only keep entries that have the new-format `first_seen` field.
         return [it for it in items if isinstance(it, dict) and "first_seen" in it and "url" in it]
     except Exception:
         return []
 
 
 def merge_into_cache(cache: list[dict], fresh: list[dict], now: datetime) -> list[dict]:
-    """Add any unseen fresh items to the cache, dedupe by URL, trim, and sort."""
-    existing_urls = {it["url"] for it in cache}
+    """Add unseen fresh items to a copy of the cache, dedupe, trim, sort. Does not mutate input."""
+    result = list(cache)
+    existing_urls = {it["url"] for it in result}
     for item in fresh:
         if item.get("url") in existing_urls:
             continue
-        cache.append({
+        result.append({
             "title": item.get("title", ""),
             "url": item["url"],
             "first_seen": now.isoformat(timespec="seconds") + "Z",
@@ -115,17 +111,13 @@ def merge_into_cache(cache: list[dict], fresh: list[dict], now: datetime) -> lis
         })
         existing_urls.add(item["url"])
 
-    # Drop anything older than CACHE_MAX_DAYS
     cutoff = now - timedelta(days=CACHE_MAX_DAYS)
-    cache = [it for it in cache if _parse_iso(it.get("first_seen", "")) >= cutoff]
-
-    # Sort newest first and trim
-    cache.sort(key=lambda x: x.get("first_seen", ""), reverse=True)
-    return cache[:CACHE_SIZE]
+    result = [it for it in result if _parse_iso(it.get("first_seen", "")) >= cutoff]
+    result.sort(key=lambda x: x.get("first_seen", ""), reverse=True)
+    return result[:CACHE_SIZE]
 
 
 def _parse_iso(s: str) -> datetime:
-    """Parse our ISO timestamps; return epoch if unparseable."""
     if not s:
         return datetime(1970, 1, 1)
     try:
@@ -137,7 +129,6 @@ def _parse_iso(s: str) -> datetime:
 
 
 def format_relative_age(first_seen_iso: str, now: datetime) -> str:
-    """Human-readable relative age, computed at scraper run time."""
     seen = _parse_iso(first_seen_iso)
     delta = now - seen
     seconds = int(delta.total_seconds())
@@ -162,26 +153,9 @@ def format_relative_age(first_seen_iso: str, now: datetime) -> str:
 # ----------------------------------------------------------------------------
 
 def parse_manx_radio_headlines(html: str) -> list[dict]:
-    """Extract recent TT news items from Manx Radio.
-
-    Strategy (permissive: scans all links, filters by URL structure):
-      - Look at every <a href> on the page.
-      - Keep only links to manxradio.com whose path has 3+ segments under /news/
-        (e.g., /news/tt-news/article-slug/ — filters out /news/weather/ etc).
-      - Use the link text as the title; if too short, look for the title in a
-        nearby heading inside the same card.
-      - Pull a date from any time/span/div near the link.
-
-    Debug counters are printed so any future shape change is easy to diagnose
-    from the workflow log.
-    """
     soup = BeautifulSoup(html, "html.parser")
     items: list[dict] = []
-
-    total_links = 0
-    rejected_offsite = 0
-    rejected_path = 0
-    rejected_title = 0
+    total_links = rejected_offsite = rejected_path = rejected_title = 0
 
     for link in soup.find_all("a", href=True):
         total_links += 1
@@ -225,7 +199,6 @@ def parse_manx_radio_headlines(html: str) -> list[dict]:
             if date_text:
                 break
             ctx = ctx.parent
-
         items.append({"title": title, "url": href, "date": date_text})
 
     seen = set()
@@ -252,10 +225,6 @@ def parse_manx_radio_headlines(html: str) -> list[dict]:
 # ----------------------------------------------------------------------------
 
 def extract_schedule_content(html: str) -> str | None:
-    """Return a normalised string representing the schedule content.
-
-    We look for the SCHEDULE heading and grab the surrounding tables.
-    """
     soup = BeautifulSoup(html, "html.parser")
     target = None
     for h in soup.find_all(["h1", "h2", "h3"]):
@@ -279,18 +248,11 @@ def extract_schedule_content(html: str) -> str | None:
 # HTML patching
 # ----------------------------------------------------------------------------
 
-NEWS_BLOCK_RE = re.compile(
-    r"(<!-- AUTO_NEWS_START -->)(.*?)(<!-- AUTO_NEWS_END -->)",
-    re.DOTALL,
-)
-LAST_UPDATED_RE = re.compile(
-    r"(<!-- LAST_UPDATED -->)(.*?)(<!-- /LAST_UPDATED -->)",
-    re.DOTALL,
-)
+NEWS_BLOCK_RE = re.compile(r"(<!-- AUTO_NEWS_START -->)(.*?)(<!-- AUTO_NEWS_END -->)", re.DOTALL)
+LAST_UPDATED_RE = re.compile(r"(<!-- LAST_UPDATED -->)(.*?)(<!-- /LAST_UPDATED -->)", re.DOTALL)
 
 
 def render_news_block(items: list[dict], schedule_changed: bool, now: datetime) -> str:
-    """Build the HTML to insert between the AUTO_NEWS markers."""
     parts: list[str] = ["<!-- AUTO_NEWS_START -->"]
 
     if schedule_changed:
@@ -334,12 +296,8 @@ def render_news_block(items: list[dict], schedule_changed: bool, now: datetime) 
 
 
 def patch_html(html: str, news_html: str, timestamp: str) -> str:
-    """Replace the AUTO_NEWS block and the LAST_UPDATED stamp."""
     new_html = NEWS_BLOCK_RE.sub(news_html, html)
-    new_html = LAST_UPDATED_RE.sub(
-        f"<!-- LAST_UPDATED -->{timestamp}<!-- /LAST_UPDATED -->",
-        new_html,
-    )
+    new_html = LAST_UPDATED_RE.sub(f"<!-- LAST_UPDATED -->{timestamp}<!-- /LAST_UPDATED -->", new_html)
     return new_html
 
 
@@ -356,7 +314,7 @@ def main() -> int:
     original_html = HTML_PATH.read_text(encoding="utf-8")
     now = datetime.utcnow()
 
-    # --- 1. News headlines (rolling cache) ---
+    # --- 1. News headlines ---
     log("Fetching Manx Radio TT news...")
     fresh: list[dict] = []
     page = fetch(MANX_RADIO_TT_URL)
@@ -367,17 +325,15 @@ def main() -> int:
         except Exception as e:
             log(f"  parse error: {e}")
 
-    cache = load_news_cache()
-    log(f"  cache had {len(cache)} headlines before merge")
-    cache = merge_into_cache(cache, fresh, now)
-    log(f"  cache has {len(cache)} headlines after merge")
-
-    headlines = cache[:MAX_HEADLINES]
+    old_cache = load_news_cache()
+    log(f"  cache had {len(old_cache)} headlines before merge")
+    new_cache = merge_into_cache(old_cache, fresh, now)
+    log(f"  cache has {len(new_cache)} headlines after merge")
+    headlines = new_cache[:MAX_HEADLINES]
 
     # --- 2. Schedule change detection ---
     log("Fetching official schedule for change detection...")
     schedule_changed = False
-    schedule_text = None
     page = fetch(IOMTT_SCHEDULE_URL)
     if page:
         try:
@@ -402,30 +358,37 @@ def main() -> int:
         except Exception as e:
             log(f"  schedule parse error: {e}")
 
-    # --- 3. Build the news block ---
-    news_html = render_news_block(headlines, schedule_changed, now)
+    # --- 3. Decide what's actually worth writing ---
+    old_displayed = [it.get("url") for it in old_cache[:MAX_HEADLINES]]
+    new_displayed = [it.get("url") for it in new_cache[:MAX_HEADLINES]]
+    display_changed = old_displayed != new_displayed
+    cache_changed = old_cache != new_cache
+    log(f"  display_changed={display_changed} cache_changed={cache_changed} schedule_changed={schedule_changed}")
 
-    # --- 4. Patch HTML ---
-    timestamp = now.strftime("%d %B %Y, %H:%M UTC")
-    new_html = patch_html(original_html, news_html, timestamp)
-
-    NEWS_PATH.write_text(
-        json.dumps(
-            {
-                "last_fetch": now.isoformat(timespec="seconds") + "Z",
-                "schedule_changed": schedule_changed,
-                "headlines": cache,
-            },
-            indent=2,
+    # Persist cache when its content has changed (so rolling history survives)
+    if cache_changed:
+        NEWS_PATH.write_text(
+            json.dumps(
+                {
+                    "last_fetch": now.isoformat(timespec="seconds") + "Z",
+                    "schedule_changed": schedule_changed,
+                    "headlines": new_cache,
+                },
+                indent=2,
+            )
         )
-    )
+        log("  news.json updated (cache content changed)")
 
-    if new_html == original_html:
-        log("No changes to write. Done.")
-        return 0
+    # Only rewrite index.html when the page visitors see would actually change
+    if display_changed or schedule_changed:
+        news_html = render_news_block(headlines, schedule_changed, now)
+        timestamp = now.strftime("%d %B %Y, %H:%M UTC")
+        new_html = patch_html(original_html, news_html, timestamp)
+        HTML_PATH.write_text(new_html, encoding="utf-8")
+        log(f"  index.html updated at {timestamp} (a deploy will follow)")
+    else:
+        log("  display unchanged, skipping index.html update (no deploy needed)")
 
-    HTML_PATH.write_text(new_html, encoding="utf-8")
-    log(f"index.html updated at {timestamp}")
     return 0
 
 
