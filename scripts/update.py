@@ -89,46 +89,55 @@ def short_hash(s: str) -> str:
 def parse_manx_radio_headlines(html: str) -> list[dict]:
     """Extract recent TT news items from Manx Radio.
 
-    The exact CSS selectors will need adjusting if their template changes;
-    we try multiple fallback strategies and return what we can.
+    Strategy:
+      - Find heading elements (h1-h4) that contain a link — these are article titles.
+      - Require URL paths of at least 3 segments under /news/ (filters out category
+        pages like /news/weather/ while keeping /news/tt-news/article-slug/).
+      - Pull a date from any sibling/parent time-like element if available.
     """
     soup = BeautifulSoup(html, "html.parser")
     items: list[dict] = []
 
-    # Strategy 1: look for article cards / list items with a link inside
-    for art in soup.find_all(["article", "li", "div"], limit=200):
-        link = art.find("a", href=True)
+    for heading in soup.find_all(["h1", "h2", "h3", "h4"], limit=300):
+        link = heading.find("a", href=True)
         if not link:
             continue
         href = link["href"]
         title = link.get_text(strip=True)
-        # Manx Radio article URLs typically include "/news/" and a slug
-        if "/news/" not in href or len(title) < 12:
+        if len(title) < 15:
             continue
-        # Look for a date near the link
-        date_text = ""
-        for tag in art.find_all(["time", "span", "div"]):
-            t = tag.get_text(strip=True)
-            if re.search(r"\b(20\d\d|today|yesterday|hour|min|ago)\b", t, re.I):
-                date_text = t
-                break
-        # Make URL absolute
         if href.startswith("/"):
             href = "https://www.manxradio.com" + href
+        if not href.startswith("https://www.manxradio.com/"):
+            continue
+        # Filter to article URLs. Real articles look like /news/<category>/<slug>/
+        # which is 3+ path segments. Category pages like /news/weather/ are 2.
+        path_parts = [p for p in href.replace("https://www.manxradio.com", "").split("/") if p]
+        if len(path_parts) < 3 or path_parts[0] != "news":
+            continue
+        # Hunt for a date near the heading (look up to 3 levels up to find a time-like sibling)
+        date_text = ""
+        ctx = heading
+        for _ in range(4):
+            if not ctx:
+                break
+            for tag in ctx.find_all(["time", "span", "div"], limit=30):
+                t = tag.get_text(strip=True)
+                if re.search(r"\b(20\d\d|today|yesterday|hours? ago|mins? ago)\b", t, re.I) and len(t) < 60:
+                    date_text = t
+                    break
+            if date_text:
+                break
+            ctx = ctx.parent
         items.append({"title": title, "url": href, "date": date_text})
-        if len(items) >= MAX_HEADLINES * 3:
-            break
 
-    # Deduplicate by URL, keep first occurrence
+    # Deduplicate by URL, preserving order
     seen = set()
     unique: list[dict] = []
     for it in items:
         if it["url"] in seen:
             continue
         seen.add(it["url"])
-        # Skip nav/category links that aren't actual articles
-        if it["url"].rstrip("/").endswith("tt-news"):
-            continue
         unique.append(it)
         if len(unique) >= MAX_HEADLINES:
             break
