@@ -89,35 +89,62 @@ def short_hash(s: str) -> str:
 def parse_manx_radio_headlines(html: str) -> list[dict]:
     """Extract recent TT news items from Manx Radio.
 
-    Strategy:
-      - Find heading elements (h1-h4) that contain a link — these are article titles.
-      - Require URL paths of at least 3 segments under /news/ (filters out category
-        pages like /news/weather/ while keeping /news/tt-news/article-slug/).
-      - Pull a date from any sibling/parent time-like element if available.
+    Strategy (permissive: scans all links, filters by URL structure):
+      - Look at every <a href> on the page.
+      - Keep only links to manxradio.com whose path has 3+ segments under /news/
+        (e.g., /news/tt-news/article-slug/ — filters out /news/weather/ etc).
+      - Use the link text as the title; if too short, look for the title in a
+        nearby heading inside the same card.
+      - Pull a date from any time/span/div near the link.
+
+    Debug counters are printed so any future shape change is easy to diagnose
+    from the workflow log.
     """
     soup = BeautifulSoup(html, "html.parser")
     items: list[dict] = []
 
-    for heading in soup.find_all(["h1", "h2", "h3", "h4"], limit=300):
-        link = heading.find("a", href=True)
-        if not link:
-            continue
+    total_links = 0
+    rejected_offsite = 0
+    rejected_path = 0
+    rejected_title = 0
+
+    for link in soup.find_all("a", href=True):
+        total_links += 1
         href = link["href"]
-        title = link.get_text(strip=True)
-        if len(title) < 15:
-            continue
         if href.startswith("/"):
             href = "https://www.manxradio.com" + href
         if not href.startswith("https://www.manxradio.com/"):
+            rejected_offsite += 1
             continue
-        # Filter to article URLs. Real articles look like /news/<category>/<slug>/
-        # which is 3+ path segments. Category pages like /news/weather/ are 2.
+        # Real article URLs look like /news/<category>/<slug>/ → 3+ path segments.
+        # Category pages like /news/weather/ → 2 segments.
         path_parts = [p for p in href.replace("https://www.manxradio.com", "").split("/") if p]
         if len(path_parts) < 3 or path_parts[0] != "news":
+            rejected_path += 1
             continue
-        # Hunt for a date near the heading (look up to 3 levels up to find a time-like sibling)
+
+        # Prefer the link's own text. If it's empty/too short, try sibling/child headings.
+        # Use " " as separator and collapse whitespace so concatenated children don't run together.
+        title = re.sub(r"\s+", " ", link.get_text(" ", strip=True)).strip()
+        # Strip trailing date fragments that often live inside the link itself.
+        title = re.sub(r"\s+\d{1,2}\s+\w+\s+20\d{2}\s*$", "", title)
+        title = re.sub(r"\s+\d+\s+(hours?|mins?|minutes?|days?)\s+ago\s*$", "", title, flags=re.I)
+        title = re.sub(r"\s+(today|yesterday)\s*$", "", title, flags=re.I)
+        title = title.strip()
+        if len(title) < 15:
+            parent = link.parent
+            for tag in (parent.find_all(["h1", "h2", "h3", "h4", "h5"]) if parent else []):
+                candidate = tag.get_text(strip=True)
+                if len(candidate) >= 15:
+                    title = candidate
+                    break
+        if len(title) < 15:
+            rejected_title += 1
+            continue
+
+        # Hunt for a date near the link (look up to 4 levels up the DOM)
         date_text = ""
-        ctx = heading
+        ctx = link.parent
         for _ in range(4):
             if not ctx:
                 break
@@ -129,6 +156,7 @@ def parse_manx_radio_headlines(html: str) -> list[dict]:
             if date_text:
                 break
             ctx = ctx.parent
+
         items.append({"title": title, "url": href, "date": date_text})
 
     # Deduplicate by URL, preserving order
@@ -141,6 +169,14 @@ def parse_manx_radio_headlines(html: str) -> list[dict]:
         unique.append(it)
         if len(unique) >= MAX_HEADLINES:
             break
+
+    # Visible in the workflow log to help diagnose if zero items came back
+    print(
+        f"  parser stats: total_links={total_links} "
+        f"offsite={rejected_offsite} bad_path={rejected_path} "
+        f"short_title={rejected_title} candidates={len(items)} kept={len(unique)}",
+        flush=True,
+    )
     return unique
 
 
