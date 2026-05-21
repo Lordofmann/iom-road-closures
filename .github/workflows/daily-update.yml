@@ -1,0 +1,46 @@
+name: Daily site update
+
+on:
+  schedule:
+    # Twice daily during race season (May-August): 06:00 and 17:00 UTC
+    - cron: "0 6,17 * 5-8 *"
+    # Once daily outside race season: 06:00 UTC
+    - cron: "0 6 * 1-4,9-12 *"
+  workflow_dispatch:
+    # Allows manual trigger from the GitHub Actions tab
+
+permissions:
+  contents: write  # Required to commit changes back to the repo
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scraper
+        run: python scripts/update.py
+
+      - name: Commit and push changes (if any)
+        run: |
+          git config user.name "iom-roads-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add index.html data/news.json data/baseline.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "Nothing to commit."
+          else
+            git commit -m "Auto-update: news + timestamp $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
