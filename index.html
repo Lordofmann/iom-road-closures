@@ -622,18 +622,7 @@
 <!-- ========== NOW & TODAY ========== -->
 <section id="tab-now" class="section active">
   <!-- AUTO_NEWS_START -->
-<div class="auto-news">
-<h3>Latest TT news from Manx Radio</h3>
-<ul>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/2026-pre-tt-classic-road-races-to-begin-tonight/" target="_blank" rel="noopener">2026 Pre-TT Classic Road Races to begin tonight</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/tt-news/drone-ban-in-force-at-billown-course/" target="_blank" rel="noopener">Drone ban in force at Billown Course</a> <span class="meta">&middot; 18h ago</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/tt-electronic-flag-system-being-tested-tomorrow-morning/" target="_blank" rel="noopener">TT electronic flag system being tested tomorrow morning</a> <span class="meta">&middot; 18h ago</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-relaxed-and-strong-for-2026/" target="_blank" rel="noopener">Dean Harrison 'relaxed' and 'strong' for 2026</a> <span class="meta">&middot; 18h ago</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/marshal-numbers-looking-pretty-healthy-heading-into-tt-2026/" target="_blank" rel="noopener">Marshal numbers 'looking pretty healthy' heading into TT 2026</a> <span class="meta">&middot; 18h ago</span></li>
-</ul>
-<p class="meta" style="margin-top:8px;">Headlines fetched automatically. For live, definitive road status call <strong>01624&nbsp;685888</strong>.</p>
-</div>
-<!-- AUTO_NEWS_END -->
+  <!-- AUTO_NEWS_END -->
 
   <h2>Today's status</h2>
   <div id="today-detail"></div>
@@ -825,7 +814,7 @@
 
 <footer class="footer">
   <p>Data compiled from <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a>, <a href="https://southern100.com/" target="_blank" rel="noopener">southern100.com</a>, <a href="https://manxgrandprix.co.uk/" target="_blank" rel="noopener">manxgrandprix.co.uk</a>, <a href="https://www.gov.im/about-the-government/departments/infrastructure/highway-services/upcoming-roadworks-and-events-on-roads/" target="_blank" rel="noopener">gov.im</a> and <a href="https://www.iomtoday.co.im/topic/tt" target="_blank" rel="noopener">iomtoday.co.im</a>. Schedules are provisional and subject to change without notice. This is an unofficial guide; always verify with the Road Information Hotline (01624&nbsp;685888) before setting off.</p>
-  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->22 May 2026, 14:47 UTC<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
+  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->21 May 2026<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
   <p class="credit">
     <em>Built by someone who would rather code an entire App than ever again try to find and understand the local Manx information.</em><br>
     You can find me at <a href="mailto:oli@ebusiness.im">oli@ebusiness.im</a>
@@ -983,10 +972,10 @@ const mountainSegments = {
 // A route definition: which course segments must be open to drive it
 const routeRules = {
   // Mountain Course routes (closed during TT and MGP closures)
-  'Douglas|Peel':       { segments: ['mountain_A1'], detour: 'No clean alternative when A1 is closed — south route via Castletown / Foxdale is very long.' },
-  'Peel|Douglas':       { segments: ['mountain_A1'], detour: 'No clean alternative when A1 is closed — south route via Castletown / Foxdale is very long.' },
-  'Douglas|Ramsey':     { segments: ['mountain_A18'], detour: 'When the Mountain Road is closed but the rest of the course is open, you cannot get to Ramsey from Douglas. When the whole course is closed there is no road option.', alternative: 'Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey &rarr; Ramsey throughout closures (unaffected by racing). About 75-90 minutes.' },
-  'Ramsey|Douglas':     { segments: ['mountain_A18'], detour: 'Same as Douglas to Ramsey: blocked when the course is closed.', alternative: 'Manx Electric Tramway runs Ramsey &rarr; Laxey &rarr; Douglas throughout closures. When Mountain Road is open (one-way only), you can drive Ramsey&rarr;Douglas via the Mountain.' },
+  'Douglas|Peel':       { segments: ['mountain_A1'], severity: 'partial', detour: 'Long way round via the south: A5 south to Ballasalla &rarr; A24 west to Foxdale &rarr; A27 north to St John\'s &rarr; A1 west into Peel (the last 3 miles of A1 are off-course). Adds about 30-40 minutes versus the direct A1.' },
+  'Peel|Douglas':       { segments: ['mountain_A1'], severity: 'partial', detour: 'Long way round via the south: A1 east to St John\'s (last 3 miles, off-course) &rarr; A27 south to Foxdale &rarr; A24 east to Ballasalla &rarr; A5 north to Douglas. Adds about 30-40 minutes.' },
+  'Douglas|Ramsey':     { segments: ['mountain_A18'], severity: 'partial', detour: 'Use the A2 coast road via Onchan &rarr; Laxey &rarr; Ramsey. Not on the course, so generally open throughout closures. About 17 miles vs 14 over the Mountain. Note: central Ramsey is on the course, so during active sessions you may only reach the southern edge of town.', alternative: 'Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey &rarr; Ramsey throughout closures (unaffected by racing). About 75-90 minutes.' },
+  'Ramsey|Douglas':     { segments: ['mountain_A18'], severity: 'partial', detour: 'Use the A2 coast road via Laxey &rarr; Onchan &rarr; Douglas. Generally open during course closures. Central Ramsey is on the course, so during active sessions you\'ll need to start from the southern edge of town.', alternative: 'Manx Electric Tramway runs Ramsey &rarr; Laxey &rarr; Douglas throughout closures. When the Mountain Road is open (one-way Ramsey&rarr;Creg-ny-Baa only during TT fortnight), you can drive over the Mountain too.' },
   'Peel|Ramsey':        { segments: ['mountain_A3'], detour: 'No alternative through the north — the A3 is the only road. Wait for course to reopen.' },
   'Ramsey|Peel':        { segments: ['mountain_A3'], detour: 'No alternative through the north — the A3 is the only road. Wait for course to reopen.' },
   'Douglas|Kirk Michael':  { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
@@ -1020,22 +1009,22 @@ const routeRules = {
   'Douglas|Airport (Ronaldsway)': { segments: [], detour: 'A5 from Douglas to the airport is OPEN.' },
 
   // Cross-island routes that mostly avoid the courses
-  'Peel|Castletown':    { segments: ['billown'], detour: 'Peel-Castletown via A27 Foxdale road avoids the Mountain Course entirely. Only the Billown closure affects the very last few miles into Castletown.' },
-  'Castletown|Peel':    { segments: ['billown'], detour: 'Castletown-Peel via A27 Foxdale road avoids the Mountain Course entirely. Billown closure blocks the southern end only.' },
+  'Peel|Castletown':    { segments: ['billown'], severity: 'partial', detour: 'Take A1 east to St John\'s (off-course), then A27 Foxdale road south to Colby and on to Castletown. During Billown closures the very last few miles into Castletown are blocked &mdash; use Farrant\'s Way past Ronaldsway Airport to enter Castletown from the east. Adds about 10-15 minutes overall.' },
+  'Castletown|Peel':    { segments: ['billown'], severity: 'partial', detour: 'Leave Castletown via Farrant\'s Way past Ronaldsway Airport to reach Ballasalla, then take the A27 Foxdale road north through Foxdale to St John\'s, then A1 west to Peel. Avoids the Mountain Course entirely and bypasses the Billown circuit. Adds about 10-15 minutes.' },
   'Peel|Port Erin':     { segments: ['billown'], severity: 'partial', detour: 'Peel-Port Erin via the A27 Foxdale road and A36 Sloc Road over South Barrule avoids the Billown circuit entirely on the western side. Scenic but slow.' },
   'Port Erin|Peel':     { segments: ['billown'], severity: 'partial', detour: 'Port Erin-Peel via the A36 Sloc Road over South Barrule, then A27 Foxdale road. Avoids Billown entirely on the western side. Scenic mountain road.' },
-  'Ramsey|Castletown':  { segments: ['mountain_A3','billown'], detour: 'The northern leg (Ramsey-Ballacraine) is on the Mountain Course; the southern end touches Billown. During TT, this route is impossible.' },
-  'Castletown|Ramsey':  { segments: ['mountain_A3','billown'], detour: 'Same as Ramsey-Castletown — affected by both courses depending on event.' },
-  'Onchan|Peel':        { segments: ['mountain_A1'], detour: 'Onchan must exit through Douglas which feeds into the A1 to Peel. Same closure rules as Douglas-Peel.' },
-  'Peel|Onchan':        { segments: ['mountain_A1'], detour: 'Same closure rules as Peel-Douglas.' },
-  'Onchan|Ramsey':      { segments: ['mountain_A18'], detour: 'Onchan can use the A2 coast road via Laxey to reach Ramsey, avoiding the Mountain Road. This is generally open during TT closures.' },
-  'Ramsey|Onchan':      { segments: ['mountain_A18'], detour: 'Use A2 coast road via Laxey, generally open during Mountain Course closures.' },
+  'Ramsey|Castletown':  { segments: ['mountain_A3','billown'], severity: 'partial', detour: 'During TT (A3 closed): Ramsey &rarr; A2 coast road south to Douglas &rarr; A5 south to Castletown. During Billown only (A3 open): Ramsey &rarr; A3 south to Foxdale &rarr; A24 east to Ballasalla &rarr; Farrant\'s Way into Castletown. When both events overlap (rare), the route is impractical &mdash; consider the Steam Railway or tram.' },
+  'Castletown|Ramsey':  { segments: ['mountain_A3','billown'], severity: 'partial', detour: 'During TT (A3 closed): Castletown &rarr; A5 north to Douglas &rarr; A2 coast road via Laxey to Ramsey. During Billown only: leave Castletown via Farrant\'s Way to Ballasalla &rarr; A24 west to Foxdale &rarr; A3 north all the way to Ramsey.' },
+  'Onchan|Peel':        { segments: ['mountain_A1'], severity: 'partial', detour: 'Same south route as Douglas-Peel: south on the A5 to Ballasalla &rarr; A24 to Foxdale &rarr; A27 to St John\'s &rarr; A1 west into Peel. Adds 30-40 minutes.' },
+  'Peel|Onchan':        { segments: ['mountain_A1'], severity: 'partial', detour: 'Same south route reversed: A1 east to St John\'s &rarr; A27 south to Foxdale &rarr; A24 east to Ballasalla &rarr; A5 north through Douglas to Onchan. Adds 30-40 minutes.' },
+  'Onchan|Ramsey':      { segments: ['mountain_A18'], severity: 'partial', detour: 'Use the A2 coast road via Laxey to Ramsey. Generally open during course closures &mdash; not on the course. About 17 miles vs 14 over the Mountain. Central Ramsey is on the course though, so you may only reach the southern edge of town during active sessions.', alternative: 'Manx Electric Tramway runs Onchan (Derby Castle) &rarr; Laxey &rarr; Ramsey throughout closures.' },
+  'Ramsey|Onchan':      { segments: ['mountain_A18'], severity: 'partial', detour: 'Use the A2 coast road via Laxey, generally open during course closures. Central Ramsey is on the course, so you\'ll need to start from the southern edge of town during active sessions.', alternative: 'Manx Electric Tramway runs Ramsey &rarr; Laxey &rarr; Onchan (Derby Castle) throughout closures.' },
   'St John\'s|Peel':    { segments: [], detour: 'Short hop between St John\'s and Peel — typically not affected by the course (the course passes nearby at Ballacraine but not through Peel itself).' },
   'Peel|St John\'s':    { segments: [], detour: 'Generally clear — Peel itself is not on the course.' },
-  'St John\'s|Douglas': { segments: ['mountain_A1'], detour: 'St John\'s to Douglas uses the A1 via Ballacraine — fully on the course during TT.' },
-  'Douglas|St John\'s': { segments: ['mountain_A1'], detour: 'Same rule as Douglas-Peel: blocked when course closed.' },
-  'Foxdale|Douglas':    { segments: ['mountain_A1'], detour: 'Foxdale-Douglas can use the B22 to Crosby and then onto the A1 — both feed into the closed course.' },
-  'Douglas|Foxdale':    { segments: ['mountain_A1'], detour: 'Same as Foxdale-Douglas.' },
+  'St John\'s|Douglas': { segments: ['mountain_A1'], severity: 'partial', detour: 'When A1 is closed, head south from St John\'s via A27 to Foxdale, then A24 east toward Mount Murray, then Old Castletown Road / Oatlands Road into Douglas, bypassing the closed Crosby-Glen Vine stretch. Adds about 20 minutes.' },
+  'Douglas|St John\'s': { segments: ['mountain_A1'], severity: 'partial', detour: 'When A1 is closed, leave Douglas via Old Castletown Road / Oatlands Road south, then A24 west to Foxdale, then A27 north to St John\'s. Adds about 20 minutes versus the direct A1.' },
+  'Foxdale|Douglas':    { segments: ['mountain_A1'], severity: 'partial', detour: 'Head east on A24 toward Mount Murray, then Old Castletown Road / Oatlands Road into Douglas. Bypasses the closed Crosby section. Adds about 15-20 minutes.' },
+  'Douglas|Foxdale':    { segments: ['mountain_A1'], severity: 'partial', detour: 'Leave Douglas via Old Castletown Road / Oatlands Road, join the A24 westbound at Mount Murray and continue to Foxdale. Bypasses the closed A1. Adds 15-20 minutes.' },
   'Port St Mary|Douglas': { segments: ['billown'], severity: 'partial', detour: 'From Port St Mary, head to Ballabeg then take the Grenaby back roads (B42 &rarr; B40 &rarr; B41) to the A3 near Ballasalla, then A5 north to Douglas. Slow on narrow lanes but the standard police-signed diversion.', alternative: 'Steam Railway runs Port St Mary &rarr; Castletown &rarr; Douglas, unaffected by Mountain Course closures.' },
   'Douglas|Port St Mary': { segments: ['billown'], severity: 'partial', detour: 'Same as Douglas to Port Erin: A5 south to Ballasalla, then Grenaby back roads (B41 &rarr; B40 &rarr; B42) to Ballabeg, then continue to Port St Mary.', alternative: 'Steam Railway runs Douglas &rarr; Castletown &rarr; Port St Mary.' }
 };
