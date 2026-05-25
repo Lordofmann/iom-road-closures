@@ -47,7 +47,7 @@ NEWS_PATH = DATA_DIR / "news.json"
 
 USER_AGENT = (
     "Mozilla/5.0 (compatible; IOM-RoadClosures-Bot/1.0; "
-    "+https://github.com/your-username/iom-road-closures)"
+    "+https://github.com/Lordofmann/iom-road-closures)"
 )
 
 MANX_RADIO_TT_URL = "https://www.manxradio.com/news/tt-news/"
