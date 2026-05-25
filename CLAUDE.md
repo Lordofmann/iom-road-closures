@@ -1,6 +1,6 @@
 # IoM Road Closures — project notes
 
-A single-page static site that tells visitors when Isle of Man roads are closed for the TT, Pre-TT Classic, Southern 100 and Manx Grand Prix. It updates itself daily via a GitHub Action and auto-deploys through Netlify.
+A single-page static site that tells visitors when Isle of Man roads are closed for the TT, Pre-TT Billown, Southern 100 and Manx Grand Prix. It updates itself daily via a GitHub Action and auto-deploys through Netlify.
 
 ## What's in the repo
 

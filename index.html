@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <title>Isle of Man Road Race Closures 2026 — When are the roads closed?</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="A clear, day-by-day guide to road closures on the Isle of Man for the 2026 TT, Pre-TT Classic, Southern 100 and Manx Grand Prix. Find out which roads are closed, when they reopen, and whether you can get from A to B.">
-<meta name="keywords" content="Isle of Man TT 2026, road closures, Mountain Course, Manx Grand Prix, Southern 100, Pre-TT Classic, Billown, when are roads closed">
+<meta name="description" content="A clear, day-by-day guide to road closures on the Isle of Man for the 2026 TT, Pre-TT Billown, Southern 100 and Manx Grand Prix. Find out which roads are closed, when they reopen, and whether you can get from A to B.">
+<meta name="keywords" content="Isle of Man TT 2026, road closures, Mountain Course, Manx Grand Prix, Southern 100, Pre-TT Billown, Billown, when are roads closed">
 <meta name="robots" content="index, follow">
 
 <meta property="og:type" content="website">
@@ -603,7 +603,7 @@
 <header class="hero">
   <div class="hero-inner">
     <h1>Isle of Man <span class="accent">Road Closures</span> 2026</h1>
-    <p class="hero-subtitle">Day-by-day guide to road closures during the TT, Pre-TT Classic, Southern 100 and Manx Grand Prix. With a route checker and glossary of section names.</p>
+    <p class="hero-subtitle">Day-by-day guide to road closures during the TT, Pre-TT Billown, Southern 100 and Manx Grand Prix. With a route checker and glossary of section names.</p>
     <div class="hero-meta">
       <span>4 race events</span>
       <span>22 May &rarr; 28 Aug 2026</span>
@@ -659,7 +659,7 @@
   <h2>Full 2026 schedule</h2>
   <div class="filters" id="filters">
     <button class="active" data-event="all">All events</button>
-    <button data-event="pre-tt">Pre-TT Classic</button>
+    <button data-event="pre-tt">Pre-TT Billown</button>
     <button data-event="tt">TT 2026</button>
     <button data-event="s100">Southern 100</button>
     <button data-event="mgp">Manx GP / Classic TT</button>
@@ -850,13 +850,13 @@ const closures = [
   // ===== PRE-TT CLASSIC (Billown) =====
   { event: 'pre-tt', course: 'billown', date: '2026-05-22',
     windows: [{ close: '18:00', reopen: '21:30' }],
-    activity: 'Pre-TT Classic practice (Day 1)' },
+    activity: 'Pre-TT Billown practice (Day 1)' },
   { event: 'pre-tt', course: 'billown', date: '2026-05-23',
     windows: [{ close: '12:30', reopen: '16:30' }, { close: '18:00', reopen: '21:30' }],
-    activity: 'Pre-TT Classic qualifying + Races 1-4' },
+    activity: 'Pre-TT Billown qualifying + Races 1-4' },
   { event: 'pre-tt', course: 'billown', date: '2026-05-24',
     windows: [{ close: '13:00', reopen: '18:00' }],
-    activity: 'Pre-TT Classic Race Day (final)' },
+    activity: 'Pre-TT Billown Race Day (final)' },
 
   // ===== TT 2026 (Mountain Course) =====
   { event: 'tt', course: 'mountain', date: '2026-05-25',
@@ -938,7 +938,7 @@ const closures = [
 ];
 
 const eventMeta = {
-  'pre-tt': { name: 'Pre-TT Classic', short: 'Pre-TT', cls: 'pre-tt', course: 'Billown Circuit (Castletown/Ballabeg)' },
+  'pre-tt': { name: 'Pre-TT Billown', short: 'Pre-TT', cls: 'pre-tt', course: 'Billown Circuit (Castletown/Ballabeg)' },
   'tt':     { name: 'Isle of Man TT 2026', short: 'TT', cls: 'tt', course: 'Snaefell Mountain Course (37.73 mi)' },
   's100':   { name: 'Southern 100', short: 'S100', cls: 's100', course: 'Billown Circuit (Castletown/Ballabeg)' },
   'mgp':    { name: 'Manx Grand Prix / Classic TT', short: 'MGP', cls: 'mgp', course: 'Snaefell Mountain Course (37.73 mi)' },
@@ -998,7 +998,7 @@ const places = [
 // You do NOT need to add per-pair entries any more.
 const circuits = {
 
-  // === BILLOWN CIRCUIT (Pre-TT Classic + Southern 100) ===
+  // === BILLOWN CIRCUIT (Pre-TT Billown + Southern 100) ===
   // A small loop in the south. Splits the island into:
   //   - north zone: everything reachable via the A5 north of Ballasalla
   //                 (i.e. most of the island)
@@ -1008,7 +1008,7 @@ const circuits = {
   billown: {
     name: 'Billown Circuit',
     short: 'Billown',
-    eventLabel: 'Pre-TT Classic / Southern 100',
+    eventLabel: 'Pre-TT Billown / Southern 100',
     zones: {
       north: {
         label: 'in the north of the Billown loop',
@@ -1150,7 +1150,7 @@ const diversions = [
     id: 'billown-grenaby',
     title: 'Grenaby back road (Ballabeg &harr; Ballasalla)',
     cls: 's100',
-    events: 'Pre-TT Classic, Southern 100',
+    events: 'Pre-TT Billown, Southern 100',
     summary: 'From Ballabeg, B42 Ronague Road &rarr; B40 Grenaby Road &rarr; B41 to the A3 near Ballasalla. The police-signed diversion when the Billown circuit is closed.',
     detail: 'Combine with the Farrant\'s Way / Ronaldsway Airport detour at the Ballasalla end to reach Castletown. This is what residents and emergency vehicles use during southern race closures.',
     caveats: [
@@ -1163,7 +1163,7 @@ const diversions = [
     id: 'billown-sloc',
     title: 'A36 Sloc Road (over South Barrule)',
     cls: 's100',
-    events: 'Pre-TT Classic, Southern 100',
+    events: 'Pre-TT Billown, Southern 100',
     summary: 'Port Erin / Port St Mary &harr; Peel via the A36 Sloc Road over the mountain pass, joining the A27 Foxdale road. Avoids Billown entirely on the west side.',
     detail: 'Useful when you want to get from the Port Erin area to Peel, Foxdale or onward to Douglas without crossing or skirting the Billown circuit. Doesn\'t help you reach Castletown directly &mdash; for that, use the Grenaby diversion above.',
     caveats: [
@@ -1175,7 +1175,7 @@ const diversions = [
     id: 'billown-farrants',
     title: 'Farrant\'s Way / Ronaldsway Airport (Castletown access)',
     cls: 's100',
-    events: 'Pre-TT Classic, Southern 100',
+    events: 'Pre-TT Billown, Southern 100',
     summary: 'Bus Vannin\'s permanent Billown workaround: leave the A5 just north of Castletown, route through the airport perimeter on Farrant\'s Way, then enter Castletown from the east. Adds a few minutes.',
     detail: 'Used by every south-bound bus during Billown closures, so cars can use it too. This is the only practical way to drive into Castletown when the bypass is closed.',
     caveats: [
