@@ -374,9 +374,11 @@
   }
   .result.closed { background: var(--accent-soft); border-left: 4px solid var(--accent); }
   .result.open { background: var(--open-soft); border-left: 4px solid var(--open); }
+  .result.minor { background: var(--open-soft); border-left: 4px solid var(--open-dark); }
   .result.warn { background: var(--warn-soft); border-left: 4px solid var(--warn); }
   .result strong { display: block; font-size: 1.08rem; margin-bottom: 8px; }
   .result .alt { margin-top: 10px; font-size: 0.88rem; color: var(--muted); }
+  .result .why { margin: 4px 0 10px; font-size: 0.9rem; color: var(--muted); font-style: italic; }
 
   /* ============ GLOSSARY ============ */
   .glossary { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
@@ -977,72 +979,170 @@ const places = [
   'Airport (Ronaldsway)', 'Foxdale', 'The Bungalow / Mountain'
 ];
 
-// Which 'segments' of the Mountain Course a route uses
-const mountainSegments = {
-  A1_DouglasPeel:     ['Douglas','Onchan','Quarterbridge','Union Mills','Crosby','Greeba','Ballacraine'],
-  A3_BallacraineRamsey: ['Ballacraine','Glen Helen','Kirk Michael','Ballaugh','Sulby','Ramsey'],
-  A18_MountainRoad:   ['Ramsey','Bungalow','Mountain','Creg-ny-Baa','Onchan','Douglas']
+// ====== CIRCUIT TOPOLOGY (zone-based route classifier) ======
+//
+// Each race circuit is a closed loop on the island that divides places into "sides".
+// During a closure, the route checker decides what to tell a user by looking at:
+//   1. which zones the start and end fall into,
+//   2. whether either endpoint is an "edge place" with a known last-mile workaround,
+//   3. whether the trip needs to cross the closed loop (a zone crossing).
+//
+// Severity levels used here (and by the new classifyRoute() function):
+//   open    -- trip unaffected by this closure
+//   minor   -- trip works, only a small last-mile detour (e.g. enter Castletown via Farrant's Way)
+//   partial -- trip is possible but needs a real diversion (Grenaby, A36 Sloc, A24+A27...)
+//   closed  -- no detour exists during this closure window
+//
+// If you add a new place to the `places` array above, just tag it in each circuit's
+// `zones` (or as an `edgePlace`) and the route checker will handle every new pair.
+// You do NOT need to add per-pair entries any more.
+const circuits = {
+
+  // === BILLOWN CIRCUIT (Pre-TT Classic + Southern 100) ===
+  // A small loop in the south. Splits the island into:
+  //   - north zone: everything reachable via the A5 north of Ballasalla
+  //                 (i.e. most of the island)
+  //   - sw zone:    the south-west tip behind the circuit (Port Erin, Port St Mary)
+  // Castletown is the edge case: physically on the loop, but the town centre can
+  // be reached via Farrant's Way past Ronaldsway Airport.
+  billown: {
+    name: 'Billown Circuit',
+    short: 'Billown',
+    eventLabel: 'Pre-TT Classic / Southern 100',
+    zones: {
+      north: {
+        label: 'in the north of the Billown loop',
+        places: [
+          'Douglas', 'Onchan', 'Laxey', 'Ramsey',
+          'Peel', 'St John\'s', 'Kirk Michael', 'Ballaugh', 'Sulby',
+          'Ballasalla', 'Airport (Ronaldsway)', 'Foxdale',
+          'The Bungalow / Mountain'
+        ]
+      },
+      sw: {
+        label: 'in the south-west of the Billown loop',
+        places: ['Port Erin', 'Port St Mary']
+      }
+    },
+    edgePlaces: {
+      'Castletown': {
+        nominalZone: 'north',
+        label: 'on the Billown loop itself',
+        accessFrom: {
+          north: {
+            severity: 'minor',
+            detour: 'Approach via Farrant\'s Way past Ronaldsway Airport &mdash; the standard bus diversion. Adds about 5 minutes vs. the normal A5 entry.',
+            alternative: 'Steam Railway from Douglas runs through most Billown closures.'
+          },
+          sw: {
+            severity: 'partial',
+            detour: 'No direct access from the south-west during closure. Take the Grenaby back roads (B42 &rarr; B40 &rarr; B41) north to Ballasalla, then come back south into Castletown via Farrant\'s Way.',
+            alternative: 'Steam Railway runs Port Erin &rarr; Port St Mary &rarr; Castletown through most Billown closures.'
+          }
+        }
+      }
+    },
+    crossings: {
+      'north|sw': {
+        severity: 'partial',
+        detour: 'Police-signed Grenaby back roads connect Ballasalla and Ballabeg: B41 Ronague Road &harr; B40 Grenaby Road &harr; B42. Narrow country lanes &mdash; go slow, expect oncoming traffic.',
+        alternative: 'Steam Railway runs Douglas &harr; Castletown &harr; Port St Mary &harr; Port Erin through most Billown closures.'
+      }
+    }
+  },
+
+  // === SNAEFELL MOUNTAIN COURSE (TT + Manx Grand Prix) ===
+  // A huge loop covering most of the major A-roads. Splits the island into:
+  //   - south:   the A5/A7 south coast cluster (Douglas, Castletown, PE/PSM, airport...)
+  //   - west:    Foxdale + St John's + Peel (reachable via the A24/A27 off-course corridor)
+  //   - east:    Laxey on the A2 coast road
+  //   - onCourse: places on the closed course with no detour
+  // Ramsey is the edge case: town centre is on the course but the southern edge is
+  // reachable from the east (Laxey) and south (via Douglas) on the A2 coast road.
+  mountain: {
+    name: 'Snaefell Mountain Course',
+    short: 'Mountain Course',
+    eventLabel: 'TT / Manx Grand Prix',
+    zones: {
+      south: {
+        label: 'in the south of the Mountain Course (A5/A7 corridor)',
+        places: [
+          'Douglas', 'Onchan',
+          'Castletown', 'Ballasalla', 'Airport (Ronaldsway)',
+          'Port Erin', 'Port St Mary'
+        ],
+        intraZoneNote: 'Note: to leave Douglas going south during a course closure, exit via Old Castletown Road / Oatlands Road instead of Quarterbridge (which is on the course).'
+      },
+      west: {
+        label: 'in the west of the Mountain Course (A24/A27 corridor)',
+        places: ['Foxdale', 'St John\'s', 'Peel']
+      },
+      east: {
+        label: 'on the A2 coast (east of the course)',
+        places: ['Laxey']
+      },
+      onCourse: {
+        label: 'on the closed Mountain Course itself',
+        places: [
+          'Kirk Michael', 'Ballaugh', 'Sulby',
+          'The Bungalow / Mountain'
+        ]
+      }
+    },
+    edgePlaces: {
+      'Ramsey': {
+        nominalZone: 'onCourse',
+        label: 'on the Mountain Course (town centre)',
+        accessFrom: {
+          east: {
+            severity: 'partial',
+            detour: 'A2 coast road from Laxey reaches the southern edge of Ramsey only &mdash; the town centre is on the closed course.',
+            alternative: 'Manx Electric Tramway runs throughout closures.'
+          },
+          south: {
+            severity: 'partial',
+            detour: 'A2 coast road from Douglas via Onchan and Laxey to the southern edge of Ramsey. Town centre is on the closed course.',
+            alternative: 'Manx Electric Tramway runs Douglas Promenade &rarr; Laxey &rarr; Ramsey throughout closures.'
+          },
+          west: {
+            severity: 'closed',
+            detour: 'No practical road route during Mountain Course closures &mdash; the course encircles Ramsey on every side except the coast.'
+          }
+        }
+      }
+    },
+    crossings: {
+      'south|west': {
+        severity: 'partial',
+        detour: 'A5 south to Ballasalla &rarr; A24 west to Foxdale &rarr; A27 north to St John\'s (continue last 3 mi of A1 west for Peel). Entirely off-course. Adds 20-40 minutes depending on the exact origin/destination.',
+        alternative: 'Steam Railway from the south coast into Douglas runs through closures.'
+      },
+      'south|east': {
+        severity: 'minor',
+        detour: 'A2 coast road via Onchan to Laxey &mdash; entirely off-course. No real detour, just the standard coast route.',
+        alternative: 'Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey throughout closures.'
+      },
+      'west|east': {
+        severity: 'partial',
+        detour: 'Long way: south via A27 + A24 to Douglas, then A2 coast road north to Laxey. Plan extra time.',
+        alternative: 'Manx Electric Tramway from Douglas to Laxey once you reach Douglas.'
+      },
+      'south|onCourse': {
+        severity: 'closed',
+        detour: 'The destination is on the closed course &mdash; wait for the road to reopen.'
+      },
+      'west|onCourse': {
+        severity: 'closed',
+        detour: 'The destination is on the closed course &mdash; wait for the road to reopen.'
+      },
+      'east|onCourse': {
+        severity: 'closed',
+        detour: 'The destination is on the closed course &mdash; wait for the road to reopen.'
+      }
+    }
+  }
 };
 
-// A route definition: which course segments must be open to drive it
-const routeRules = {
-  // Mountain Course routes (closed during TT and MGP closures)
-  'Douglas|Peel':       { segments: ['mountain_A1'], severity: 'partial', detour: 'Long way round via the south: A5 south to Ballasalla &rarr; A24 west to Foxdale &rarr; A27 north to St John\'s &rarr; A1 west into Peel (the last 3 miles of A1 are off-course). Adds about 30-40 minutes versus the direct A1.' },
-  'Peel|Douglas':       { segments: ['mountain_A1'], severity: 'partial', detour: 'Long way round via the south: A1 east to St John\'s (last 3 miles, off-course) &rarr; A27 south to Foxdale &rarr; A24 east to Ballasalla &rarr; A5 north to Douglas. Adds about 30-40 minutes.' },
-  'Douglas|Ramsey':     { segments: ['mountain_A18'], severity: 'partial', detour: 'Use the A2 coast road via Onchan &rarr; Laxey &rarr; Ramsey. Not on the course, so generally open throughout closures. About 17 miles vs 14 over the Mountain. Note: central Ramsey is on the course, so during active sessions you may only reach the southern edge of town.', alternative: 'Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey &rarr; Ramsey throughout closures (unaffected by racing). About 75-90 minutes.' },
-  'Ramsey|Douglas':     { segments: ['mountain_A18'], severity: 'partial', detour: 'Use the A2 coast road via Laxey &rarr; Onchan &rarr; Douglas. Generally open during course closures. Central Ramsey is on the course, so during active sessions you\'ll need to start from the southern edge of town.', alternative: 'Manx Electric Tramway runs Ramsey &rarr; Laxey &rarr; Douglas throughout closures. When the Mountain Road is open (one-way Ramsey&rarr;Creg-ny-Baa only during TT fortnight), you can drive over the Mountain too.' },
-  'Peel|Ramsey':        { segments: ['mountain_A3'], detour: 'No alternative through the north — the A3 is the only road. Wait for course to reopen.' },
-  'Ramsey|Peel':        { segments: ['mountain_A3'], detour: 'No alternative through the north — the A3 is the only road. Wait for course to reopen.' },
-  'Douglas|Kirk Michael':  { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
-  'Kirk Michael|Douglas':  { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
-  'Douglas|Ballaugh':   { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
-  'Ballaugh|Douglas':   { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
-  'Douglas|Sulby':      { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
-  'Sulby|Douglas':      { segments: ['mountain_A1','mountain_A3'], detour: 'Both A1 and A3 carry the course.' },
-  'Douglas|Laxey':      { segments: ['mountain_A18_lower'], detour: 'A2 coast road from Douglas to Laxey IS open during course closures (it\'s east of the course, parallel to but not on the course). Confirm with hotline.' },
-  'Laxey|Douglas':      { segments: ['mountain_A18_lower'], detour: 'A2 coast road from Douglas to Laxey IS open during course closures. Confirm with hotline.' },
-  'Laxey|Ramsey':       { segments: ['mountain_A2_north'], detour: 'A2 coast road continues north to Ramsey and is generally open during Mountain Course closures (though Ramsey town centre itself is on the course).' },
-  'Ramsey|Laxey':       { segments: ['mountain_A2_north'], detour: 'A2 coast road south from Ramsey is generally open, but the very centre of Ramsey is on the course.' },
-  'The Bungalow / Mountain|Douglas': { segments: ['mountain_A18'], detour: 'The Mountain Road is one-way Ramsey&rarr;Creg-ny-Baa for the entire TT fortnight, even when open.' },
-  'Douglas|The Bungalow / Mountain': { segments: ['mountain_A18'], detour: 'Cannot drive UP the Mountain from Douglas &mdash; the A18 is one-way the other direction for the entire TT fortnight.', alternative: 'Take the Manx Electric Tramway to Laxey, then the Snaefell Mountain Railway to the Bungalow or summit. This works even when the road is fully closed for racing.' },
-
-  // Billown routes (closed during Pre-TT and S100)
-  // Douglas-Castletown: workaround exists via Ronaldsway Airport + Farrant's Way (buses use this)
-  'Douglas|Castletown': { segments: ['billown'], severity: 'partial', detour: 'The Castletown bypass (A5) is on the circuit, but you can still reach Castletown Square by coming south on the A5 to Ballasalla, then routing via Ronaldsway Airport and Farrant\'s Way. Buses use this detour throughout the closures, so cars can too. Slower than usual but possible.', alternative: 'The Steam Railway runs Douglas &rarr; Castletown. The line crosses the Billown circuit at Castletown station, so timetables may be affected during racing but typically resumes during the breaks.' },
-  'Castletown|Douglas': { segments: ['billown'], severity: 'partial', detour: 'Leave Castletown via Farrant\'s Way and Ronaldsway Airport to rejoin the A5 north of Ballasalla. Buses use this detour throughout closures. Adds a few minutes.', alternative: 'The Steam Railway runs Castletown &rarr; Douglas, with the same Billown caveat at the Castletown end.' },
-  // Port Erin/Port St Mary-Castletown: signed back-road diversion via Grenaby exists
-  'Castletown|Port Erin': { segments: ['billown'], severity: 'partial', detour: 'Leave Castletown via Farrant\'s Way past Ronaldsway Airport, then come south on the A5 to Ballasalla. From Ballasalla, take the back roads via Grenaby (B41 &rarr; B40 &rarr; B42) to rejoin the A7 at Ballabeg, then continue to Port Erin. This is the signed police diversion. Slow on narrow lanes, but workable.', alternative: 'The Steam Railway (Castletown &rarr; Port St Mary &rarr; Port Erin) is the easier option and runs through most Billown closures.' },
-  'Port Erin|Castletown': { segments: ['billown'], severity: 'partial', detour: 'From Ballabeg, take the back roads via Grenaby: B42 Ronague Road &rarr; B40 Grenaby Road &rarr; B41 to the A3 near Ballasalla. Then from Ballasalla, route via Ronaldsway Airport and Farrant\'s Way into Castletown. Bus Vannin doesn\'t run this in closure but cars can. Narrow lanes &mdash; expect oncoming traffic.', alternative: 'The Steam Railway runs Port Erin &rarr; Port St Mary &rarr; Castletown and is unaffected by Mountain Course closures.' },
-  // Douglas-Port Erin: through route exists by combining the Farrant's Way and Grenaby back-road diversions
-  'Douglas|Port Erin':  { segments: ['billown'], severity: 'partial', detour: 'Come south on the A5 to Ballasalla (always open). From Ballasalla take the back roads via Grenaby (B41 &rarr; B40 &rarr; B42) to rejoin the A7 at Ballabeg, then south to Port Erin. Adds 15-20 minutes versus the direct route. Slow on narrow lanes.', alternative: 'The Steam Railway runs Douglas &rarr; Castletown &rarr; Port St Mary &rarr; Port Erin and is unaffected by Mountain Course closures.' },
-  'Port Erin|Douglas':  { segments: ['billown'], severity: 'partial', detour: 'Take the back roads via Grenaby (B42 &rarr; B40 &rarr; B41) from Ballabeg to the A3 near Ballasalla, then north on the A5 to Douglas. Adds 15-20 minutes. Police advise NOT to use Silverdale Glen as a shortcut.', alternative: 'The Steam Railway runs Port Erin &rarr; Castletown &rarr; Douglas, unaffected by Mountain Course closures.' },
-  'Castletown|Ballasalla': { segments: [], detour: 'Short hop just north of Castletown — typically not affected.' },
-  'Ballasalla|Castletown': { segments: [], detour: 'Short hop — typically not affected.' },
-  'Ballasalla|Douglas': { segments: [], detour: 'A5 from Ballasalla to Douglas is open during Billown closures (the closure is to the south of Ballasalla).' },
-  'Douglas|Ballasalla': { segments: [], detour: 'A5 from Douglas to Ballasalla is open during Billown closures.' },
-  'Airport (Ronaldsway)|Douglas': { segments: [], detour: 'A5 from the airport to Douglas is OPEN — the airport sits just north of Castletown but Ronaldsway access road is not on the circuit. Check hotline if Billown is closed for racing.' },
-  'Douglas|Airport (Ronaldsway)': { segments: [], detour: 'A5 from Douglas to the airport is OPEN.' },
-
-  // Cross-island routes that mostly avoid the courses
-  'Peel|Castletown':    { segments: ['billown'], severity: 'partial', detour: 'Take A1 east to St John\'s (off-course), then A27 Foxdale road south to Colby and on to Castletown. During Billown closures the very last few miles into Castletown are blocked &mdash; use Farrant\'s Way past Ronaldsway Airport to enter Castletown from the east. Adds about 10-15 minutes overall.' },
-  'Castletown|Peel':    { segments: ['billown'], severity: 'partial', detour: 'Leave Castletown via Farrant\'s Way past Ronaldsway Airport to reach Ballasalla, then take the A27 Foxdale road north through Foxdale to St John\'s, then A1 west to Peel. Avoids the Mountain Course entirely and bypasses the Billown circuit. Adds about 10-15 minutes.' },
-  'Peel|Port Erin':     { segments: ['billown'], severity: 'partial', detour: 'Peel-Port Erin via the A27 Foxdale road and A36 Sloc Road over South Barrule avoids the Billown circuit entirely on the western side. Scenic but slow.' },
-  'Port Erin|Peel':     { segments: ['billown'], severity: 'partial', detour: 'Port Erin-Peel via the A36 Sloc Road over South Barrule, then A27 Foxdale road. Avoids Billown entirely on the western side. Scenic mountain road.' },
-  'Ramsey|Castletown':  { segments: ['mountain_A3','billown'], severity: 'partial', detour: 'During TT (A3 closed): Ramsey &rarr; A2 coast road south to Douglas &rarr; A5 south to Castletown. During Billown only (A3 open): Ramsey &rarr; A3 south to Foxdale &rarr; A24 east to Ballasalla &rarr; Farrant\'s Way into Castletown. When both events overlap (rare), the route is impractical &mdash; consider the Steam Railway or tram.' },
-  'Castletown|Ramsey':  { segments: ['mountain_A3','billown'], severity: 'partial', detour: 'During TT (A3 closed): Castletown &rarr; A5 north to Douglas &rarr; A2 coast road via Laxey to Ramsey. During Billown only: leave Castletown via Farrant\'s Way to Ballasalla &rarr; A24 west to Foxdale &rarr; A3 north all the way to Ramsey.' },
-  'Onchan|Peel':        { segments: ['mountain_A1'], severity: 'partial', detour: 'Same south route as Douglas-Peel: south on the A5 to Ballasalla &rarr; A24 to Foxdale &rarr; A27 to St John\'s &rarr; A1 west into Peel. Adds 30-40 minutes.' },
-  'Peel|Onchan':        { segments: ['mountain_A1'], severity: 'partial', detour: 'Same south route reversed: A1 east to St John\'s &rarr; A27 south to Foxdale &rarr; A24 east to Ballasalla &rarr; A5 north through Douglas to Onchan. Adds 30-40 minutes.' },
-  'Onchan|Ramsey':      { segments: ['mountain_A18'], severity: 'partial', detour: 'Use the A2 coast road via Laxey to Ramsey. Generally open during course closures &mdash; not on the course. About 17 miles vs 14 over the Mountain. Central Ramsey is on the course though, so you may only reach the southern edge of town during active sessions.', alternative: 'Manx Electric Tramway runs Onchan (Derby Castle) &rarr; Laxey &rarr; Ramsey throughout closures.' },
-  'Ramsey|Onchan':      { segments: ['mountain_A18'], severity: 'partial', detour: 'Use the A2 coast road via Laxey, generally open during course closures. Central Ramsey is on the course, so you\'ll need to start from the southern edge of town during active sessions.', alternative: 'Manx Electric Tramway runs Ramsey &rarr; Laxey &rarr; Onchan (Derby Castle) throughout closures.' },
-  'St John\'s|Peel':    { segments: [], detour: 'Short hop between St John\'s and Peel — typically not affected by the course (the course passes nearby at Ballacraine but not through Peel itself).' },
-  'Peel|St John\'s':    { segments: [], detour: 'Generally clear — Peel itself is not on the course.' },
-  'St John\'s|Douglas': { segments: ['mountain_A1'], severity: 'partial', detour: 'When A1 is closed, head south from St John\'s via A27 to Foxdale, then A24 east toward Mount Murray, then Old Castletown Road / Oatlands Road into Douglas, bypassing the closed Crosby-Glen Vine stretch. Adds about 20 minutes.' },
-  'Douglas|St John\'s': { segments: ['mountain_A1'], severity: 'partial', detour: 'When A1 is closed, leave Douglas via Old Castletown Road / Oatlands Road south, then A24 west to Foxdale, then A27 north to St John\'s. Adds about 20 minutes versus the direct A1.' },
-  'Foxdale|Douglas':    { segments: ['mountain_A1'], severity: 'partial', detour: 'Head east on A24 toward Mount Murray, then Old Castletown Road / Oatlands Road into Douglas. Bypasses the closed Crosby section. Adds about 15-20 minutes.' },
-  'Douglas|Foxdale':    { segments: ['mountain_A1'], severity: 'partial', detour: 'Leave Douglas via Old Castletown Road / Oatlands Road, join the A24 westbound at Mount Murray and continue to Foxdale. Bypasses the closed A1. Adds 15-20 minutes.' },
-  'Port St Mary|Douglas': { segments: ['billown'], severity: 'partial', detour: 'From Port St Mary, head to Ballabeg then take the Grenaby back roads (B42 &rarr; B40 &rarr; B41) to the A3 near Ballasalla, then A5 north to Douglas. Slow on narrow lanes but the standard police-signed diversion.', alternative: 'Steam Railway runs Port St Mary &rarr; Castletown &rarr; Douglas, unaffected by Mountain Course closures.' },
-  'Douglas|Port St Mary': { segments: ['billown'], severity: 'partial', detour: 'Same as Douglas to Port Erin: A5 south to Ballasalla, then Grenaby back roads (B41 &rarr; B40 &rarr; B42) to Ballabeg, then continue to Port St Mary.', alternative: 'Steam Railway runs Douglas &rarr; Castletown &rarr; Port St Mary.' }
-};
 
 // ====== KNOWN DIVERSIONS (signed or community-known back-road workarounds) ======
 const diversions = [
@@ -1294,41 +1394,138 @@ function renderUpcomingBlock(iso, mins, segments) {
   return '<div class="alt" style="margin-top: 10px; padding: 10px 12px; background: var(--warn-soft); border-left: 3px solid var(--warn); border-radius: 4px;">' + items + '</div>';
 }
 
-function isCourseClosedForRoute(iso, mins, segments) {
-  const s = statusAt(iso, mins);
 
-  // Mountain Road one-way restriction (applies even when course is "open")
-  for (const seg of segments) {
-    if (seg === 'mountain_A18' && s.oneWay && !s.closed) {
-      // The Mountain Road is one-way; this affects only Douglas->Bungalow direction. We use this as a soft warning, route checker will warn.
+// ====== ZONE-BASED ROUTE CLASSIFIER ======
+//
+// Reads the `circuits` topology (above) plus statusAt() (current closure state)
+// and decides whether a trip from A to B at a given date+time is:
+//   open    -- nothing in the way
+//   minor   -- works fine, only a small last-mile detour
+//   partial -- possible but needs a real diversion
+//   closed  -- no road route during this closure
+//
+// Returns an object the UI can render directly:
+//   { severity, parts: [{circuit, severity, why, detour, alternative}], status }
+// where `parts` lists each closure currently active that affects this trip.
+// `status` is the raw statusAt() result, so the UI can layer on the existing
+// special cases (A18 one-way, MGP pending, mountain section closing, etc.).
+
+const SEVERITY_RANK = { open: 0, minor: 1, partial: 2, closed: 3 };
+
+function classifyRoute(from, to, iso, mins) {
+  const status = statusAt(iso, mins);
+
+  // Which whole-circuit closures are active right now?
+  const closedCircuits = new Set();
+  for (const item of (status.items || [])) {
+    if (item.status === 'closed') {
+      if (item.course === 'mountain') closedCircuits.add('mountain');
+      if (item.course === 'billown')  closedCircuits.add('billown');
     }
   }
 
-  for (const it of s.items) {
-    if (it.status === 'closed') {
-      if (it.course === 'mountain' && segments.some(x => x.startsWith('mountain'))) {
-        return { closed: true, info: it };
-      }
-      if (it.course === 'billown' && segments.includes('billown')) {
-        return { closed: true, info: it };
-      }
-      // Mountain Road setup/teardown — only the A18 affected
-      if (it.course === 'mountain-a18-only' && segments.includes('mountain_A18')) {
-        return { closed: true, info: it };
-      }
-    }
-    // Wed May 27 window: A18 Mountain section stays closed even when A1/A3 reopen
-    if (it.status === 'mountain-stays-closed' && segments.includes('mountain_A18')) {
-      return { closed: true, info: { event: it.event, activity: it.activity, reopen: '18:00 (then again until 21:30 for evening qualifying)' } };
-    }
-    if (it.status === 'pending') {
-      // MGP pending — flag as warning
-      if (it.event === 'mgp' && segments.some(x => x.startsWith('mountain'))) {
-        return { warn: true, info: it };
-      }
+  let worst = 'open';
+  const parts = [];
+
+  for (const circuitId of closedCircuits) {
+    const c = circuits[circuitId];
+    if (!c) continue;
+    const verdict = classifyForCircuit(from, to, c, circuitId);
+    parts.push(verdict);
+    if (SEVERITY_RANK[verdict.severity] > SEVERITY_RANK[worst]) worst = verdict.severity;
+  }
+
+  return { severity: worst, parts: parts, status: status, closedCircuits: Array.from(closedCircuits) };
+}
+
+function classifyForCircuit(from, to, circuit, circuitId) {
+  const fromInfo = findPlaceInCircuit(from, circuit);
+  const toInfo   = findPlaceInCircuit(to,   circuit);
+
+  // If either endpoint isn't tagged in this circuit's topology, treat as unaffected.
+  // (Shouldn't happen if data is complete — we tag every place for every circuit —
+  //  but guard so a missing tag doesn't crash the UI.)
+  if (!fromInfo || !toInfo) {
+    return { circuitId: circuitId, circuit: circuit, severity: 'open',
+             why: 'This closure does not affect the trip.' };
+  }
+
+  // Edge place at the FROM end — use its accessFrom rule keyed by the other zone
+  if (fromInfo.isEdge) {
+    const edge = circuit.edgePlaces[from];
+    const otherZone = toInfo.isEdge ? circuit.edgePlaces[to].nominalZone : toInfo.zone;
+    const rule = edge.accessFrom && edge.accessFrom[otherZone];
+    if (rule) {
+      return makeVerdict(circuitId, circuit, rule,
+        from + ' is ' + edge.label + '; ' + to + ' is ' + zoneLabel(circuit, otherZone) + '.');
     }
   }
-  return { closed: false, oneWay: s.oneWay };
+
+  // Edge place at the TO end
+  if (toInfo.isEdge) {
+    const edge = circuit.edgePlaces[to];
+    const otherZone = fromInfo.isEdge ? circuit.edgePlaces[from].nominalZone : fromInfo.zone;
+    const rule = edge.accessFrom && edge.accessFrom[otherZone];
+    if (rule) {
+      return makeVerdict(circuitId, circuit, rule,
+        from + ' is ' + zoneLabel(circuit, otherZone) + '; ' + to + ' is ' + edge.label + '.');
+    }
+  }
+
+  // Two regular zone places
+  const fromZone = fromInfo.zone;
+  const toZone   = toInfo.zone;
+
+  if (fromZone === toZone) {
+    const zone = circuit.zones[fromZone];
+    if (fromZone === 'onCourse') {
+      return { circuitId: circuitId, circuit: circuit, severity: 'closed',
+               why: from + ' and ' + to + ' are both ' + zone.label + '.',
+               detour: 'Both points are on the closed course &mdash; wait for it to reopen.' };
+    }
+    return { circuitId: circuitId, circuit: circuit, severity: 'open',
+             why: from + ' and ' + to + ' are both ' + zone.label + ', so this trip uses off-course roads throughout.',
+             detour: zone.intraZoneNote };
+  }
+
+  // Cross-zone — look up in the crossings table (try both key orders)
+  const crossing = (circuit.crossings && (
+                      circuit.crossings[fromZone + '|' + toZone] ||
+                      circuit.crossings[toZone + '|' + fromZone]
+                    )) || null;
+  if (crossing) {
+    return makeVerdict(circuitId, circuit, crossing,
+      from + ' is ' + zoneLabel(circuit, fromZone) + '; ' +
+      to   + ' is ' + zoneLabel(circuit, toZone)   + '.');
+  }
+
+  // Defensive fallback — no crossing rule defined for this pair of zones
+  return { circuitId: circuitId, circuit: circuit, severity: 'closed',
+           why: 'No known route between ' + zoneLabel(circuit, fromZone) +
+                ' and ' + zoneLabel(circuit, toZone) + ' during this closure.',
+           detour: 'Please check official sources (01624 685888).' };
+}
+
+function makeVerdict(circuitId, circuit, rule, why) {
+  return { circuitId: circuitId, circuit: circuit,
+           severity: rule.severity, why: why,
+           detour: rule.detour, alternative: rule.alternative };
+}
+
+function findPlaceInCircuit(place, circuit) {
+  if (circuit.edgePlaces && circuit.edgePlaces[place]) {
+    return { isEdge: true, zone: circuit.edgePlaces[place].nominalZone };
+  }
+  for (const zoneId in circuit.zones) {
+    if (circuit.zones[zoneId].places.indexOf(place) !== -1) {
+      return { isEdge: false, zone: zoneId };
+    }
+  }
+  return null;
+}
+
+function zoneLabel(circuit, zoneId) {
+  return (circuit.zones[zoneId] && circuit.zones[zoneId].label) || zoneId;
 }
 
 // ====== RENDER: now / today ======
@@ -1453,97 +1650,237 @@ function renderRouteSelectors() {
   t.value = 'Peel';
 }
 
+// For the "upcoming changes in 2 hours" alert: which course segments could
+// conceivably affect this route? We ask the classifier hypothetically — if a
+// circuit would change the route's severity if closed, we surface its alerts.
+function computeRelevantSegments(from, to) {
+  const segs = [];
+  for (const circuitId in circuits) {
+    const v = classifyForCircuit(from, to, circuits[circuitId], circuitId);
+    if (v.severity !== 'open') {
+      if (circuitId === 'mountain') segs.push('mountain_A1', 'mountain_A3', 'mountain_A18');
+      if (circuitId === 'billown')  segs.push('billown');
+    }
+  }
+  return segs;
+}
+
+// A18 "one-way wrong direction" check: when the course is open but the Mountain
+// Road is one-way Ramsey→Creg, certain Douglas-northbound routes are blocked
+// even though the rest of the island is clear.
+function isA18UpDirection(from, to) {
+  return (from === 'Douglas' && (to === 'Ramsey' || to === 'The Bungalow / Mountain')) ||
+         (from === 'Onchan'  && (to === 'Ramsey' || to === 'The Bungalow / Mountain'));
+}
+
+// Pretty-print the closure reasons stacked across multiple parts.
+function partsReasonHTML(parts) {
+  if (!parts || !parts.length) return '';
+  // Find the underlying schedule items for human-readable reason text.
+  // parts comes from classifyRoute; we don't have the schedule item attached
+  // directly. Use the circuit name as a stand-in plus the status items below.
+  return parts.map(function(p) {
+    return p.circuit.short + ' closure';
+  }).join(' &middot; ');
+}
+
+// Stack each circuit's "why + workaround + non-driving option" as its own block
+// inside the result card. Most of the time there's only one part.
+function partsDetailHTML(parts, opts) {
+  opts = opts || {};
+  if (!parts || !parts.length) return '';
+  return parts.map(function(p) {
+    let html = '';
+    if (p.why)    html += '<p class="why">' + p.why + '</p>';
+    if (p.detour) html += '<div class="alt"><strong>' + (opts.label || 'Workaround') + ' (' + p.circuit.short + '):</strong> ' + p.detour + '</div>';
+    if (p.alternative) {
+      html += '<div class="alt" style="margin-top: 10px; padding: 8px 10px; background: #eaf2fa; border-left: 3px solid var(--s100); border-radius: 4px;">' +
+              '<strong>Non-driving option:</strong> ' + p.alternative + '</div>';
+    }
+    return html;
+  }).join('');
+}
+
+// Find the closure item driving each part, so we can show reopen times in the UI.
+function reopenTimesForParts(parts, status) {
+  if (!parts || !parts.length || !status || !status.items) return null;
+  // Items keyed by which course they belong to
+  const byCourse = {};
+  for (const item of status.items) {
+    if (item.status === 'closed' && item.reopen) byCourse[item.course] = item;
+  }
+  return parts.map(function(p) {
+    const item = byCourse[p.circuitId];
+    return { circuitShort: p.circuit.short, item: item };
+  }).filter(function(x) { return x.item; });
+}
+
 function checkRoute() {
   const from = document.getElementById('from').value;
-  const to = document.getElementById('to').value;
+  const to   = document.getElementById('to').value;
   const date = document.getElementById('date').value;
   const time = document.getElementById('time').value;
   const mins = timeToMin(time);
   const result = document.getElementById('route-result');
 
   if (from === to) {
-    result.innerHTML = `<div class="result warn"><strong>Same start and end</strong>Pick two different places.</div>`;
-    return;
-  }
-  const key = from + '|' + to;
-  const rule = routeRules[key];
-
-  if (!rule) {
-    result.innerHTML = `<div class="result warn">
-      <strong>Route not pre-mapped</strong>
-      I don't have an explicit rule for "${from} &rarr; ${to}". The common race-affected pairs are: Douglas&harr;Peel, Douglas&harr;Ramsey (Mountain Road), Peel&harr;Ramsey, Douglas&harr;Castletown, Castletown&harr;Port Erin. Check the schedule above and the Road Information Hotline (01624 685888) for less common routes.
-    </div>`;
+    result.innerHTML = '<div class="result warn"><strong>Same start and end</strong>Pick two different places.</div>';
     return;
   }
 
-  const check = isCourseClosedForRoute(date, mins, rule.segments);
-  const st = statusAt(date, mins);
+  const r = classifyRoute(from, to, date, mins);
+  const status = r.status;
+  const relevantSegs = computeRelevantSegments(from, to);
+  const upcomingBlock = renderUpcomingBlock(date, mins, relevantSegs);
+  const tripHeader = from + ' to ' + to + ' on ' + fmtDateLong(date) + ' at ' + time;
+  const noLater = '<p class="note" style="margin-top: 6px;">Reopening time is a "no later than" maximum &mdash; roads may reopen earlier. Verify with the hotline (01624&nbsp;685888) before assuming.</p>';
 
-  if (check.closed) {
-    const info = check.info;
-    const eventName = eventMeta[info.event].name;
-    const altBlock = rule.alternative
-      ? `<div class="alt" style="margin-top: 10px; padding: 8px 10px; background: #eaf2fa; border-left: 3px solid var(--s100); border-radius: 4px;"><strong>Non-driving option:</strong> ${rule.alternative}</div>`
-      : '';
-    const noLaterBlock = `<p class="note" style="margin-top: 6px;">Reopening time is a "no later than" maximum &mdash; roads may reopen earlier. Verify with the hotline (01624&nbsp;685888) before assuming.</p>`;
-    const upcomingBlock = renderUpcomingBlock(date, mins, rule.segments);
-    if (rule.severity === 'partial') {
-      result.innerHTML = `<div class="result warn">
-        <strong>POSSIBLE with a detour</strong>
-        <p>${from} to ${to} on ${fmtDateLong(date)} at ${time}: the direct route is blocked but a workaround exists.</p>
-        <p><strong>Reason:</strong> ${eventName} &mdash; ${info.activity}.</p>
-        <p><strong>Direct route reopens:</strong> ${info.reopen}.</p>
-        <div class="alt"><strong>Workaround:</strong> ${rule.detour}</div>
-        ${altBlock}
-        ${upcomingBlock}
-        ${noLaterBlock}
-      </div>`;
-    } else {
-      result.innerHTML = `<div class="result closed">
-        <strong>NO &mdash; road is closed</strong>
-        <p>${from} to ${to} on ${fmtDateLong(date)} at ${time} is blocked.</p>
-        <p><strong>Reason:</strong> ${eventName} &mdash; ${info.activity}.</p>
-        <p><strong>Closed until:</strong> ${info.reopen}.</p>
-        <div class="alt"><strong>Alternative:</strong> ${rule.detour}</div>
-        ${altBlock}
-        ${upcomingBlock}
-        ${noLaterBlock}
-      </div>`;
-    }
-  } else if (check.warn) {
-    result.innerHTML = `<div class="result warn">
-      <strong>POSSIBLY — exact times not yet published</strong>
-      <p>${fmtDateLong(date)} falls within the Manx Grand Prix / Classic TT period (16-28 August 2026). The detailed daily schedule isn't published yet. Historical pattern: Mountain Course typically closes for evening practice (around 6pm-10pm on weekdays) and full days for race days (Saturdays and the final Monday).</p>
-      <div class="alt">Check <strong>manxgrandprix.co.uk</strong> closer to the date for confirmed times, or call <strong>01624 685888</strong>.</div>
-    </div>`;
-  } else if (st.oneWay && rule.segments.includes('mountain_A18')) {
-    // One-way Mountain Road during TT fortnight
-    if ((from === 'Douglas' && to === 'Ramsey') ||
-        (from === 'Douglas' && to === 'The Bungalow / Mountain') ||
-        (from === 'Onchan' && to === 'Ramsey')) {
-      result.innerHTML = `<div class="result warn">
-        <strong>NO direct route via Mountain Road &mdash; one-way wrong direction</strong>
-        <p>The A18 Mountain Road operates one-way (Ramsey &rarr; Creg-ny-Baa) from 4:30pm Fri 22 May until 9:30am Tue 9 June 2026, so you cannot drive UP from Douglas/Creg-ny-Baa to Ramsey on the A18 during the entire TT fortnight, even when the course is "open".</p>
-        <div class="alt"><strong>By road:</strong> Use the A2 coast road via Onchan &rarr; Laxey &rarr; Ramsey instead. About 17 miles vs 14 over the Mountain.</div>
-        <div class="alt" style="margin-top: 10px; padding: 8px 10px; background: #eaf2fa; border-left: 3px solid var(--s100); border-radius: 4px;"><strong>By rail:</strong> Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey &rarr; Ramsey throughout the TT period. ${(from === 'Douglas' && to === 'The Bungalow / Mountain') ? 'For the Bungalow specifically, change at Laxey for the Snaefell Mountain Railway to the summit.' : ''}</div>
-        ${renderUpcomingBlock(date, mins, rule.segments)}
-      </div>`;
+  // SPECIAL CASE 1: MGP "times not yet published" — only matters for routes that
+  // would be affected by a Mountain Course closure.
+  const wouldBeAffectedByMountain = relevantSegs.indexOf('mountain_A1') !== -1;
+  for (const item of (status.items || [])) {
+    if (item.status === 'pending' && wouldBeAffectedByMountain) {
+      result.innerHTML =
+        '<div class="result warn">' +
+          '<strong>POSSIBLY &mdash; exact times not yet published</strong>' +
+          '<p>' + fmtDateLong(date) + ' falls within the Manx Grand Prix / Classic TT period (16-28 August 2026). The detailed daily schedule isn\'t published yet. Historical pattern: Mountain Course typically closes for evening practice (around 6pm-10pm on weekdays) and full days for race days (Saturdays and the final Monday).</p>' +
+          '<div class="alt">Check <strong>manxgrandprix.co.uk</strong> closer to the date for confirmed times, or call <strong>01624 685888</strong>.</div>' +
+        '</div>';
       return;
     }
-    result.innerHTML = `<div class="result open">
-      <strong>YES &mdash; you can drive</strong>
-      <p>${from} to ${to} on ${fmtDateLong(date)} at ${time} is clear.</p>
-      <p><em>Note: the A18 Mountain Road remains one-way (Ramsey &rarr; Creg-ny-Baa direction) throughout TT fortnight.</em></p>
-      ${renderUpcomingBlock(date, mins, rule.segments)}
-    </div>`;
-  } else {
-    result.innerHTML = `<div class="result open">
-      <strong>YES &mdash; you can drive</strong>
-      <p>${from} to ${to} on ${fmtDateLong(date)} at ${time} is clear of race closures.</p>
-      <p class="alt">Always confirm closer to the time &mdash; weather can shift sessions.</p>
-      ${renderUpcomingBlock(date, mins, rule.segments)}
-    </div>`;
   }
+
+  // SPECIAL CASE 2: A18 setup/teardown day — only Bungalow trips are affected,
+  // everything else stays open.
+  if (status.mountainSetup) {
+    const involvesBungalow = (from === 'The Bungalow / Mountain' || to === 'The Bungalow / Mountain');
+    const setupItem = status.items[0];
+    if (involvesBungalow) {
+      result.innerHTML =
+        '<div class="result closed">' +
+          '<strong>NO &mdash; A18 Mountain Road closed</strong>' +
+          '<p>' + tripHeader + ' is blocked.</p>' +
+          '<p><strong>Reason:</strong> ' + setupItem.activity + '.</p>' +
+          '<p><strong>Closed until:</strong> ' + setupItem.reopen + '.</p>' +
+          '<div class="alt"><strong>Alternative:</strong> Snaefell Mountain Railway from Laxey runs throughout setup/teardown closures.</div>' +
+          upcomingBlock + noLater +
+        '</div>';
+      return;
+    }
+    result.innerHTML =
+      '<div class="result open">' +
+        '<strong>YES &mdash; you can drive</strong>' +
+        '<p>' + tripHeader + ' is clear.</p>' +
+        '<p class="why">A18 Mountain Road is closed today (' + setupItem.activity + ') but the rest of the island\'s roads are unaffected.</p>' +
+        upcomingBlock +
+      '</div>';
+    return;
+  }
+
+  // SPECIAL CASE 3: Mountain section closing window (A18 only, ~15-min buffer
+  // before the full course closes). Treat Bungalow trips as closed; warn others.
+  if (status.partial && r.closedCircuits.indexOf('mountain') === -1) {
+    const involvesBungalow = (from === 'The Bungalow / Mountain' || to === 'The Bungalow / Mountain');
+    if (involvesBungalow) {
+      const item = status.items.find(function(i) { return i.status === 'mountain-closing' || i.status === 'mountain-stays-closed'; }) || status.items[0];
+      result.innerHTML =
+        '<div class="result closed">' +
+          '<strong>NO &mdash; Mountain Road closed (section closure in progress)</strong>' +
+          '<p>' + tripHeader + ' is blocked &mdash; the A18 closes before the full course as a buffer.</p>' +
+          '<p><strong>Reason:</strong> ' + item.activity + '.</p>' +
+          (item.reopen ? '<p><strong>Reopens by:</strong> ' + item.reopen + '.</p>' : '') +
+          '<div class="alt"><strong>Alternative:</strong> Snaefell Mountain Railway from Laxey runs throughout most closures.</div>' +
+          upcomingBlock + noLater +
+        '</div>';
+      return;
+    }
+    // Otherwise, route is fine but full closure is imminent — fall through to
+    // normal rendering so the upcoming-block surfaces the timing.
+  }
+
+  // SPECIAL CASE 4: A18 one-way wrong direction. Only triggers when the Mountain
+  // Course isn't actively closed (otherwise the whole road is shut, not just the
+  // one-way restriction) AND we're heading Douglas/Onchan → Ramsey/Bungalow.
+  if (status.oneWay && isA18UpDirection(from, to) && r.closedCircuits.indexOf('mountain') === -1) {
+    const bungalowExtra = (to === 'The Bungalow / Mountain')
+      ? ' For the Bungalow specifically, change at Laxey for the Snaefell Mountain Railway to the summit.'
+      : '';
+    result.innerHTML =
+      '<div class="result warn">' +
+        '<strong>NO direct route via Mountain Road &mdash; one-way wrong direction</strong>' +
+        '<p>The A18 Mountain Road operates one-way (Ramsey &rarr; Creg-ny-Baa) from 4:30pm Fri 22 May until 9:30am Tue 9 June 2026, so you cannot drive UP from Douglas/Onchan to Ramsey or the Bungalow on the A18 during the entire TT fortnight, even when the course is "open".</p>' +
+        '<div class="alt"><strong>By road:</strong> Use the A2 coast road via Onchan &rarr; Laxey &rarr; Ramsey instead. About 17 miles vs 14 over the Mountain.</div>' +
+        '<div class="alt" style="margin-top: 10px; padding: 8px 10px; background: #eaf2fa; border-left: 3px solid var(--s100); border-radius: 4px;">' +
+          '<strong>By rail:</strong> Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey &rarr; Ramsey throughout the TT period.' + bungalowExtra +
+        '</div>' +
+        upcomingBlock +
+      '</div>';
+    return;
+  }
+
+  // === MAIN PATH: render based on the zone classifier's verdict. ===
+  const reasonSummary = partsReasonHTML(r.parts);
+  const reopens = reopenTimesForParts(r.parts, status);
+  const reopenLine = reopens && reopens.length
+    ? '<p><strong>' + (r.severity === 'closed' ? 'Closed until' : 'Direct route reopens') + ':</strong> ' +
+        reopens.map(function(x) { return x.item.reopen + ' (' + x.circuitShort + ')'; }).join(', ') + '.</p>'
+    : '';
+
+  if (r.severity === 'closed') {
+    result.innerHTML =
+      '<div class="result closed">' +
+        '<strong>NO &mdash; road is closed</strong>' +
+        '<p>' + tripHeader + ' is blocked.</p>' +
+        (reasonSummary ? '<p><strong>Reason:</strong> ' + reasonSummary + '.</p>' : '') +
+        reopenLine +
+        partsDetailHTML(r.parts, { label: 'Alternative' }) +
+        upcomingBlock + noLater +
+      '</div>';
+    return;
+  }
+
+  if (r.severity === 'partial') {
+    result.innerHTML =
+      '<div class="result warn">' +
+        '<strong>POSSIBLE with a detour</strong>' +
+        '<p>' + tripHeader + ': the direct route is blocked but a workaround exists.</p>' +
+        (reasonSummary ? '<p><strong>Reason:</strong> ' + reasonSummary + '.</p>' : '') +
+        reopenLine +
+        partsDetailHTML(r.parts, { label: 'Workaround' }) +
+        upcomingBlock + noLater +
+      '</div>';
+    return;
+  }
+
+  if (r.severity === 'minor') {
+    result.innerHTML =
+      '<div class="result minor">' +
+        '<strong>YES &mdash; small last-mile detour</strong>' +
+        '<p>' + tripHeader + ' is fine apart from a small detour at one end.</p>' +
+        partsDetailHTML(r.parts, { label: 'Detour' }) +
+        upcomingBlock +
+      '</div>';
+    return;
+  }
+
+  // r.severity === 'open'
+  // Only mention the A18 one-way operation if this route would actually use the
+  // Mountain Road (i.e. heads to/from Ramsey or the Bungalow). For a Douglas →
+  // Peel or Castletown → Port Erin trip the one-way restriction is irrelevant.
+  const involvesMountainRoad =
+    from === 'Ramsey' || to === 'Ramsey' ||
+    from === 'The Bungalow / Mountain' || to === 'The Bungalow / Mountain';
+  const oneWayNote = (status.oneWay && involvesMountainRoad)
+    ? '<p class="why">Note: the A18 Mountain Road remains one-way (Ramsey &rarr; Creg-ny-Baa direction) throughout TT fortnight.</p>'
+    : '';
+  result.innerHTML =
+    '<div class="result open">' +
+      '<strong>YES &mdash; you can drive</strong>' +
+      '<p>' + tripHeader + ' is clear of race closures.</p>' +
+      oneWayNote +
+      '<p class="alt">Always confirm closer to the time &mdash; weather can shift sessions.</p>' +
+      upcomingBlock +
+    '</div>';
 }
 
 // ====== TAB NAVIGATION ======
@@ -1576,7 +1913,99 @@ async function refreshLive() {
   wrap.classList.remove('loading');
 }
 
+// ====== SELF-CHECK (data integrity for the zone classifier) ======
+// Runs once on load. Console output only. Catches missing place tags or
+// unexpected severity values when you edit `circuits` or `places`.
+// Look in DevTools Console after loading the page to see results.
+function runClassifierSelfCheck() {
+  const VALID_SEVERITIES = ['open', 'minor', 'partial', 'closed'];
+  const errors = [];
+  const warnings = [];
+
+  // 1. Every place in the picker is tagged in every circuit.
+  for (const circuitId in circuits) {
+    const c = circuits[circuitId];
+    for (const place of places) {
+      const found = findPlaceInCircuit(place, c);
+      if (!found) {
+        errors.push('Place "' + place + '" is not tagged in any zone or edgePlace of circuit "' + circuitId + '"');
+      }
+    }
+  }
+
+  // 2. All severity values inside zones/edges/crossings are valid.
+  for (const circuitId in circuits) {
+    const c = circuits[circuitId];
+    if (c.edgePlaces) {
+      for (const placeName in c.edgePlaces) {
+        const edge = c.edgePlaces[placeName];
+        for (const zoneKey in (edge.accessFrom || {})) {
+          const sev = edge.accessFrom[zoneKey].severity;
+          if (VALID_SEVERITIES.indexOf(sev) === -1) {
+            errors.push('Invalid severity "' + sev + '" at ' + circuitId + '.edgePlaces.' + placeName + '.accessFrom.' + zoneKey);
+          }
+        }
+      }
+    }
+    for (const key in (c.crossings || {})) {
+      const sev = c.crossings[key].severity;
+      if (VALID_SEVERITIES.indexOf(sev) === -1) {
+        errors.push('Invalid severity "' + sev + '" at ' + circuitId + '.crossings["' + key + '"]');
+      }
+    }
+  }
+
+  // 3. Spot-check known scenarios. Each row: [from, to, circuitId, expectedSeverity, note]
+  // Bypasses statusAt() and exercises classifyForCircuit() directly so the result
+  // doesn't depend on the current date/time.
+  const cases = [
+    // Billown closure scenarios
+    ['Douglas',      'Castletown',   'billown', 'minor',   'NE → Castletown edge via Farrant\'s'],
+    ['Castletown',   'Douglas',      'billown', 'minor',   'Castletown edge → NE via Farrant\'s'],
+    ['Douglas',      'Port Erin',    'billown', 'partial', 'NE → SW via Grenaby'],
+    ['Port Erin',    'Castletown',   'billown', 'partial', 'SW → Castletown edge (needs full crossing + Farrant\'s)'],
+    ['Port Erin',    'Port St Mary', 'billown', 'open',    'Both in SW zone'],
+    ['Douglas',      'Ballasalla',   'billown', 'open',    'Both in NE zone'],
+    ['Douglas',      'Peel',         'billown', 'open',    'Both in NE zone (Billown doesn\'t affect)'],
+    ['Ramsey',       'Castletown',   'billown', 'minor',   'NE → Castletown edge'],
+    // Mountain Course closure scenarios
+    ['Douglas',      'Castletown',   'mountain','open',    'Both in south zone'],
+    ['Douglas',      'Port Erin',    'mountain','open',    'Both in south zone'],
+    ['Douglas',      'Peel',         'mountain','partial', 'south → west, long way via A24+A27'],
+    ['Douglas',      'Laxey',        'mountain','minor',   'south → east via A2 coast road'],
+    ['Douglas',      'Kirk Michael', 'mountain','closed',  'south → onCourse'],
+    ['Peel',         'Ramsey',       'mountain','closed',  'west → Ramsey edge (no west access)'],
+    ['Laxey',        'Ramsey',       'mountain','partial', 'east → Ramsey southern edge'],
+    ['Douglas',      'Ramsey',       'mountain','partial', 'south → Ramsey southern edge via A2'],
+    ['Kirk Michael', 'Ballaugh',     'mountain','closed',  'both on closed course'],
+    ['Castletown',   'Port St Mary', 'mountain','open',    'both in south zone'],
+    ['Foxdale',      'St John\'s',   'mountain','open',    'both in west zone'],
+    ['Foxdale',      'Laxey',        'mountain','partial', 'west → east, long way']
+  ];
+  for (const row of cases) {
+    const c = circuits[row[2]];
+    if (!c) { errors.push('Self-check: unknown circuit "' + row[2] + '"'); continue; }
+    const v = classifyForCircuit(row[0], row[1], c, row[2]);
+    if (v.severity !== row[3]) {
+      warnings.push('Self-check FAIL: ' + row[0] + ' → ' + row[1] + ' on ' + row[2] +
+                    ' expected ' + row[3] + ', got ' + v.severity + ' (' + row[4] + ')');
+    }
+  }
+
+  if (errors.length) {
+    console.error('[Route classifier] DATA ERRORS:', errors);
+  }
+  if (warnings.length) {
+    console.warn('[Route classifier] Test-case mismatches:', warnings);
+  }
+  if (!errors.length && !warnings.length) {
+    console.log('[Route classifier] Self-check passed (' + cases.length + ' scenarios, ' +
+                places.length + ' places × ' + Object.keys(circuits).length + ' circuits validated).');
+  }
+}
+
 // ====== INIT ======
+runClassifierSelfCheck();
 renderNow();
 renderSchedule();
 renderGlossary();
