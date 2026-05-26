@@ -380,6 +380,79 @@
   .result .alt { margin-top: 10px; font-size: 0.88rem; color: var(--muted); }
   .result .why { margin: 4px 0 10px; font-size: 0.9rem; color: var(--muted); font-style: italic; }
 
+  /* ============ TRUST-TIER ALERTS (reusable) ============ */
+  /* Three visual tiers for any item shown in the alerts section. Tier classes
+     (tier-verified / tier-human / tier-auto) are set by the Python renderer
+     based on each item's `tier` field in data/alerts.json. */
+  .alerts-block { margin: 14px 0 18px; }
+  .alerts-meta {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .alerts-meta .freshness { font-weight: 600; }
+  .alerts-meta .freshness.stale { color: var(--warn); font-weight: 700; }
+
+  .alert {
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin: 8px 0;
+    font-size: 0.93rem;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+  }
+  .alert .alert-tier-label {
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .alert .alert-text { font-size: 0.98rem; line-height: 1.4; }
+  .alert .alert-meta { color: var(--muted); font-size: 0.82rem; margin-top: 6px; }
+  .alert .alert-meta a { color: var(--muted); text-decoration: underline; }
+  .alert .alert-note { color: var(--muted); font-size: 0.85rem; margin-top: 8px; font-style: italic; }
+  .alert .pin {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 8px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* Verified — base/neutral, calm green tint with check */
+  .alert.tier-verified {
+    background: var(--open-soft);
+    border-left: 4px solid var(--open);
+  }
+  .alert.tier-verified .alert-tier-label { color: var(--open-dark); }
+
+  /* Human-relayed — distinct mid-trust, neutral blue */
+  .alert.tier-human {
+    background: #eaf2fa;
+    border-left: 4px solid var(--s100);
+  }
+  .alert.tier-human .alert-tier-label { color: var(--s100); }
+
+  /* Auto-detected, unverified — LOUD: amber soft bg, thick amber bar, dashed top/bottom */
+  .alert.tier-auto {
+    background: var(--warn-soft);
+    border: 1px solid rgba(196, 106, 8, 0.25);
+    border-top: 1px dashed var(--warn);
+    border-bottom: 1px dashed var(--warn);
+    border-left: 6px solid var(--warn);
+  }
+  .alert.tier-auto .alert-tier-label { color: var(--warn); }
+
   /* ============ GLOSSARY ============ */
   .glossary { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
   .gloss-card {
@@ -627,6 +700,12 @@
 
 <!-- ========== NOW & TODAY ========== -->
 <section id="tab-now" class="section active">
+  <!-- AUTO_ALERTS_START -->
+<div class="alerts-block">
+<div class="alerts-meta">Last checked <span class="freshness" data-freshness-from="2026-05-26T17:57:16Z">just now</span> &middot; auto-detected from external sources, not yet verified.</div>
+<div class="alert tier-auto" data-event="pre-tt"><div class="alert-tier-label">&#9888; AUTOMATICALLY DETECTED &mdash; NOT YET VERIFIED</div><div class="alert-text"><strong>Revised Schedule for Saturday 23rd May (Afternoon)</strong></div><div class="alert-meta">Source: <a href="https://southern100.com/revised-schedule-for-saturday-23rd-may-afternoon/" target="_blank" rel="noopener">Southern 100</a> &middot; published 23 May 2026, 09:14 UTC &middot; seen just now</div><div class="alert-note">Heads-up: this source publishes revised times as images, which we cannot read automatically. Open the source link to see the new times. Our route checker has <strong>not</strong> been updated for this revision.</div></div>
+</div>
+<!-- AUTO_ALERTS_END -->
   <!-- AUTO_NEWS_START -->
 <div class="schedule-changed"><strong>Heads-up: the official schedule on iomttraces.com may have changed since this page was last verified.</strong> Cross-check the dates and times below against <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">the official source</a> or call the Road Information Hotline on <strong>01624&nbsp;685888</strong>.</div>
 <div class="auto-news">
@@ -832,7 +911,7 @@
 
 <footer class="footer">
   <p>Data compiled from <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a>, <a href="https://southern100.com/" target="_blank" rel="noopener">southern100.com</a>, <a href="https://manxgrandprix.co.uk/" target="_blank" rel="noopener">manxgrandprix.co.uk</a>, <a href="https://www.gov.im/about-the-government/departments/infrastructure/highway-services/upcoming-roadworks-and-events-on-roads/" target="_blank" rel="noopener">gov.im</a> and <a href="https://www.iomtoday.co.im/topic/tt" target="_blank" rel="noopener">iomtoday.co.im</a>. Schedules are provisional and subject to change without notice. This is an unofficial guide; always verify with the Road Information Hotline (01624&nbsp;685888) before setting off.</p>
-  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->26 May 2026, 17:48 UTC<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
+  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->26 May 2026, 17:57 UTC<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
   <p class="credit">
     <em>Built by someone who would rather code an entire App than ever again try to find and understand the local Manx information.</em><br>
     You can find me at <a href="mailto:oli@ebusiness.im">oli@ebusiness.im</a>
@@ -2005,6 +2084,54 @@ function runClassifierSelfCheck() {
   }
 }
 
+// ====== FRESHNESS LABELS (alerts block, and any future "last checked X ago") ======
+// Converts ISO timestamps embedded as data-freshness-from="..." into a friendly
+// relative label computed at page-load time, so the staleness is honest: a feed
+// that hasn't refreshed in 12+ hours shows up as a visibly stale label, not a
+// frozen "30 minutes ago" lie.
+//
+// Two-stage timestamp:
+//   1. The embedded data-freshness-from attribute is whatever was current the
+//      last time index.html was rewritten. That may be hours/days ago, because
+//      we deliberately skip rewrites when displayed content hasn't changed.
+//   2. data/alerts.json carries the LIVE last_fetch, refreshed on every scraper
+//      run (even quiet runs). We fetch it once on load and prefer its value, so
+//      the freshness label reflects the *actual* most recent scraper run.
+//      If the fetch fails (file://, offline, CORS), we fall back to the embedded
+//      attribute — still useful, just potentially staler.
+async function updateFreshnessLabels() {
+  let liveLastFetch = null;
+  try {
+    const resp = await fetch('data/alerts.json', { cache: 'no-store' });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data && typeof data.last_fetch === 'string') liveLastFetch = data.last_fetch;
+    }
+  } catch (e) {
+    // Fall through to embedded fallback.
+  }
+
+  const els = document.querySelectorAll('[data-freshness-from]');
+  const now = new Date();
+  els.forEach(function(el) {
+    const iso = liveLastFetch || el.getAttribute('data-freshness-from');
+    if (!iso) return;
+    const then = new Date(iso);
+    if (isNaN(then.getTime())) return;
+    const mins = Math.max(0, Math.floor((now - then) / 60000));
+    let label;
+    if (mins < 5)              label = 'just now';
+    else if (mins < 60)        label = mins + ' min ago';
+    else if (mins < 24 * 60)   label = Math.floor(mins / 60) + 'h ago';
+    else if (mins < 48 * 60)   label = 'yesterday';
+    else                       label = Math.floor(mins / (24 * 60)) + ' days ago';
+    el.textContent = label;
+    // Mark visibly stale if it's been more than 12 hours since the scraper ran.
+    if (mins > 12 * 60) el.classList.add('stale');
+    else                el.classList.remove('stale');
+  });
+}
+
 // ====== INIT ======
 runClassifierSelfCheck();
 renderNow();
@@ -2012,6 +2139,7 @@ renderSchedule();
 renderGlossary();
 renderDiversions();
 renderRouteSelectors();
+updateFreshnessLabels();
 </script>
 
 </body>

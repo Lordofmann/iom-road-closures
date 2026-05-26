@@ -1,0 +1,17 @@
+{
+  "last_fetch": "2026-05-26T17:57:16Z",
+  "items": [
+    {
+      "id": "s100-https://southern100.com/?p=12307",
+      "tier": "auto",
+      "text": "Revised Schedule for Saturday 23rd May (Afternoon)",
+      "source_name": "Southern 100",
+      "source_url": "https://southern100.com/revised-schedule-for-saturday-23rd-may-afternoon/",
+      "timestamp": "2026-05-23T09:14:19Z",
+      "first_seen": "2026-05-26T17:57:16Z",
+      "implies_schedule_change": true,
+      "event": "pre-tt",
+      "note": "Heads-up: this source publishes revised times as images, which we cannot read automatically. Open the source link to see the new times. Our route checker has <strong>not</strong> been updated for this revision."
+    }
+  ]
+}

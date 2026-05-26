@@ -24,7 +24,9 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timedelta
+import xml.etree.ElementTree as ET
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 try:
@@ -44,6 +46,7 @@ HTML_PATH = ROOT / "index.html"
 DATA_DIR = ROOT / "data"
 BASELINE_PATH = DATA_DIR / "baseline.json"
 NEWS_PATH = DATA_DIR / "news.json"
+ALERTS_PATH = DATA_DIR / "alerts.json"
 
 USER_AGENT = (
     "Mozilla/5.0 (compatible; IOM-RoadClosures-Bot/1.0; "
@@ -52,11 +55,46 @@ USER_AGENT = (
 
 MANX_RADIO_TT_URL = "https://www.manxradio.com/news/tt-news/"
 IOMTT_SCHEDULE_URL = "https://www.iomttraces.com/racing/page/schedule/"
+SOUTHERN_100_RSS_URL = "https://southern100.com/feed/"
 
 REQUEST_TIMEOUT = 30
 MAX_HEADLINES = 5
 CACHE_SIZE = 20
 CACHE_MAX_DAYS = 30
+
+# Trust-tier alerts (powers the <!-- AUTO_ALERTS_START/END --> block on the page)
+ALERTS_CACHE_MAX_DAYS = 90       # how long auto items linger in the cache before age-out
+ALERTS_MAX_ITEMS = 20            # cap on cached auto items per source bucket
+ALERTS_DISPLAY_CAP = 5           # top-N shown on the page (pinned items can exceed this)
+ALERTS_EVENT_CLASSIFY_WINDOW = 30  # days of date-proximity used to map an article to an event
+
+# Conservative title-keyword filter for the Southern 100 RSS feed. Case-insensitive
+# substring match. Approved set: Tier 1 (definite phrases) + "contingency".
+S100_SCHEDULE_KEYWORDS = (
+    "revised schedule",
+    "revised timetable",
+    "revised practice",
+    "revised programme",
+    "revised race",
+    "schedule revision",
+    "schedule update",
+    "schedule change",
+    "new timetable",
+    "rescheduled",
+    "postponed",
+    "cancelled",
+    "cancellation",
+    "contingency",
+)
+
+# The note shown beneath every auto-detected Southern 100 alert. Honest about the
+# data source's limitations: revised times are baked into JPG images on their site,
+# so we can detect that a revision happened but can't extract the new times.
+S100_LIMITATION_NOTE = (
+    "Heads-up: this source publishes revised times as images, which we cannot read "
+    "automatically. Open the source link to see the new times. Our route checker has "
+    "<strong>not</strong> been updated for this revision."
+)
 
 
 # ----------------------------------------------------------------------------
@@ -245,6 +283,406 @@ def extract_schedule_content(html: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# Trust-tier alerts (powers <!-- AUTO_ALERTS_START/END --> on the page)
+#
+# Architecture:
+#   - Each cached item is a self-describing dict with a `tier` field (auto /
+#     human / verified). The page's CSS picks the visual treatment from `tier`.
+#   - Auto items come from scrapers (currently: Southern 100 RSS). Human items
+#     would be added by hand to data/alerts.json. Verified items typically
+#     reference the canonical `closures` array in index.html.
+#   - Pinning rule: auto items with implies_schedule_change=True for an event
+#     that's "running today" (today's date appears in any closure entry for
+#     that event) are kept visible regardless of how many newer items arrive.
+# ----------------------------------------------------------------------------
+
+ALERTS_BLOCK_RE = re.compile(
+    r"(<!-- AUTO_ALERTS_START -->)(.*?)(<!-- AUTO_ALERTS_END -->)", re.DOTALL
+)
+
+
+# --- RSS parsing -----------------------------------------------------------
+
+def parse_southern100_rss(xml_text: str) -> list[dict]:
+    """Parse the RSS XML into a list of {title, url, pub_iso, guid} dicts.
+
+    Returns [] on parse failure. Skips items missing either title or link.
+    Converts pubDate (RFC 822) to ISO UTC for downstream use.
+    """
+    try:
+        root = ET.fromstring(xml_text)
+    except ET.ParseError as e:
+        log(f"  RSS parse error: {e}")
+        return []
+
+    items: list[dict] = []
+    for item_el in root.iter("item"):
+        title_el = item_el.find("title")
+        link_el = item_el.find("link")
+        pub_el = item_el.find("pubDate")
+        guid_el = item_el.find("guid")
+
+        title = (title_el.text or "").strip() if title_el is not None else ""
+        url = (link_el.text or "").strip() if link_el is not None else ""
+        if not title or not url:
+            continue
+
+        pub_iso = None
+        if pub_el is not None and pub_el.text:
+            try:
+                dt = parsedate_to_datetime(pub_el.text)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                pub_iso = dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            except (TypeError, ValueError):
+                pub_iso = None
+
+        guid = (guid_el.text or "").strip() if guid_el is not None and guid_el.text else url
+
+        items.append({"title": title, "url": url, "pub_iso": pub_iso, "guid": guid})
+    return items
+
+
+def _matches_schedule_keywords(title: str) -> bool:
+    """Conservative title filter — Tier 1 phrases + 'contingency'."""
+    lower = title.lower()
+    return any(kw in lower for kw in S100_SCHEDULE_KEYWORDS)
+
+
+# --- Event-date awareness (drives the pinning rule) ------------------------
+
+def extract_event_dates_from_index(html: str) -> dict[str, set[str]]:
+    """Parse {event_id -> set of YYYY-MM-DD strings} out of the closures array in index.html.
+
+    Walks the array character by character, tracking brace depth, to extract
+    each top-level {...} entry as a string. This is necessary because Pre-TT
+    and S100 entries contain nested objects (`windows: [{ close, reopen }]`)
+    which a simple `\\{[^{}]*\\}` regex would mis-match.
+
+    If the parse fails entirely (e.g. file shape drifts) we return {} and the
+    pinning rule silently degrades to "nothing is pinned" — pages still render,
+    just without the pinned indicator. Failure-tolerance over precision here.
+    """
+    m = re.search(r"const closures\s*=\s*\[(.*?)\];", html, re.DOTALL)
+    if not m:
+        return {}
+    block = m.group(1)
+
+    result: dict[str, set[str]] = {}
+    depth = 0
+    start: int | None = None
+    for i, ch in enumerate(block):
+        if ch == "{":
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0 and start is not None:
+                entry = block[start:i + 1]
+                e = re.search(r"event:\s*'([^']+)'", entry)
+                d = re.search(r"date:\s*'(\d{4}-\d{2}-\d{2})'", entry)
+                if e and d:
+                    result.setdefault(e.group(1), set()).add(d.group(1))
+                start = None
+    return result
+
+
+def running_events_today(event_dates: dict[str, set[str]], today_iso: str) -> set[str]:
+    """Which events have any closure entry on today's date."""
+    return {ev for ev, dates in event_dates.items() if today_iso in dates}
+
+
+def classify_event_by_date(
+    pub_date_str: str | None,
+    event_dates: dict[str, set[str]],
+    window_days: int = ALERTS_EVENT_CLASSIFY_WINDOW,
+) -> str | None:
+    """Map an article publication date to the nearest event whose closures
+    fall within `window_days` of it. Returns None if no event is close enough."""
+    if not pub_date_str:
+        return None
+    try:
+        pub_date = datetime.strptime(pub_date_str[:10], "%Y-%m-%d").date()
+    except ValueError:
+        return None
+    best_event, best_distance = None, None
+    for event_id, date_strs in event_dates.items():
+        for ds in date_strs:
+            try:
+                d = datetime.strptime(ds, "%Y-%m-%d").date()
+            except ValueError:
+                continue
+            distance = abs((pub_date - d).days)
+            if distance <= window_days and (best_distance is None or distance < best_distance):
+                best_event = event_id
+                best_distance = distance
+    return best_event
+
+
+# --- Watcher: Southern 100 RSS --------------------------------------------
+
+def fetch_southern100_alerts(
+    event_dates: dict[str, set[str]],
+    now: datetime,
+) -> list[dict]:
+    """Fetch the S100 feed, keep only items whose title matches schedule
+    keywords, and shape them into the canonical alert dict for the cache.
+
+    Failure-tolerant: any error returns []. The rest of the run continues.
+    """
+    log("Fetching Southern 100 RSS feed...")
+    xml = fetch(SOUTHERN_100_RSS_URL)
+    if not xml:
+        return []
+    raw = parse_southern100_rss(xml)
+    log(f"  parsed {len(raw)} RSS items from feed")
+    matched = [it for it in raw if _matches_schedule_keywords(it["title"])]
+    log(f"  {len(matched)} matched schedule-revision keywords")
+
+    nowstamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    out: list[dict] = []
+    for it in matched:
+        event = classify_event_by_date(it.get("pub_iso"), event_dates)
+        out.append({
+            # id is stable and used for dedup display-signature; URL is the cache key.
+            "id": "s100-" + (it.get("guid") or it["url"]),
+            "tier": "auto",
+            "text": it["title"],
+            "source_name": "Southern 100",
+            "source_url": it["url"],
+            "timestamp": it.get("pub_iso") or nowstamp,
+            "first_seen": nowstamp,
+            "implies_schedule_change": True,
+            "event": event,
+            "note": S100_LIMITATION_NOTE,
+        })
+    return out
+
+
+# --- Cache I/O --------------------------------------------------------------
+
+def load_alerts_cache() -> tuple[list[dict], str | None]:
+    """Returns (items, last_fetch_iso). Both default if the file is missing/corrupt."""
+    if not ALERTS_PATH.exists():
+        return [], None
+    try:
+        data = json.loads(ALERTS_PATH.read_text())
+        items = data.get("items", [])
+        # defensive filter — only dicts with at least source_url survive
+        items = [it for it in items if isinstance(it, dict) and it.get("source_url")]
+        return items, data.get("last_fetch")
+    except Exception:
+        return [], None
+
+
+def write_alerts_cache(items: list[dict], now: datetime) -> None:
+    """Always write — last_fetch must refresh every run so the freshness label is honest.
+
+    Strips any transient flags (e.g. _pinned) so the cache file stays canonical.
+    """
+    DATA_DIR.mkdir(exist_ok=True)
+    clean = [{k: v for k, v in it.items() if not k.startswith("_")} for it in items]
+    payload = {
+        "last_fetch": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "items": clean,
+    }
+    ALERTS_PATH.write_text(json.dumps(payload, indent=2))
+
+
+def merge_alerts_into_cache(
+    existing: list[dict], fresh: list[dict], now: datetime
+) -> list[dict]:
+    """Add unseen `fresh` auto items to `existing`. Preserve human/verified items
+    untouched. Drop auto items older than ALERTS_CACHE_MAX_DAYS by first_seen.
+    Cap auto items at ALERTS_MAX_ITEMS. Returns a new list (no mutation)."""
+    existing_auto_urls = {it.get("source_url") for it in existing if it.get("tier") == "auto"}
+    result = list(existing)
+    for f in fresh:
+        if f.get("source_url") in existing_auto_urls:
+            continue
+        result.append(f)
+        existing_auto_urls.add(f.get("source_url"))
+
+    cutoff = now - timedelta(days=ALERTS_CACHE_MAX_DAYS)
+
+    def keep(it: dict) -> bool:
+        if it.get("tier") != "auto":
+            return True
+        return _parse_iso(it.get("first_seen", "")) >= cutoff
+
+    result = [it for it in result if keep(it)]
+
+    # Cap only the auto bucket; human/verified items are unbounded.
+    auto = [it for it in result if it.get("tier") == "auto"]
+    non_auto = [it for it in result if it.get("tier") != "auto"]
+    auto.sort(key=lambda x: x.get("first_seen", ""), reverse=True)
+    auto = auto[:ALERTS_MAX_ITEMS]
+    return non_auto + auto
+
+
+# --- Display selection (pinning rule lives here) ---------------------------
+
+def _recency_key(it: dict) -> str:
+    return it.get("timestamp") or it.get("first_seen", "")
+
+
+def select_displayed_alerts(
+    cache: list[dict],
+    running_events: set[str],
+    max_items: int,
+) -> list[dict]:
+    """Decide which items get rendered on the page, applying the pinning rule:
+
+      - Auto items with implies_schedule_change=True AND event currently running
+        are PINNED — they always render, even if more recent items would push
+        them out of the top-N display cap.
+      - Remaining slots (max_items - pinned) are filled with the most recent
+        unpinned auto items.
+      - Human and verified items are ALWAYS displayed (no cap, no aging).
+      - Pinned items are marked with _pinned=True (a transient flag the
+        renderer reads to draw the pinned badge; never persisted to cache).
+    """
+    autos = [dict(it) for it in cache if it.get("tier") == "auto"]
+    autos.sort(key=_recency_key, reverse=True)
+
+    pinned: list[dict] = []
+    unpinned: list[dict] = []
+    for it in autos:
+        ev = it.get("event")
+        if it.get("implies_schedule_change") and ev and ev in running_events:
+            it["_pinned"] = True
+            pinned.append(it)
+        else:
+            unpinned.append(it)
+
+    slots = max(0, max_items - len(pinned))
+    # Pinned items render at the TOP regardless of date (they're already sorted
+    # by recency among themselves), followed by the most recent unpinned items.
+    # We deliberately do NOT re-sort the combined list, so the badge's
+    # importance signal lines up with visual position.
+    auto_displayed = pinned + unpinned[:slots]
+
+    others = [dict(it) for it in cache if it.get("tier") in ("human", "verified")]
+    others.sort(key=_recency_key, reverse=True)
+
+    # Stack human/verified at the top of the section, then auto items below.
+    return others + auto_displayed
+
+
+def displayed_signature(items: list[dict]) -> list[tuple]:
+    """A stable, comparable signature used to gate index.html rewrites.
+
+    Includes id, tier and pinned state so the page is rewritten when any of
+    those change for the displayed set (e.g. a pin transition on race day).
+    """
+    return [
+        (it.get("id") or it.get("source_url"), it.get("tier"), bool(it.get("_pinned")))
+        for it in items
+    ]
+
+
+# --- HTML rendering --------------------------------------------------------
+
+def _esc(s: str) -> str:
+    """Minimal HTML escaping consistent with render_news_block."""
+    return (s or "").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _format_pub_timestamp(ts: str) -> str:
+    """Convert an ISO timestamp into 'DD Mon YYYY, HH:MM UTC' for display.
+    Falls back to the raw string if parsing fails."""
+    if not ts:
+        return ""
+    try:
+        d = datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
+        return d.strftime("%d %b %Y, %H:%M UTC")
+    except ValueError:
+        return ts
+
+
+def _render_alert_item(it: dict, now: datetime) -> str:
+    tier = it.get("tier", "auto")
+    text = _esc(it.get("text", ""))
+    source_name = _esc(it.get("source_name", ""))
+    source_url = it.get("source_url", "#")
+    timestamp = it.get("timestamp", "")
+    first_seen = it.get("first_seen", "")
+    event = it.get("event")
+    note = it.get("note", "")  # rendered with HTML allowed (we author it server-side)
+
+    tier_label_map = {
+        "verified": "&#10003; VERIFIED SCHEDULE",
+        "human":    "&#9679; CONFIRMED BY " + source_name.upper(),
+        "auto":     "&#9888; AUTOMATICALLY DETECTED &mdash; NOT YET VERIFIED",
+    }
+    tier_label = tier_label_map.get(tier, tier.upper())
+
+    pin_html = ' <span class="pin">&#128204; TODAY\'S RACING</span>' if it.get("_pinned") else ""
+
+    meta_parts: list[str] = []
+    if source_name and source_url:
+        meta_parts.append(
+            f'Source: <a href="{source_url}" target="_blank" rel="noopener">{source_name}</a>'
+        )
+    pub_display = _format_pub_timestamp(timestamp)
+    if pub_display:
+        meta_parts.append(f"published {pub_display}")
+    if first_seen and first_seen != timestamp:
+        seen_label = format_relative_age(first_seen, now)
+        meta_parts.append(f"seen {seen_label}")
+    meta_html = " &middot; ".join(meta_parts)
+
+    note_html = f'<div class="alert-note">{note}</div>' if note else ""
+    event_attr = f' data-event="{_esc(event)}"' if event else ""
+
+    return (
+        f'<div class="alert tier-{tier}"{event_attr}>'
+        f'<div class="alert-tier-label">{tier_label}{pin_html}</div>'
+        f'<div class="alert-text"><strong>{text}</strong></div>'
+        f'<div class="alert-meta">{meta_html}</div>'
+        f'{note_html}'
+        f'</div>'
+    )
+
+
+def render_alerts_block(
+    displayed: list[dict],
+    last_fetch_iso: str | None,
+    now: datetime,
+) -> str:
+    """Return the full replacement for the <!-- AUTO_ALERTS_START/END --> block.
+
+    If there are no items to display, returns a minimal markers-only block
+    (effectively hiding the section, per the "hide entirely when empty" rule).
+    """
+    if not displayed:
+        return "<!-- AUTO_ALERTS_START -->\n  <!-- no alerts to display -->\n  <!-- AUTO_ALERTS_END -->"
+
+    parts: list[str] = ["<!-- AUTO_ALERTS_START -->", '<div class="alerts-block">']
+
+    if last_fetch_iso:
+        initial_label = format_relative_age(last_fetch_iso, now)
+        parts.append(
+            '<div class="alerts-meta">'
+            f'Last checked <span class="freshness" data-freshness-from="{last_fetch_iso}">{initial_label}</span>'
+            ' &middot; auto-detected from external sources, not yet verified.'
+            '</div>'
+        )
+
+    for it in displayed:
+        parts.append(_render_alert_item(it, now))
+
+    parts.append("</div>")
+    parts.append("<!-- AUTO_ALERTS_END -->")
+    return "\n".join(parts)
+
+
+def patch_html_alerts(html: str, alerts_html: str) -> str:
+    return ALERTS_BLOCK_RE.sub(alerts_html, html)
+
+
+# ----------------------------------------------------------------------------
 # HTML patching
 # ----------------------------------------------------------------------------
 
@@ -358,14 +796,44 @@ def main() -> int:
         except Exception as e:
             log(f"  schedule parse error: {e}")
 
-    # --- 3. Decide what's actually worth writing ---
-    old_displayed = [it.get("url") for it in old_cache[:MAX_HEADLINES]]
-    new_displayed = [it.get("url") for it in new_cache[:MAX_HEADLINES]]
-    display_changed = old_displayed != new_displayed
-    cache_changed = old_cache != new_cache
-    log(f"  display_changed={display_changed} cache_changed={cache_changed} schedule_changed={schedule_changed}")
+    # --- 3. Southern 100 alerts (first user of the trust-tiered alerts system) ---
+    today_iso = now.strftime("%Y-%m-%d")
+    event_dates = extract_event_dates_from_index(original_html)
+    running_today = running_events_today(event_dates, today_iso)
+    log(f"  events running today ({today_iso}): {sorted(running_today) or 'none'}")
 
-    # Persist cache when its content has changed (so rolling history survives)
+    fresh_alerts = fetch_southern100_alerts(event_dates, now)
+    old_alerts, _old_last_fetch = load_alerts_cache()
+    log(f"  alerts cache had {len(old_alerts)} items before merge")
+    merged_alerts = merge_alerts_into_cache(old_alerts, fresh_alerts, now)
+    log(f"  alerts cache has {len(merged_alerts)} items after merge")
+
+    displayed_alerts = select_displayed_alerts(merged_alerts, running_today, ALERTS_DISPLAY_CAP)
+    pinned_count = sum(1 for x in displayed_alerts if x.get("_pinned"))
+    log(f"  displaying {len(displayed_alerts)} alerts ({pinned_count} pinned)")
+
+    # --- 4. Decide what's actually worth writing ---
+    old_displayed_news = [it.get("url") for it in old_cache[:MAX_HEADLINES]]
+    new_displayed_news = [it.get("url") for it in new_cache[:MAX_HEADLINES]]
+    display_changed = old_displayed_news != new_displayed_news
+    cache_changed = old_cache != new_cache
+
+    # Alerts display gate. Includes pin state and tier in the signature so any
+    # of the following triggers an index.html rewrite (and therefore a deploy):
+    #   - a new auto item enters/leaves the displayed set
+    #   - an item changes tier (e.g. a human upgrade)
+    #   - pinning flips because the calendar moved into/out of a race day
+    old_displayed_alerts = select_displayed_alerts(old_alerts, running_today, ALERTS_DISPLAY_CAP)
+    alerts_display_changed = (
+        displayed_signature(old_displayed_alerts) != displayed_signature(displayed_alerts)
+    )
+
+    log(
+        f"  display_changed={display_changed} cache_changed={cache_changed} "
+        f"schedule_changed={schedule_changed} alerts_display_changed={alerts_display_changed}"
+    )
+
+    # Persist news cache when its content has changed (so rolling history survives)
     if cache_changed:
         NEWS_PATH.write_text(
             json.dumps(
@@ -379,11 +847,22 @@ def main() -> int:
         )
         log("  news.json updated (cache content changed)")
 
-    # Only rewrite index.html when the page visitors see would actually change
-    if display_changed or schedule_changed:
+    # Always persist alerts.json — last_fetch must refresh every run so the
+    # JS-rendered "Last checked X ago" label on the page stays honest, even
+    # on quiet runs that don't touch index.html.
+    write_alerts_cache(merged_alerts, now)
+    log("  alerts.json updated (last_fetch refreshed)")
+
+    # Only rewrite index.html when the page visitors see would actually change.
+    # Three independent signals can trigger a rewrite; any one is enough.
+    if display_changed or schedule_changed or alerts_display_changed:
         news_html = render_news_block(headlines, schedule_changed, now)
+        alerts_html = render_alerts_block(
+            displayed_alerts, now.strftime("%Y-%m-%dT%H:%M:%SZ"), now
+        )
         timestamp = now.strftime("%d %B %Y, %H:%M UTC")
         new_html = patch_html(original_html, news_html, timestamp)
+        new_html = patch_html_alerts(new_html, alerts_html)
         HTML_PATH.write_text(new_html, encoding="utf-8")
         log(f"  index.html updated at {timestamp} (a deploy will follow)")
     else:
