@@ -1,7 +1,25 @@
 {
-  "last_fetch": "2026-05-30T20:35:01Z",
+  "last_fetch": "2026-05-31T11:51:49Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Michael Dunlop 'just searching for more wins' in 2026",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-just-searching-for-more-wins-in-2026/",
+      "first_seen": "2026-05-31T11:51:49Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
+    {
+      "title": "Superbike race to kickstart TT 2026 race week",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/superbike-race-to-kickstart-tt-2026-race-week/",
+      "first_seen": "2026-05-31T11:51:49Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
+    {
+      "title": "Women to lead the TT Legacy Lap",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/women-to-lead-the-tt-legacy-lap/",
+      "first_seen": "2026-05-31T11:51:49Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
     {
       "title": "TT 2026 race day two schedule confirmed",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-race-day-two-schedule-confirmed/",
@@ -101,24 +119,6 @@
     {
       "title": "Gary McCoy: TT 'everything I thought it would be and more'",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/gary-mccoy-tt-everything-i-thought-it-would-be-and-more/",
-      "first_seen": "2026-05-27T17:44:19Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
-    },
-    {
-      "title": "TT 2026: Dunlop sets unofficial Sportbike record in afternoon practice",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/tt-2026-dunlop-sets-unofficial-sportbike-record-in-afternoon-practice/",
-      "first_seen": "2026-05-27T17:44:19Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
-    },
-    {
-      "title": "Former nurse helps injured spectators after TT crash",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/former-nurse-helps-injured-spectators-after-tt-crash/",
-      "first_seen": "2026-05-27T17:44:19Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
-    },
-    {
-      "title": "Fancy being in the TT film?",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/fancy-being-in-the-tt-film/",
       "first_seen": "2026-05-27T17:44:19Z",
       "source_date": "AudioRider making long-awaited debut in 2026"
     }
