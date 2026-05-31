@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-05-31T11:51:49Z",
+  "last_fetch": "2026-05-31T20:40:13Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Dean Harrison surges to Superbike win",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-surges-to-superbike-win/",
+      "first_seen": "2026-05-31T20:40:13Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
     {
       "title": "Michael Dunlop 'just searching for more wins' in 2026",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-just-searching-for-more-wins-in-2026/",
@@ -114,12 +120,6 @@
       "title": "TT winners enclosure filming postponed",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-winners-enclosure-filming-postponed/",
       "first_seen": "2026-05-28T17:52:44Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
-    },
-    {
-      "title": "Gary McCoy: TT 'everything I thought it would be and more'",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/gary-mccoy-tt-everything-i-thought-it-would-be-and-more/",
-      "first_seen": "2026-05-27T17:44:19Z",
       "source_date": "AudioRider making long-awaited debut in 2026"
     }
   ]
