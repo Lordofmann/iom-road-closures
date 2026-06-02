@@ -1,7 +1,37 @@
 {
-  "last_fetch": "2026-05-31T20:40:13Z",
+  "last_fetch": "2026-06-02T19:01:55Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Michael Dunlop wins first Supersport contest of TT 2026",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-wins-first-supersport-contest-of-tt-2026/",
+      "first_seen": "2026-06-02T19:01:55Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
+    {
+      "title": "Wednesday morning TT racing ruled out",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/wednesday-morning-tt-racing-ruled-out/",
+      "first_seen": "2026-06-02T19:01:55Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
+    {
+      "title": "TT 2026: No more racing tonight",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-no-more-racing-tonight/",
+      "first_seen": "2026-06-02T19:01:55Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
+    {
+      "title": "Clerk of the Course: 'It's likely there'll be racing on Sunday'",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/clerk-of-the-course-its-likely-therell-be-racing-on-sunday/",
+      "first_seen": "2026-06-02T19:01:55Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
+    {
+      "title": "TT 2026: Maria's Road to Recovery",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-marias-road-to-recovery/",
+      "first_seen": "2026-06-02T19:01:55Z",
+      "source_date": "First race of TT 2026 won't run today"
+    },
     {
       "title": "Dean Harrison surges to Superbike win",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-surges-to-superbike-win/",
@@ -91,36 +121,6 @@
       "url": "https://www.manxradio.com/news/isle-of-man-news/thats-not-it-for-sidecars-at-tt-says-clerk-of-the-course/",
       "first_seen": "2026-05-29T17:57:44Z",
       "source_date": "Two sessions taking place today"
-    },
-    {
-      "title": "Michael Evans declared fit to race following qualifying incident",
-      "url": "https://www.manxradio.com/news/tt-news/michael-evans-declared-fit-to-race-following-qualifying-incident/",
-      "first_seen": "2026-05-28T17:52:44Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
-    },
-    {
-      "title": "Father of sidecar duo praises medical staff who came to his sons' aid",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/father-of-sidecar-duo-praises-medical-staff-who-came-to-his-sons-aid/",
-      "first_seen": "2026-05-28T17:52:44Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
-    },
-    {
-      "title": "More scans expected today for Ryan and Callum Crowe",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/more-scans-expected-today-for-ryan-and-callum-crowe/",
-      "first_seen": "2026-05-28T17:52:44Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
-    },
-    {
-      "title": "TT racer killed in qualifying incident at Doran's Bend",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-racer-killed-in-qualifying-incident-at-dorans-bend/",
-      "first_seen": "2026-05-28T17:52:44Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
-    },
-    {
-      "title": "TT winners enclosure filming postponed",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-winners-enclosure-filming-postponed/",
-      "first_seen": "2026-05-28T17:52:44Z",
-      "source_date": "AudioRider making long-awaited debut in 2026"
     }
   ]
 }
