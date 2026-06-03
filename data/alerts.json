@@ -1,5 +1,5 @@
 {
-  "last_fetch": "2026-06-03T13:38:29Z",
+  "last_fetch": "2026-06-03T13:54:53Z",
   "items": [
     {
       "id": "tt-schedule-applied-2026-06-03T12:24:43Z",
@@ -23,7 +23,8 @@
       "first_seen": "2026-05-26T17:57:16Z",
       "implies_schedule_change": true,
       "event": "pre-tt",
-      "note": "Heads-up: this source publishes revised times as images, which we cannot read automatically. Open the source link to see the new times. Our route checker has <strong>not</strong> been updated for this revision."
+      "note": "Heads-up: this source publishes revised times as images, which we cannot read automatically. Open the source link to see the new times. Our route checker has <strong>not</strong> been updated for this revision.",
+      "expires_at": "2026-05-24T00:00:00Z"
     }
   ]
 }

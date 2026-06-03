@@ -1314,6 +1314,102 @@ def classify_event_by_date(
 
 # --- Watcher: Southern 100 RSS --------------------------------------------
 
+# --- S100 alert expiry helpers --------------------------------------------
+#
+# These apply to Southern 100 informational alerts ONLY. The TT auto-update
+# alerts (id starting with "tt-schedule-applied-") deliberately have no
+# expires_at field, so they're never filtered out by this mechanism and
+# their pinning behaviour is untouched.
+
+_S100_DATE_RE = re.compile(
+    r"\b"
+    r"(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+)?"
+    r"(\d{1,2})(?:st|nd|rd|th)?\s+"
+    r"(?:of\s+)?"   # tolerate the English "1st of June" construction
+    r"(January|February|March|April|May|June|July|August|September|October|November|December)"
+    # Capture any 4-digit year (not just 20xx) so the year-sanity check can
+    # catch historical references like "23rd May 1948".
+    r"(?:\s+(\d{4}))?"
+    r"\b",
+    re.IGNORECASE,
+)
+
+_MONTH_NAMES_LOWER = {m.lower(): i + 1 for i, m in enumerate(_MONTH_NAMES)}
+
+
+def extract_date_from_title(title: str, fallback_year: int) -> str | None:
+    """Return an ISO date (YYYY-MM-DD) if a single, plausible date can be
+    parsed from the title. Returns None - i.e. "not confident" - for:
+
+      * zero matches (no day+month token in title)
+      * multiple matches (ambiguous - bias toward the fallback rule)
+      * an extracted year more than 2 years from fallback_year (probably a
+        historical reference, e.g. "23rd May 1948", not an actionable event)
+      * a day/month combination that doesn't form a valid calendar date
+
+    This is the conservative half of the contract: when in doubt, callers
+    use the 3-day fallback rather than risk clearing something early.
+    """
+    matches = list(_S100_DATE_RE.finditer(title or ""))
+    if len(matches) != 1:
+        return None
+    m = matches[0]
+    day = int(m.group(1))
+    month = _MONTH_NAMES_LOWER.get(m.group(2).lower())
+    if not month:
+        return None
+    year = int(m.group(3)) if m.group(3) else fallback_year
+    if abs(year - fallback_year) > 2:
+        return None
+    try:
+        d = datetime(year, month, day)
+    except ValueError:
+        return None
+    return d.strftime("%Y-%m-%d")
+
+
+def compute_s100_expiry(title: str, pub_iso: str | None, ref_now: datetime) -> str:
+    """ISO timestamp at which an S100 informational alert should stop showing.
+
+    Priority:
+      1. If a date is reliably extractable from the article title, expire at
+         the start of the next calendar day in UTC (so an article about
+         "Saturday 23rd May" disappears from view at 00:00 UTC on the 24th).
+      2. Otherwise, expire 3 days after the article's publication time
+         (or 3 days from ref_now if no pubDate is available).
+    """
+    pub_dt: datetime | None = None
+    if pub_iso:
+        try:
+            pub_dt = datetime.strptime(pub_iso[:19], "%Y-%m-%dT%H:%M:%S")
+        except (TypeError, ValueError):
+            pub_dt = None
+    fallback_year = pub_dt.year if pub_dt else ref_now.year
+
+    title_date = extract_date_from_title(title, fallback_year)
+    if title_date:
+        d = datetime.strptime(title_date, "%Y-%m-%d")
+        return (d + timedelta(days=1)).strftime("%Y-%m-%dT00:00:00Z")
+    base = pub_dt or ref_now
+    return (base + timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _backfill_s100_expires_at(it: dict, ref_now: datetime | None = None) -> dict:
+    """Compute and store expires_at on a cached S100 alert that predates this
+    feature. Idempotent: only adds the field when absent and only for S100
+    items. TT auto-update alerts are skipped (they should never expire)."""
+    if it.get("source_name") != "Southern 100":
+        return it
+    if it.get("expires_at"):
+        return it
+    title = it.get("text", "")
+    pub_iso = it.get("timestamp")
+    first_seen = it.get("first_seen", "")
+    ref = _parse_iso(first_seen) if first_seen else (ref_now or datetime.utcnow())
+    it["expires_at"] = compute_s100_expiry(title, pub_iso, ref)
+    return it
+
+
 def fetch_southern100_alerts(
     event_dates: dict[str, set[str]],
     now: datetime,
@@ -1348,6 +1444,9 @@ def fetch_southern100_alerts(
             "implies_schedule_change": True,
             "event": event,
             "note": S100_LIMITATION_NOTE,
+            # Auto-expiry: dates extracted from title -> end of that day,
+            # otherwise 3 days from publication. See compute_s100_expiry.
+            "expires_at": compute_s100_expiry(it["title"], it.get("pub_iso"), now),
         })
     return out
 
@@ -1363,6 +1462,9 @@ def load_alerts_cache() -> tuple[list[dict], str | None]:
         items = data.get("items", [])
         # defensive filter — only dicts with at least source_url survive
         items = [it for it in items if isinstance(it, dict) and it.get("source_url")]
+        # Backfill expires_at on cached S100 items that predate the auto-
+        # expiry feature. No-op for TT alerts and items that already have it.
+        items = [_backfill_s100_expires_at(it) for it in items]
         return items, data.get("last_fetch")
     except Exception:
         return [], None
@@ -1423,9 +1525,14 @@ def select_displayed_alerts(
     cache: list[dict],
     running_events: set[str],
     max_items: int,
+    now: datetime | None = None,
 ) -> list[dict]:
     """Decide which items get rendered on the page, applying the pinning rule:
 
+      - Items with expires_at <= now are filtered out (display-only; they
+        stay in the cache for history and age out naturally at 90 days).
+        Only S100 alerts carry expires_at; TT auto-update alerts have no
+        such field and so are never affected.
       - Auto items with implies_schedule_change=True AND event currently running
         are PINNED — they always render, even if more recent items would push
         them out of the top-N display cap.
@@ -1435,7 +1542,15 @@ def select_displayed_alerts(
       - Pinned items are marked with _pinned=True (a transient flag the
         renderer reads to draw the pinned badge; never persisted to cache).
     """
-    autos = [dict(it) for it in cache if it.get("tier") == "auto"]
+    if now is None:
+        now = datetime.utcnow()
+    nowstamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    def _not_expired(it: dict) -> bool:
+        exp = it.get("expires_at")
+        return (not exp) or (exp > nowstamp)
+
+    autos = [dict(it) for it in cache if it.get("tier") == "auto" and _not_expired(it)]
     autos.sort(key=_recency_key, reverse=True)
 
     pinned: list[dict] = []
@@ -1455,7 +1570,8 @@ def select_displayed_alerts(
     # importance signal lines up with visual position.
     auto_displayed = pinned + unpinned[:slots]
 
-    others = [dict(it) for it in cache if it.get("tier") in ("human", "verified")]
+    others = [dict(it) for it in cache
+              if it.get("tier") in ("human", "verified") and _not_expired(it)]
     others.sort(key=_recency_key, reverse=True)
 
     # Stack human/verified at the top of the section, then auto items below.
@@ -1465,11 +1581,23 @@ def select_displayed_alerts(
 def displayed_signature(items: list[dict]) -> list[tuple]:
     """A stable, comparable signature used to gate index.html rewrites.
 
-    Includes id, tier and pinned state so the page is rewritten when any of
-    those change for the displayed set (e.g. a pin transition on race day).
+    Includes id, tier, pinned state, text and expires_at so the page is
+    rewritten when any of those change for the displayed set:
+      - id / tier / pinned: structural changes (new item, tier upgrade,
+        pin flip on race day)
+      - text: copy changes (e.g. a regenerated TT alert with different
+        friendly-dates)
+      - expires_at: catches the case where the only change between runs is
+        that an item's expiry shifted (rare but observable)
     """
     return [
-        (it.get("id") or it.get("source_url"), it.get("tier"), bool(it.get("_pinned")))
+        (
+            it.get("id") or it.get("source_url"),
+            it.get("tier"),
+            bool(it.get("_pinned")),
+            it.get("text", ""),
+            it.get("expires_at", ""),
+        )
         for it in items
     ]
 
@@ -1873,7 +2001,14 @@ def main() -> int:
     #   - a new auto item enters/leaves the displayed set
     #   - an item changes tier (e.g. a human upgrade)
     #   - pinning flips because the calendar moved into/out of a race day
-    old_displayed_alerts = select_displayed_alerts(old_alerts, running_today, ALERTS_DISPLAY_CAP)
+    #   - an item expires (between the previous run and this one)
+    # We use the previous run's last_fetch as the "now" for the OLD displayed
+    # set so an item that crossed its expires_at between runs shows up as a
+    # transition (was visible, now isn't) and triggers the rewrite.
+    old_now = _parse_iso(_old_last_fetch) if _old_last_fetch else now
+    old_displayed_alerts = select_displayed_alerts(
+        old_alerts, running_today, ALERTS_DISPLAY_CAP, now=old_now
+    )
     alerts_display_changed = (
         displayed_signature(old_displayed_alerts) != displayed_signature(displayed_alerts)
     )
