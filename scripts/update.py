@@ -197,6 +197,68 @@ def format_relative_age(first_seen_iso: str, now: datetime) -> str:
     return seen.strftime("%d %b")
 
 
+_MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+]
+
+
+def _ordinal(n: int) -> str:
+    """1 -> '1st', 2 -> '2nd', 3 -> '3rd', 4 -> '4th', 11 -> '11th', etc."""
+    if 11 <= (n % 100) <= 13:
+        return f"{n}th"
+    return f"{n}{ {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th') }"
+
+
+def format_dates_friendly(iso_dates: list[str]) -> str:
+    """Render a list of ISO YYYY-MM-DD strings in plain-English form used by
+    the TT auto-update alert (and reusable anywhere else that lists a small
+    set of dates within the current season).
+
+    Rules (per agreed UX):
+      - day with ordinal suffix + month name, year dropped
+      - same-month dates collapse into one group: '4th, 5th and 6th of June'
+      - cross-month dates split into groups, month repeated per group:
+        '30th and 31st of May and 1st of June'
+      - Oxford-style 'and' before the last item at each level
+
+    Robust to unparseable entries (silently dropped) and to unsorted input
+    (we sort by date before formatting).
+    """
+    parsed: list[tuple[int, int]] = []
+    for s in iso_dates or []:
+        try:
+            d = datetime.strptime(s, "%Y-%m-%d")
+            parsed.append((d.month, d.day))
+        except (TypeError, ValueError):
+            continue
+    if not parsed:
+        return ""
+    parsed.sort()
+
+    # Group consecutive same-month dates
+    groups: list[tuple[int, list[int]]] = []
+    for month, day in parsed:
+        if groups and groups[-1][0] == month:
+            groups[-1][1].append(day)
+        else:
+            groups.append((month, [day]))
+
+    def join_with_and(items: list[str]) -> str:
+        if len(items) == 1:
+            return items[0]
+        if len(items) == 2:
+            return items[0] + " and " + items[1]
+        return ", ".join(items[:-1]) + " and " + items[-1]
+
+    group_strs: list[str] = []
+    for month_num, days in groups:
+        day_str = join_with_and([_ordinal(d) for d in days])
+        group_strs.append(f"{day_str} of {_MONTH_NAMES[month_num - 1]}")
+
+    return join_with_and(group_strs)
+
+
 # ----------------------------------------------------------------------------
 # Manx Radio: extract latest TT news headlines
 # ----------------------------------------------------------------------------
@@ -1730,13 +1792,14 @@ def main() -> int:
                 tt_schedule_applied = True
                 if changed_dates:
                     log(f"  TT block CHANGED on {len(changed_dates)} day(s): {changed_dates}")
+                    friendly_dates = format_dates_friendly(changed_dates)
                     tt_phase4_alerts.append({
                         "id": "tt-schedule-applied-" + nowstamp,
                         "tier": "auto",
                         "text": (
                             f"TT schedule auto-updated from iomttraces "
                             f"({len(changed_dates)} day{'s' if len(changed_dates)!=1 else ''} changed: "
-                            f"{', '.join(changed_dates)})"
+                            f"{friendly_dates})"
                         ),
                         "source_name": "iomttraces.com",
                         "source_url": IOMTT_SCHEDULE_URL,

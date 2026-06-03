@@ -1,10 +1,10 @@
 {
-  "last_fetch": "2026-06-03T13:22:47Z",
+  "last_fetch": "2026-06-03T13:38:29Z",
   "items": [
     {
       "id": "tt-schedule-applied-2026-06-03T12:24:43Z",
       "tier": "auto",
-      "text": "TT schedule auto-updated from iomttraces (3 days changed: 2026-06-04, 2026-06-05, 2026-06-06)",
+      "text": "TT schedule auto-updated from iomttraces (3 days changed: 4th, 5th and 6th of June)",
       "source_name": "iomttraces.com",
       "source_url": "https://www.iomttraces.com/racing/page/schedule/",
       "timestamp": "2026-06-03T12:24:43Z",
