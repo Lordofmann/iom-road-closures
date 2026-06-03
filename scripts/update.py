@@ -47,6 +47,9 @@ DATA_DIR = ROOT / "data"
 BASELINE_PATH = DATA_DIR / "baseline.json"
 NEWS_PATH = DATA_DIR / "news.json"
 ALERTS_PATH = DATA_DIR / "alerts.json"
+SCHEDULE_TT_PARSED_PATH = DATA_DIR / "schedule-tt-parsed.json"
+SCHEDULE_TT_OVERRIDE_PATH = DATA_DIR / "schedule-tt-manual-override.json"
+TT_PARSER_VERSION = "1.0"
 
 USER_AGENT = (
     "Mozilla/5.0 (compatible; IOM-RoadClosures-Bot/1.0; "
@@ -280,6 +283,592 @@ def extract_schedule_content(html: str) -> str | None:
     if not pieces:
         return None
     return re.sub(r"\s+", " ", " ".join(pieces)).strip()
+
+
+# ----------------------------------------------------------------------------
+# iomttraces.com: parse the schedule INTO our closures-array format (TT only)
+#
+# Phases 2-3 of the TT auto-update work. Phase 2 (this section) extracts a
+# candidate list of TT entries from the page. Phase 3 validates the result and
+# decides whether the parse is trustworthy enough to apply. Phase 4 (not yet
+# shipped) will actually overwrite the closures array between markers in
+# index.html — until then, the parser's output only goes to a sidecar JSON
+# file (data/schedule-tt-parsed.json) for observation.
+#
+# The page shape we're parsing (verified against the live site on 2026-05-26):
+#   - heading "2026 SCHEDULE"
+#   - 3 tables: Qualifying Week, Race Week, Contingency Periods
+#   - each row is a day, cells = [date label] | [schedule text]
+#   - times are HH:MM 24-hour, followed by " – <phrase>"
+#   - 4 key phrases: "Mountain Section only begins to close",
+#     "Full TT Mountain Course closed",
+#     "All roads will re-open no later than",
+#     "All roads except for mountain section will re-open"
+#   - past-day rows lose their times once a session has run
+# ----------------------------------------------------------------------------
+
+# Known closure-phrase markers, lower-cased for matching.
+_TT_MARK_MOUNTAIN_CLOSES = "mountain section only begins to close"
+_TT_MARK_FULL_CLOSES = "full tt mountain course closed"
+_TT_MARK_FULL_REOPEN = "all roads will re-open"
+_TT_MARK_PARTIAL_REOPEN = "all roads except for mountain section will re-open"
+
+_MONTHS = {
+    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12,
+}
+
+
+def parse_tt_schedule_year(html: str) -> int | None:
+    """Extract the schedule year from a heading like '2026 SCHEDULE' or
+    '2026 Schedule'. Returns None if no plausible year heading is found."""
+    m = re.search(r"\b(20\d{2})\s+SCHEDULE\b", html, re.IGNORECASE)
+    return int(m.group(1)) if m else None
+
+
+def _parse_tt_day_label(text: str, year: int) -> dict | None:
+    """Parse a date-label cell like 'RACE DAY 3 Tuesday 2 June' or
+    'Thursday 28 May' or 'Monday 25 May (Spring Bank Holiday)' into:
+        { 'date': 'YYYY-MM-DD', 'day_label': 'Tue — Race Day 3', ... }
+    Returns None if no day/month token was found.
+    """
+    m = re.search(
+        r"\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+"
+        r"(\d{1,2})\s+"
+        r"(January|February|March|April|May|June|July|August|September|October|November|December)\b",
+        text, re.IGNORECASE,
+    )
+    if not m:
+        return None
+    weekday = m.group(1).title()
+    day = int(m.group(2))
+    month = _MONTHS[m.group(3).lower()]
+    try:
+        dt = datetime(year, month, day)
+    except ValueError:
+        return None
+
+    short_day = weekday[:3]
+    race_day_m = re.search(r"\bRACE\s+DAY\s+(\d+)\b", text, re.IGNORECASE)
+    paren_m = re.search(r"\(([^)]+)\)", text)
+    label = short_day
+    if race_day_m:
+        label = f"{short_day} — Race Day {race_day_m.group(1)}"
+    if paren_m:
+        label = f"{label} ({paren_m.group(1)})"
+    return {"date": dt.strftime("%Y-%m-%d"), "day_label": label}
+
+
+def _clean_tt_activity(chunk: str) -> str:
+    """Reduce a race-name chunk like 'Milwaukee Senior TT – [6 laps] Start List
+    - Results - Lap by Lap - Fast Laps' to just 'Milwaukee Senior TT'."""
+    s = chunk
+    # Drop "[N lap(s)]" annotations and everything after
+    s = re.sub(r"\s*[–—-]\s*\[\d+\s*laps?\].*$", "", s, flags=re.IGNORECASE)
+    # Drop "Start List ..." trailing decoration
+    s = re.sub(r"\s*Start\s+List.*$", "", s, flags=re.IGNORECASE)
+    # Drop results / lap-by-lap / fast-laps trailing links
+    s = re.sub(r"\s+-\s+(Results|Lap by Lap|Fast Laps).*$", "", s, flags=re.IGNORECASE)
+    return s.strip(" -–— ").strip()
+
+
+def _parse_tt_schedule_cell(text: str) -> dict:
+    """Parse the schedule-detail cell into a partial closures-array entry.
+
+    Returns a dict that may contain any of: is_rest (bool), mountainCloses,
+    fullCloses, reopen, secondMountain, secondFull, secondReopen, activity.
+
+    The walker is tolerant: unrecognised chunks are ignored, RACE POSTPONED
+    markers are dropped, and a cell with no time tokens at all (typical for a
+    past day whose results have replaced the schedule) returns {}.
+    """
+    text = (text or "").strip()
+    info: dict = {}
+
+    # Quick rest-day detection (case-insensitive exact-ish match)
+    if re.fullmatch(r"\s*Rest\s+Day\s*", text, re.IGNORECASE):
+        info["is_rest"] = True
+        info["activity"] = "Rest day"
+        return info
+
+    # Find every "HH:MM – " marker; chunks run from one marker to the next
+    markers = list(re.finditer(r"(\d{1,2}):(\d{2})\s*[–—-]\s*", text))
+    if not markers:
+        return info  # no times — likely a past day or atypical row
+
+    chunks: list[tuple[str, str]] = []
+    for i, mt in enumerate(markers):
+        hh, mm = int(mt.group(1)), int(mt.group(2))
+        if not (0 <= hh <= 23 and 0 <= mm <= 59):
+            continue
+        time_str = f"{hh:02d}:{mm:02d}"
+        chunk_start = mt.end()
+        chunk_end = markers[i + 1].start() if i + 1 < len(markers) else len(text)
+        chunks.append((time_str, text[chunk_start:chunk_end].strip()))
+
+    first_reopen_seen = False
+    second_full_close_seen = False
+    for time_str, chunk in chunks:
+        lower = chunk.lower()
+        # Phrase markers are matched BEFORE the race-postponed filter. The page
+        # often appends "RACE POSTPONED ..." to the end of an earlier chunk
+        # (e.g. the 17:00 partial-reopen chunk on Tue 2 June 2026), so we must
+        # detect the phrase first or we'd lose the time entirely.
+        if _TT_MARK_PARTIAL_REOPEN in lower:
+            if not first_reopen_seen:
+                info["reopen"] = time_str
+                info["secondMountain"] = "stays closed"
+                first_reopen_seen = True
+            continue
+        if _TT_MARK_FULL_REOPEN in lower:
+            if not first_reopen_seen:
+                info["reopen"] = time_str
+                first_reopen_seen = True
+            elif "secondReopen" not in info:
+                info["secondReopen"] = time_str
+            continue
+        if _TT_MARK_MOUNTAIN_CLOSES in lower:
+            if "mountainCloses" not in info:
+                info["mountainCloses"] = time_str
+            elif first_reopen_seen and "secondMountain" not in info:
+                info["secondMountain"] = time_str
+            continue
+        if _TT_MARK_FULL_CLOSES in lower:
+            if "fullCloses" not in info:
+                info["fullCloses"] = time_str
+            elif not second_full_close_seen:
+                info["secondFull"] = time_str
+                second_full_close_seen = True
+            continue
+        # Race-postponed entries appear as time-less chunks tagged "RACE POSTPONED"
+        # at the start. Only skip those (don't false-trigger on chunks that
+        # mention "race postponed" elsewhere in trailing text).
+        if lower.startswith("race postponed"):
+            continue
+        # Anything else with content is a race-name chunk; the first one wins
+        # (decision: activity label is the headline race only).
+        if chunk and "activity" not in info:
+            cleaned = _clean_tt_activity(chunk)
+            if cleaned and not cleaned.lower().startswith(("daytime racing", "evening racing")):
+                info["activity"] = cleaned
+
+    return info
+
+
+def parse_tt_schedule(html: str) -> dict:
+    """Parse the iomttraces schedule page into a list of TT closures-array entries.
+
+    Returns:
+        {
+          "entries":  list[dict] - candidate entries in our schema,
+          "year":     int        - schedule year detected from page heading,
+          "warnings": list[str]  - non-fatal issues (missing year, missing tables,
+                                   past-day rows with no times, etc.),
+        }
+
+    Failure-tolerant: any unexpected error returns {entries: [], warnings: [...]}.
+    Tables 0 and 1 (Qualifying Week + Race Week) provide normal-schedule entries.
+    Table 2 (Contingency Periods) contributes ONLY for dates not seen in 0/1 -
+    those become minimal `contingency: true` entries with no times, matching how
+    Sunday 7 June is hand-encoded today.
+    """
+    out: dict = {"entries": [], "year": None, "warnings": []}
+    try:
+        soup = BeautifulSoup(html, "html.parser")
+    except Exception as e:
+        out["warnings"].append(f"BeautifulSoup parse error: {e}")
+        return out
+
+    year = parse_tt_schedule_year(html)
+    if year is None:
+        out["warnings"].append("could not detect schedule year from page heading")
+        year = datetime.utcnow().year  # last-ditch fallback (validation will catch)
+    out["year"] = year
+
+    tables = soup.find_all("table")
+    if not tables:
+        out["warnings"].append("no <table> elements found on schedule page")
+        return out
+
+    regular_dates: set[str] = set()
+    contingency_candidates: list[dict] = []
+
+    for ti, table in enumerate(tables):
+        rows = table.find_all("tr")
+        if not rows:
+            continue
+        # Identify which "section" this table represents from its first row.
+        # The header row is a single cell whose text matches QUALIFYING WEEK / RACE WEEK / CONTINGENCY PERIODS.
+        header_text = rows[0].get_text(" ", strip=True).lower()
+        is_contingency_table = "contingency" in header_text
+
+        for ri, row in enumerate(rows):
+            if ri == 0:
+                continue
+            cells = row.find_all(["td", "th"])
+            if len(cells) < 2:
+                continue
+            label_text = cells[0].get_text(" ", strip=True)
+            cell_text = cells[1].get_text(" ", strip=True)
+
+            day_info = _parse_tt_day_label(label_text, year)
+            if not day_info:
+                out["warnings"].append(f"could not parse day label: {label_text!r}")
+                continue
+            iso_date = day_info["date"]
+
+            if is_contingency_table:
+                # Capture for second-pass dedup against regular dates
+                contingency_candidates.append({
+                    "iso_date": iso_date,
+                    "day_label": day_info["day_label"],
+                    "label_text": label_text,
+                })
+                continue
+
+            regular_dates.add(iso_date)
+            cell_info = _parse_tt_schedule_cell(cell_text)
+
+            entry: dict = {
+                "event": "tt",
+                "course": "mountain",
+                "date": iso_date,
+                "day": day_info["day_label"],
+            }
+
+            if cell_info.get("is_rest"):
+                entry["restDay"] = True
+                entry["activity"] = cell_info.get("activity") or "Rest day"
+                out["entries"].append(entry)
+                continue
+
+            for k in ("mountainCloses", "fullCloses", "reopen",
+                      "secondMountain", "secondFull", "secondReopen", "activity"):
+                if cell_info.get(k) is not None:
+                    entry[k] = cell_info[k]
+
+            # If no times and no rest flag, this is a mutated past-day cell
+            # (results/links replacing schedule). Record a warning and skip.
+            if not any(entry.get(k) for k in ("mountainCloses", "fullCloses", "reopen", "restDay")):
+                out["warnings"].append(
+                    f"no closure times or rest marker for {iso_date} "
+                    f"(likely a past day with results displayed)"
+                )
+                continue
+
+            out["entries"].append(entry)
+
+    # Second pass: any contingency-table date that didn't appear in regular
+    # tables gets a minimal contingency-only entry, mirroring how Sun 7 June
+    # is currently hand-encoded. We don't attempt to parse contingency times -
+    # those are alternative-scenario times and don't fit our single-session schema.
+    for c in contingency_candidates:
+        if c["iso_date"] in regular_dates:
+            continue
+        out["entries"].append({
+            "event": "tt",
+            "course": "mountain",
+            "date": c["iso_date"],
+            "day": c["day_label"],
+            "activity": "Contingency day — only used if rescheduling needed",
+            "contingency": True,
+        })
+
+    return out
+
+
+def extract_tt_entries_from_index(html: str) -> list[dict]:
+    """Read the current TT entries from index.html between the
+    `// AUTO_TT_SCHEDULE_START` and `// AUTO_TT_SCHEDULE_END` comment markers.
+
+    Used by the validator for diff comparison. Returns [] if markers are
+    missing (e.g. on a fresh clone before Phase 1 lands) - validation will
+    then treat every parsed entry as "new".
+    """
+    m = re.search(
+        r"//\s*AUTO_TT_SCHEDULE_START\b.*?(?P<body>.*?)//\s*AUTO_TT_SCHEDULE_END\b",
+        html, re.DOTALL,
+    )
+    if not m:
+        return []
+    body = m.group("body")
+    entries: list[dict] = []
+    depth = 0
+    start: int | None = None
+    for i, ch in enumerate(body):
+        if ch == "{":
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0 and start is not None:
+                entry_text = body[start:i + 1]
+                parsed = _parse_js_tt_entry(entry_text)
+                if parsed:
+                    entries.append(parsed)
+                start = None
+    return entries
+
+
+def _parse_js_tt_entry(text: str) -> dict | None:
+    """Extract fields from a TT closures entry's JS object literal."""
+    fields: dict = {}
+    for key in (
+        "event", "course", "date",
+        "mountainCloses", "fullCloses", "reopen",
+        "secondMountain", "secondFull", "secondReopen",
+        "activity", "day",
+    ):
+        m = re.search(rf"\b{key}:\s*'([^']*)'", text)
+        if m:
+            fields[key] = m.group(1)
+    for key in ("restDay", "contingency", "pending"):
+        if re.search(rf"\b{key}:\s*true\b", text):
+            fields[key] = True
+    return fields if fields.get("date") else None
+
+
+def _hhmm_to_minutes(t: str | None) -> int | None:
+    """Convert 'HH:MM' to minutes-since-midnight, or None if unparseable."""
+    if not t:
+        return None
+    m = re.fullmatch(r"(\d{1,2}):(\d{2})", t)
+    if not m:
+        return None
+    h, mn = int(m.group(1)), int(m.group(2))
+    if not (0 <= h <= 23 and 0 <= mn <= 59):
+        return None
+    return h * 60 + mn
+
+
+# Time fields compared when diffing a parsed entry against a current entry.
+_TT_TIME_FIELDS = ("mountainCloses", "fullCloses", "reopen", "secondFull", "secondReopen")
+
+
+def validate_tt_parse(
+    parsed: list[dict],
+    current: list[dict],
+    today_iso: str,
+) -> dict:
+    """Run every validation gate on a parsed TT schedule.
+
+    Returns:
+        {
+          'status': 'ok' | 'rejected',
+          'reasons': [str, ...],          # human-readable rejection reasons, empty if ok
+          'diff_summary': {
+              'entries_parsed', 'entries_in_current_array',
+              'past_days_skipped', 'differences',
+              'missing_future_days', 'new_future_days',
+              'max_shift_per_day_minutes',
+              'pct_fields_shifted_over_2h',
+          }
+        }
+
+    Rules applied (any failure rejects the whole parse - no partial applies):
+        1. parser returned at least 1 entry
+        2. parsed dates fall within the May-June window of the current year
+        3. every per-entry time matches HH:MM and falls within 00:00-23:59
+        4. per-entry ordering: mountainCloses ≤ fullCloses ≤ reopen, and the
+           second-session times are strictly ordered after reopen
+        5. every FUTURE day present in the current array is also in the parse
+           (parser must not silently drop future entries)
+        6. diff sanity: not more than 50% of compared times shift by >2 hours
+        7. per-day diff sanity: no single day shifts by >3 hours
+
+    Past-day immutability (decision 1) is enforced by silently skipping any
+    parsed entry whose date is ≤ today. They appear in past_days_skipped for
+    visibility but never trigger rejection.
+    """
+    diff_summary: dict = {
+        "entries_parsed": len(parsed),
+        "entries_in_current_array": len(current),
+        "past_days_skipped": [],
+        "differences": [],
+        "missing_future_days": [],
+        "new_future_days": [],
+        "max_shift_per_day_minutes": {},
+        "pct_fields_shifted_over_2h": 0.0,
+    }
+    reasons: list[str] = []
+
+    # Rule 1: non-empty
+    if not parsed:
+        return {
+            "status": "rejected",
+            "reasons": ["parser returned 0 entries"],
+            "diff_summary": diff_summary,
+        }
+
+    # Parse today
+    try:
+        today_dt = datetime.strptime(today_iso, "%Y-%m-%d").date()
+    except ValueError:
+        return {
+            "status": "rejected",
+            "reasons": [f"invalid today_iso passed to validator: {today_iso!r}"],
+            "diff_summary": diff_summary,
+        }
+
+    # Rule 2: date window sanity
+    try:
+        parsed_dates = [datetime.strptime(e["date"], "%Y-%m-%d").date() for e in parsed]
+    except (KeyError, ValueError) as e:
+        reasons.append(f"unparseable date in parsed entries: {e}")
+        parsed_dates = []
+    if parsed_dates:
+        d_min, d_max = min(parsed_dates), max(parsed_dates)
+        if d_min.year != today_dt.year:
+            reasons.append(
+                f"parsed dates ({d_min} - {d_max}) span the wrong year for today ({today_dt})"
+            )
+        # TT 2026 runs late May to early June; reject anything outside May-June.
+        for d in (d_min, d_max):
+            if d.month not in (5, 6):
+                reasons.append(f"parsed date {d} falls outside the TT May-June window")
+                break
+
+    # Rule 3+4: time format and per-entry ordering
+    for e in parsed:
+        for k in _TT_TIME_FIELDS:
+            v = e.get(k)
+            if v is None:
+                continue
+            if not re.fullmatch(r"\d{2}:\d{2}", v):
+                reasons.append(f"{e.get('date','?')} {k}={v!r} is not HH:MM")
+        mc = _hhmm_to_minutes(e.get("mountainCloses"))
+        fc = _hhmm_to_minutes(e.get("fullCloses"))
+        ro = _hhmm_to_minutes(e.get("reopen"))
+        sf = _hhmm_to_minutes(e.get("secondFull"))
+        sr = _hhmm_to_minutes(e.get("secondReopen"))
+        date = e.get("date", "?")
+        if mc is not None and fc is not None and mc > fc:
+            reasons.append(f"{date} mountainCloses {e['mountainCloses']} > fullCloses {e['fullCloses']}")
+        if fc is not None and ro is not None and fc > ro:
+            reasons.append(f"{date} fullCloses {e['fullCloses']} > reopen {e['reopen']}")
+        if sf is not None and ro is not None and sf <= ro:
+            reasons.append(f"{date} secondFull {e['secondFull']} <= reopen {e['reopen']}")
+        if sr is not None and sf is not None and sr <= sf:
+            reasons.append(f"{date} secondReopen {e['secondReopen']} <= secondFull {e['secondFull']}")
+
+    # Index by date and partition past vs future
+    current_by_date = {e["date"]: e for e in current}
+    parsed_by_date = {e["date"]: e for e in parsed}
+    parsed_future = []
+    for e in parsed:
+        try:
+            d = datetime.strptime(e["date"], "%Y-%m-%d").date()
+        except (KeyError, ValueError):
+            continue
+        if d <= today_dt:
+            diff_summary["past_days_skipped"].append(e["date"])
+        else:
+            parsed_future.append(e)
+
+    # Rule 5: future-day coverage. Every future entry currently in the
+    # closures array must be in the parse, otherwise the parser is silently
+    # dropping schedule we already know exists.
+    for c_date in current_by_date:
+        try:
+            d = datetime.strptime(c_date, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if d <= today_dt:
+            continue
+        if c_date not in parsed_by_date:
+            diff_summary["missing_future_days"].append(c_date)
+    if diff_summary["missing_future_days"]:
+        reasons.append(
+            f"parse is missing {len(diff_summary['missing_future_days'])} future "
+            f"day(s) we already have in the array: {diff_summary['missing_future_days']}"
+        )
+
+    # Track NEW future days (parser found them, we didn't have them). Not a
+    # rejection on its own - could be a legitimate addition by the organisers.
+    for p_date in parsed_by_date:
+        try:
+            d = datetime.strptime(p_date, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if d <= today_dt:
+            continue
+        if p_date not in current_by_date:
+            diff_summary["new_future_days"].append(p_date)
+
+    # Rules 6 + 7: diff sanity
+    n_fields_compared = 0
+    n_fields_shifted_over_2h = 0
+    for e in parsed_future:
+        c = current_by_date.get(e["date"])
+        if not c:
+            continue
+        day_max_shift_min = 0
+        for f in _TT_TIME_FIELDS:
+            cv = c.get(f)
+            pv = e.get(f)
+            if cv and pv:
+                cm = _hhmm_to_minutes(cv)
+                pm = _hhmm_to_minutes(pv)
+                if cm is None or pm is None:
+                    continue
+                n_fields_compared += 1
+                delta = pm - cm
+                abs_delta = abs(delta)
+                if abs_delta > 120:
+                    n_fields_shifted_over_2h += 1
+                if abs_delta > day_max_shift_min:
+                    day_max_shift_min = abs_delta
+                if delta != 0:
+                    diff_summary["differences"].append({
+                        "date": e["date"],
+                        "field": f,
+                        "current": cv,
+                        "parsed": pv,
+                        "delta_minutes": delta,
+                    })
+        if day_max_shift_min > 0:
+            diff_summary["max_shift_per_day_minutes"][e["date"]] = day_max_shift_min
+
+    if n_fields_compared > 0:
+        pct = n_fields_shifted_over_2h / n_fields_compared
+        diff_summary["pct_fields_shifted_over_2h"] = round(pct, 4)
+        if pct > 0.5:
+            reasons.append(
+                f"{n_fields_shifted_over_2h}/{n_fields_compared} ({pct:.0%}) "
+                f"of compared times shift >2h vs current array — too large to auto-apply"
+            )
+
+    for date, sm in diff_summary["max_shift_per_day_minutes"].items():
+        if sm > 180:
+            reasons.append(
+                f"{date} shifts {sm} minutes (>3h) vs current array — too large to auto-apply, flag for review"
+            )
+
+    return {
+        "status": "rejected" if reasons else "ok",
+        "reasons": reasons,
+        "diff_summary": diff_summary,
+    }
+
+
+def write_tt_parsed_sidecar(
+    parsed: dict, validation: dict | None, now: datetime
+) -> None:
+    """Write data/schedule-tt-parsed.json with the parser output + (optionally)
+    the validation verdict. Always called, even on parse/validation failure -
+    the sidecar IS the observation surface during the Phase-3 watch period."""
+    DATA_DIR.mkdir(exist_ok=True)
+    payload = {
+        "fetched_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "source_url": IOMTT_SCHEDULE_URL,
+        "parser_version": TT_PARSER_VERSION,
+        "year_detected": parsed.get("year"),
+        "warnings": parsed.get("warnings", []),
+        "validation": validation or {"status": "not_run", "reasons": []},
+        "entries": parsed.get("entries", []),
+    }
+    SCHEDULE_TT_PARSED_PATH.write_text(json.dumps(payload, indent=2))
 
 
 # ----------------------------------------------------------------------------
@@ -795,6 +1384,55 @@ def main() -> int:
                     )
         except Exception as e:
             log(f"  schedule parse error: {e}")
+
+    # --- 2b. TT schedule parse + validate (observation only, Phases 2-3) ---
+    # Run the candidate parser against the same iomttraces page already fetched
+    # above, validate against the current closures array in index.html, and write
+    # everything to data/schedule-tt-parsed.json for observation. Phase 4 will
+    # later read this sidecar and actually overwrite the closures block - until
+    # then this code never touches the route checker's data.
+    log("Parsing TT schedule (observation-only, Phases 2-3)...")
+    tt_parsed: dict = {"entries": [], "warnings": ["iomttraces page not fetched"], "year": None}
+    tt_validation: dict | None = None
+    if page:
+        try:
+            tt_parsed = parse_tt_schedule(page)
+            log(
+                f"  parser: year={tt_parsed.get('year')} "
+                f"entries={len(tt_parsed.get('entries', []))} "
+                f"warnings={len(tt_parsed.get('warnings', []))}"
+            )
+        except Exception as e:
+            log(f"  TT parser error: {e}")
+            tt_parsed = {"entries": [], "warnings": [f"parser exception: {e}"], "year": None}
+        try:
+            current_tt = extract_tt_entries_from_index(original_html)
+            log(f"  current closures array contains {len(current_tt)} TT entries")
+            tt_validation = validate_tt_parse(
+                tt_parsed.get("entries", []),
+                current_tt,
+                now.strftime("%Y-%m-%d"),
+            )
+            log(f"  validation: {tt_validation['status']}")
+            for r in tt_validation.get("reasons", []):
+                log(f"    - {r}")
+            ds = tt_validation.get("diff_summary", {})
+            log(
+                f"    diff: {len(ds.get('differences', []))} field changes, "
+                f"max-shift days: {len(ds.get('max_shift_per_day_minutes', {}))}, "
+                f"missing-future: {len(ds.get('missing_future_days', []))}, "
+                f"past-skipped: {len(ds.get('past_days_skipped', []))}"
+            )
+        except Exception as e:
+            log(f"  TT validation error: {e}")
+            tt_validation = {"status": "rejected", "reasons": [f"validator exception: {e}"], "diff_summary": {}}
+
+    # Always write the sidecar - this IS the observation surface during Phases 2-3.
+    try:
+        write_tt_parsed_sidecar(tt_parsed, tt_validation, now)
+        log("  schedule-tt-parsed.json updated")
+    except Exception as e:
+        log(f"  schedule-tt-parsed.json write error: {e}")
 
     # --- 3. Southern 100 alerts (first user of the trust-tiered alerts system) ---
     today_iso = now.strftime("%Y-%m-%d")
