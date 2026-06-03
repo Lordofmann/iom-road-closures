@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-03T17:49:12Z",
+  "fetched_at": "2026-06-03T18:45:53Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2026,
@@ -23,10 +23,20 @@
         "2026-06-01",
         "2026-06-03"
       ],
-      "differences": [],
+      "differences": [
+        {
+          "date": "2026-06-04",
+          "field": "reopen",
+          "current": "18:00",
+          "parsed": "17:00",
+          "delta_minutes": -60
+        }
+      ],
       "missing_future_days": [],
       "new_future_days": [],
-      "max_shift_per_day_minutes": {},
+      "max_shift_per_day_minutes": {
+        "2026-06-04": 60
+      },
       "pct_fields_shifted_over_2h": 0.0
     }
   },
@@ -70,8 +80,10 @@
       "day": "Thu",
       "mountainCloses": "09:00",
       "fullCloses": "10:00",
-      "reopen": "18:00",
-      "activity": "Schedule update issued"
+      "reopen": "17:00",
+      "secondMountain": "stays closed",
+      "secondReopen": "18:00",
+      "activity": "RL360 Superstock TT Race 1"
     },
     {
       "event": "tt",
@@ -81,7 +93,7 @@
       "mountainCloses": "09:00",
       "fullCloses": "10:00",
       "reopen": "21:30",
-      "activity": "Free Practice [1 lap]"
+      "activity": "Monster Energy Supersport TT Race 2"
     },
     {
       "event": "tt",

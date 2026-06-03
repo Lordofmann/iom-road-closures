@@ -377,11 +377,63 @@ def extract_schedule_content(html: str) -> str | None:
 #   - past-day rows lose their times once a session has run
 # ----------------------------------------------------------------------------
 
-# Known closure-phrase markers, lower-cased for matching.
-_TT_MARK_MOUNTAIN_CLOSES = "mountain section only begins to close"
-_TT_MARK_FULL_CLOSES = "full tt mountain course closed"
-_TT_MARK_FULL_REOPEN = "all roads will re-open"
-_TT_MARK_PARTIAL_REOPEN = "all roads except for mountain section will re-open"
+# Phrase-class predicates. iomttraces periodically rewords cells (e.g. on
+# 2026-06-03 the partial-reopen wording moved from
+#   "All roads except for mountain section will re-open"
+# to
+#   "All roads open except Mountain Section"
+# - same intent, different prose. Rather than chain a growing list of literal
+# substrings, each phrase class is detected by checking for the SEMANTIC
+# signals it always carries, while excluding signals that belong to a
+# neighbouring class. Each predicate operates on the already-lowercased text.
+#
+# Test these by hand if you ever touch them - the chunk classifier in
+# _parse_tt_schedule_cell calls them in this exact order, and the order
+# matters (partial-reopen is more specific than full-reopen).
+
+def _phrase_is_partial_reopen(lower: str) -> bool:
+    """`All roads open except Mountain Section` / `All roads except for mountain
+    section will re-open` and similar."""
+    if "all roads" not in lower:
+        return False
+    if "except" not in lower:
+        return False
+    if "mountain section" not in lower:
+        return False
+    # Need some opening verb - matches "open", "reopen", "re-open".
+    return ("open" in lower) or ("reopen" in lower) or ("re-open" in lower)
+
+
+def _phrase_is_full_reopen(lower: str) -> bool:
+    """`All roads will re-open no later than` and similar full reopens."""
+    if "all roads" not in lower:
+        return False
+    if "except" in lower:          # would be partial, not full
+        return False
+    # Tolerate "re-open" / "reopen" / "will open" / "to open"
+    return any(s in lower for s in ("re-open", "reopen", "will open", "to open"))
+
+
+def _phrase_is_mountain_section_closes(lower: str) -> bool:
+    """`Mountain Section only begins to close` and similar mountain-section
+    closure phrases. Must NOT be a reopen line."""
+    if "all roads" in lower:       # reopen lines mention "all roads"
+        return False
+    if "mountain section" not in lower:
+        return False
+    return ("close" in lower) or ("shut" in lower)
+
+
+def _phrase_is_full_course_closes(lower: str) -> bool:
+    """`Full TT Mountain Course closed` and similar full-course closures.
+    Excludes reopen lines and mountain-section-only lines."""
+    if "all roads" in lower:       # reopen lines
+        return False
+    if "section" in lower:         # belongs to _phrase_is_mountain_section_closes
+        return False
+    if "mountain course" not in lower:
+        return False
+    return ("close" in lower) or ("shut" in lower)
 
 _MONTHS = {
     "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
@@ -433,8 +485,10 @@ def _clean_tt_activity(chunk: str) -> str:
     """Reduce a race-name chunk like 'Milwaukee Senior TT – [6 laps] Start List
     - Results - Lap by Lap - Fast Laps' to just 'Milwaukee Senior TT'."""
     s = chunk
-    # Drop "[N lap(s)]" annotations and everything after
-    s = re.sub(r"\s*[–—-]\s*\[\d+\s*laps?\].*$", "", s, flags=re.IGNORECASE)
+    # Drop "[N lap(s)]" annotations and everything after. The preceding dash
+    # is optional - some chunks have "Race 1 – [3 laps]", others have
+    # "Free Practice [1 lap]" with no dash before the brackets.
+    s = re.sub(r"\s*(?:[–—-]\s*)?\[\d+\s*laps?\].*$", "", s, flags=re.IGNORECASE)
     # Drop "Start List ..." trailing decoration
     s = re.sub(r"\s*Start\s+List.*$", "", s, flags=re.IGNORECASE)
     # Drop results / lap-by-lap / fast-laps trailing links
@@ -495,32 +549,40 @@ def _parse_tt_schedule_cell(text: str) -> dict:
 
     first_reopen_seen = False
     second_full_close_seen = False
+    # Activity selection: prefer a real race chunk (has a `[N lap(s)]`
+    # annotation AND isn't a practice session) over a practice chunk.
+    # Metadata chunks like "Schedule update issued" lack the laps annotation
+    # entirely and never win. The practice fallback is only used if no real
+    # race chunk is found in the cell - which can happen on practice-only days.
+    activity_practice_fallback: str | None = None
+
     for time_str, chunk in chunks:
         lower = chunk.lower()
-        # Phrase markers are matched BEFORE the race-postponed filter. The page
-        # often appends "RACE POSTPONED ..." to the end of an earlier chunk
-        # (e.g. the 17:00 partial-reopen chunk on Tue 2 June 2026), so we must
-        # detect the phrase first or we'd lose the time entirely.
-        if _TT_MARK_PARTIAL_REOPEN in lower:
+        # Phrase predicates are checked BEFORE the race-postponed filter. The
+        # page often appends "RACE POSTPONED ..." to the end of an earlier
+        # chunk (e.g. the 17:00 partial-reopen chunk on Tue 2 June 2026), so we
+        # must detect the phrase first or we'd lose the time entirely.
+        # Order matters: partial-reopen is more specific than full-reopen.
+        if _phrase_is_partial_reopen(lower):
             if not first_reopen_seen:
                 info["reopen"] = time_str
                 info["secondMountain"] = "stays closed"
                 first_reopen_seen = True
             continue
-        if _TT_MARK_FULL_REOPEN in lower:
+        if _phrase_is_full_reopen(lower):
             if not first_reopen_seen:
                 info["reopen"] = time_str
                 first_reopen_seen = True
             elif "secondReopen" not in info:
                 info["secondReopen"] = time_str
             continue
-        if _TT_MARK_MOUNTAIN_CLOSES in lower:
+        if _phrase_is_mountain_section_closes(lower):
             if "mountainCloses" not in info:
                 info["mountainCloses"] = time_str
             elif first_reopen_seen and "secondMountain" not in info:
                 info["secondMountain"] = time_str
             continue
-        if _TT_MARK_FULL_CLOSES in lower:
+        if _phrase_is_full_course_closes(lower):
             if "fullCloses" not in info:
                 info["fullCloses"] = time_str
             elif not second_full_close_seen:
@@ -532,12 +594,26 @@ def _parse_tt_schedule_cell(text: str) -> dict:
         # mention "race postponed" elsewhere in trailing text).
         if lower.startswith("race postponed"):
             continue
-        # Anything else with content is a race-name chunk; the first one wins
-        # (decision: activity label is the headline race only).
-        if chunk and "activity" not in info:
+        # Activity candidate. Must carry a "[N lap(s)]" annotation, otherwise
+        # it's metadata (e.g. "Schedule update issued", "Notes") rather than
+        # a real session. Among annotated chunks, real races beat practice.
+        if "activity" in info:
+            continue
+        if chunk and re.search(r"\[\s*\d+\s*laps?\b", chunk, re.IGNORECASE):
             cleaned = _clean_tt_activity(chunk)
-            if cleaned and not cleaned.lower().startswith(("daytime racing", "evening racing")):
+            if not cleaned or cleaned.lower().startswith(("daytime racing", "evening racing")):
+                continue
+            is_practice = "practice" in cleaned.lower()
+            if not is_practice:
+                # Real race - lock in the activity immediately
                 info["activity"] = cleaned
+            elif activity_practice_fallback is None:
+                # Hold the first practice as fallback in case the cell has no
+                # non-practice race (e.g. a practice-only Solo Practice day).
+                activity_practice_fallback = cleaned
+
+    if "activity" not in info and activity_practice_fallback is not None:
+        info["activity"] = activity_practice_fallback
 
     return info
 
