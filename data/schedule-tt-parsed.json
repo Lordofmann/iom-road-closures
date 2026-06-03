@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-03T18:45:53Z",
+  "fetched_at": "2026-06-03T19:59:29Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2026,
@@ -23,20 +23,10 @@
         "2026-06-01",
         "2026-06-03"
       ],
-      "differences": [
-        {
-          "date": "2026-06-04",
-          "field": "reopen",
-          "current": "18:00",
-          "parsed": "17:00",
-          "delta_minutes": -60
-        }
-      ],
+      "differences": [],
       "missing_future_days": [],
       "new_future_days": [],
-      "max_shift_per_day_minutes": {
-        "2026-06-04": 60
-      },
+      "max_shift_per_day_minutes": {},
       "pct_fields_shifted_over_2h": 0.0
     }
   },
