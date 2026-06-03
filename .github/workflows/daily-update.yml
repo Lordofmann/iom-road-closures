@@ -40,7 +40,7 @@ jobs:
         run: |
           git config user.name "iom-roads-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add index.html data/news.json data/baseline.json data/alerts.json data/schedule-tt-parsed.json 2>/dev/null || true
+          git add index.html data/news.json data/baseline.json data/alerts.json data/schedule-tt-parsed.json data/schedule-tt-last-applied.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "Nothing to commit."
           else

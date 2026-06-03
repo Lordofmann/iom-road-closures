@@ -453,6 +453,27 @@
   }
   .alert.tier-auto .alert-tier-label { color: var(--warn); }
 
+  /* Phase 5 — "TT schedule auto-imported" badge. Shown above the schedule.
+     Freshness label inside is filled in by JS from data/schedule-tt-last-applied.json
+     so the timestamp stays accurate between HTML rewrites. Goes amber after 24h. */
+  .tt-badge {
+    margin: 14px 0 18px;
+    padding: 10px 14px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--open);
+    border-radius: var(--radius);
+    font-size: 0.86rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+  .tt-badge .freshness { font-weight: 600; color: var(--ink); }
+  .tt-badge .freshness.stale { color: var(--warn); font-weight: 700; }
+  .tt-badge.stale-source {
+    border-left-color: var(--warn);
+    background: var(--warn-soft);
+  }
+
   /* ============ GLOSSARY ============ */
   .glossary { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
   .gloss-card {
@@ -702,7 +723,8 @@
 <section id="tab-now" class="section active">
   <!-- AUTO_ALERTS_START -->
 <div class="alerts-block">
-<div class="alerts-meta">Last checked <span class="freshness" data-freshness-from="2026-06-03T11:16:52Z">just now</span> &middot; auto-detected from external sources, not yet verified.</div>
+<div class="alerts-meta">Last checked <span class="freshness" data-freshness-from="2026-06-03T13:22:47Z">just now</span> &middot; auto-detected from external sources, not yet verified.</div>
+<div class="alert tier-auto" data-event="tt"><div class="alert-tier-label">&#9888; AUTOMATICALLY DETECTED &mdash; NOT YET VERIFIED <span class="pin">&#128204; TODAY'S RACING</span></div><div class="alert-text"><strong>TT schedule auto-updated from iomttraces (3 days changed: 2026-06-04, 2026-06-05, 2026-06-06)</strong></div><div class="alert-meta">Source: <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a> &middot; published 03 Jun 2026, 12:24 UTC</div><div class="alert-note">The route checker has been updated with these times. Always verify against the official source or the Road Information Hotline (01624 685888) before setting off.</div></div>
 <div class="alert tier-auto" data-event="pre-tt"><div class="alert-tier-label">&#9888; AUTOMATICALLY DETECTED &mdash; NOT YET VERIFIED</div><div class="alert-text"><strong>Revised Schedule for Saturday 23rd May (Afternoon)</strong></div><div class="alert-meta">Source: <a href="https://southern100.com/revised-schedule-for-saturday-23rd-may-afternoon/" target="_blank" rel="noopener">Southern 100</a> &middot; published 23 May 2026, 09:14 UTC &middot; seen 1 week ago</div><div class="alert-note">Heads-up: this source publishes revised times as images, which we cannot read automatically. Open the source link to see the new times. Our route checker has <strong>not</strong> been updated for this revision.</div></div>
 </div>
 <!-- AUTO_ALERTS_END -->
@@ -711,11 +733,11 @@
 <div class="auto-news">
 <h3>Latest TT news from Manx Radio</h3>
 <ul>
-<li><a href="https://www.manxradio.com/news/isle-of-man-sport/franco-bourne-planning-tt-return-after-missing-debut/" target="_blank" rel="noopener">Franco Bourne planning TT return after missing debut</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/no-tt-racing-to-take-place-today/" target="_blank" rel="noopener">No TT racing to take place</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/tt-newcomer-taken-to-nobles-after-coming-off-at-kerrowmoar/" target="_blank" rel="noopener">TT newcomer taken to Noble's after coming off at Kerrowmoar</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-news/tt-marshals-urged-to-sign-up-early-for-contingency-sessions/" target="_blank" rel="noopener">TT marshals urged to sign up early for contingency sessions</a> <span class="meta">&middot; just now</span></li>
-<li><a href="https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-wins-first-supersport-contest-of-tt-2026/" target="_blank" rel="noopener">Michael Dunlop wins first Supersport contest of TT 2026</a> <span class="meta">&middot; just now</span></li>
+<li><a href="https://www.manxradio.com/news/isle-of-man-sport/franco-bourne-planning-tt-return-after-missing-debut/" target="_blank" rel="noopener">Franco Bourne planning TT return after missing debut</a> <span class="meta">&middot; 2h ago</span></li>
+<li><a href="https://www.manxradio.com/news/isle-of-man-news/no-tt-racing-to-take-place-today/" target="_blank" rel="noopener">No TT racing to take place</a> <span class="meta">&middot; 2h ago</span></li>
+<li><a href="https://www.manxradio.com/news/isle-of-man-news/tt-newcomer-taken-to-nobles-after-coming-off-at-kerrowmoar/" target="_blank" rel="noopener">TT newcomer taken to Noble's after coming off at Kerrowmoar</a> <span class="meta">&middot; 2h ago</span></li>
+<li><a href="https://www.manxradio.com/news/isle-of-man-news/tt-marshals-urged-to-sign-up-early-for-contingency-sessions/" target="_blank" rel="noopener">TT marshals urged to sign up early for contingency sessions</a> <span class="meta">&middot; 2h ago</span></li>
+<li><a href="https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-wins-first-supersport-contest-of-tt-2026/" target="_blank" rel="noopener">Michael Dunlop wins first Supersport contest of TT 2026</a> <span class="meta">&middot; 2h ago</span></li>
 </ul>
 <p class="meta" style="margin-top:8px;">Headlines fetched automatically. For live, definitive road status call <strong>01624&nbsp;685888</strong>.</p>
 </div>
@@ -737,6 +759,9 @@
 <!-- ========== FULL SCHEDULE ========== -->
 <section id="tab-schedule" class="section">
   <h2>Full 2026 schedule</h2>
+  <!-- AUTO_TT_BADGE_START -->
+<div class="tt-badge">TT schedule auto-imported <span class="freshness" data-freshness-source="tt-schedule" data-stale-after-mins="1440">recently</span> from <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a>. Always verify with <strong>01624&nbsp;685888</strong>.</div>
+<!-- AUTO_TT_BADGE_END -->
   <div class="filters" id="filters">
     <button class="active" data-event="all">All events</button>
     <button data-event="pre-tt">Pre-TT Billown</button>
@@ -911,7 +936,7 @@
 
 <footer class="footer">
   <p>Data compiled from <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a>, <a href="https://southern100.com/" target="_blank" rel="noopener">southern100.com</a>, <a href="https://manxgrandprix.co.uk/" target="_blank" rel="noopener">manxgrandprix.co.uk</a>, <a href="https://www.gov.im/about-the-government/departments/infrastructure/highway-services/upcoming-roadworks-and-events-on-roads/" target="_blank" rel="noopener">gov.im</a> and <a href="https://www.iomtoday.co.im/topic/tt" target="_blank" rel="noopener">iomtoday.co.im</a>. Schedules are provisional and subject to change without notice. This is an unofficial guide; always verify with the Road Information Hotline (01624&nbsp;685888) before setting off.</p>
-  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->03 June 2026, 11:16 UTC<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
+  <p><strong>Last updated:</strong> <span id="last-updated"><!-- LAST_UPDATED -->03 June 2026, 13:22 UTC<!-- /LAST_UPDATED --></span> &middot; Spotted an error? Race day changed? <a href="mailto:lordofmann@gmail.com?subject=IoM road closures correction">Let us know</a>.</p>
   <p class="credit">
     <em>Built by someone who would rather code an entire App than ever again try to find and understand the local Manx information.</em><br>
     You can find me at <a href="mailto:oli@ebusiness.im">oli@ebusiness.im</a>
@@ -939,12 +964,14 @@ const closures = [
     activity: 'Pre-TT Billown Race Day (final)' },
 
   // ===== TT 2026 (Mountain Course) =====
-  // AUTO_TT_SCHEDULE_START — managed by scripts/update.py once Phase 4 ships.
-  // The block between these markers will be overwritten by the scraper when it
-  // successfully parses and validates the iomttraces.com schedule. Hand-edits
-  // inside this block survive only until the next successful auto-update.
-  // Pre-TT, Southern 100 and Manx GP entries live OUTSIDE these markers and
-  // are never touched by the parser.
+  // AUTO_TT_SCHEDULE_START — managed by scripts/update.py.
+  //   Managed by scripts/update.py. The block between these markers is
+  //   overwritten by the scraper when a parsed-and-validated iomttraces
+  //   schedule becomes available. Hand-edits inside this block survive
+  //   only until the next successful auto-update. Use
+  //   data/schedule-tt-manual-override.json to force a specific entry.
+  //   Pre-TT, Southern 100 and Manx GP entries live OUTSIDE these
+  //   markers and are never touched by the parser.
   { event: 'tt', course: 'mountain', date: '2026-05-25',
     mountainCloses: '08:45', fullCloses: '10:00', reopen: '21:30',
     activity: 'Free Practice &amp; Qualifying 1', day: 'Mon (Bank Holiday)' },
@@ -975,13 +1002,13 @@ const closures = [
     mountainCloses: '09:00', fullCloses: '10:00', reopen: '17:00',
     activity: 'Sidecar TT 2 (10:45) + Superstock TT 2 (13:30) + Solo Practice', day: 'Wed — Race Day 4' },
   { event: 'tt', course: 'mountain', date: '2026-06-04',
-    activity: 'Rest day (contingency only)', day: 'Thu', restDay: true },
+    activity: 'Rest day', day: 'Thu', restDay: true },
   { event: 'tt', course: 'mountain', date: '2026-06-05',
     mountainCloses: '09:00', fullCloses: '10:00', reopen: '21:30',
-    activity: 'Supersport TT 2 (10:45) + Sportbike TT 2 (14:00) + Senior Practice (16:00)', day: 'Fri — Race Day 5 (TT Bank Holiday)' },
+    activity: 'Monster Energy Supersport TT Race 2', day: 'Fri — Race Day 5 (TT Bank Holiday)' },
   { event: 'tt', course: 'mountain', date: '2026-06-06',
     mountainCloses: '09:00', fullCloses: '10:00', reopen: '21:30',
-    activity: 'Senior TT (11:00, 6 laps) — festival finale', day: 'Sat — Race Day 6' },
+    activity: 'Milwaukee Senior TT', day: 'Sat — Race Day 6' },
   { event: 'tt', course: 'mountain', date: '2026-06-07',
     activity: 'Contingency day — only used if rescheduling needed', day: 'Sun', contingency: true },
   // AUTO_TT_SCHEDULE_END
@@ -2091,41 +2118,63 @@ function runClassifierSelfCheck() {
   }
 }
 
-// ====== FRESHNESS LABELS (alerts block, and any future "last checked X ago") ======
-// Converts ISO timestamps embedded as data-freshness-from="..." into a friendly
-// relative label computed at page-load time, so the staleness is honest: a feed
-// that hasn't refreshed in 12+ hours shows up as a visibly stale label, not a
-// frozen "30 minutes ago" lie.
+// ====== FRESHNESS LABELS ======
+// Converts ISO timestamps into "X ago" labels computed at page-load time, so a
+// feed that hasn't refreshed in N+ hours shows up as a visibly stale label, not
+// a frozen lie.
 //
-// Two-stage timestamp:
-//   1. The embedded data-freshness-from attribute is whatever was current the
-//      last time index.html was rewritten. That may be hours/days ago, because
-//      we deliberately skip rewrites when displayed content hasn't changed.
-//   2. data/alerts.json carries the LIVE last_fetch, refreshed on every scraper
-//      run (even quiet runs). We fetch it once on load and prefer its value, so
-//      the freshness label reflects the *actual* most recent scraper run.
-//      If the fetch fails (file://, offline, CORS), we fall back to the embedded
-//      attribute — still useful, just potentially staler.
+// Sources (in priority order, per element):
+//   1. data-freshness-source="tt-schedule" -> live last_ok_validation from
+//      data/schedule-tt-last-applied.json (used by the TT auto-import badge).
+//   2. otherwise -> live last_fetch from data/alerts.json (used by the alerts
+//      block "Last checked" line).
+//   3. fallback -> the embedded data-freshness-from attribute on the element
+//      (useful for file:// local testing or if the JSON fetch fails).
+//
+// Per-element stale threshold: data-stale-after-mins (default 720 = 12h).
+// The TT badge sets this to 1440 (24h) per the agreed UX.
 async function updateFreshnessLabels() {
-  let liveLastFetch = null;
-  try {
-    const resp = await fetch('data/alerts.json', { cache: 'no-store' });
-    if (resp.ok) {
-      const data = await resp.json();
-      if (data && typeof data.last_fetch === 'string') liveLastFetch = data.last_fetch;
-    }
-  } catch (e) {
-    // Fall through to embedded fallback.
-  }
+  let liveAlertsFetch = null;
+  let liveTtValidation = null;
 
-  const els = document.querySelectorAll('[data-freshness-from]');
+  // Pull both sidecar JSONs in parallel. Failures are silent - we fall back
+  // to whichever value the element already carries.
+  await Promise.all([
+    (async () => {
+      try {
+        const r = await fetch('data/alerts.json', { cache: 'no-store' });
+        if (r.ok) {
+          const d = await r.json();
+          if (d && typeof d.last_fetch === 'string') liveAlertsFetch = d.last_fetch;
+        }
+      } catch (e) { /* ignore */ }
+    })(),
+    (async () => {
+      try {
+        const r = await fetch('data/schedule-tt-last-applied.json', { cache: 'no-store' });
+        if (r.ok) {
+          const d = await r.json();
+          if (d && typeof d.last_ok_validation === 'string') liveTtValidation = d.last_ok_validation;
+        }
+      } catch (e) { /* ignore */ }
+    })(),
+  ]);
+
   const now = new Date();
-  els.forEach(function(el) {
-    const iso = liveLastFetch || el.getAttribute('data-freshness-from');
+  document.querySelectorAll('[data-freshness-source], [data-freshness-from]').forEach(function(el) {
+    const source = el.getAttribute('data-freshness-source') || '';
+    let iso = null;
+    if (source === 'tt-schedule') {
+      iso = liveTtValidation || el.getAttribute('data-freshness-from');
+    } else {
+      iso = liveAlertsFetch || el.getAttribute('data-freshness-from');
+    }
     if (!iso) return;
     const then = new Date(iso);
     if (isNaN(then.getTime())) return;
+
     const mins = Math.max(0, Math.floor((now - then) / 60000));
+    const staleAfterMins = parseInt(el.getAttribute('data-stale-after-mins') || '720', 10);
     let label;
     if (mins < 5)              label = 'just now';
     else if (mins < 60)        label = mins + ' min ago';
@@ -2133,9 +2182,15 @@ async function updateFreshnessLabels() {
     else if (mins < 48 * 60)   label = 'yesterday';
     else                       label = Math.floor(mins / (24 * 60)) + ' days ago';
     el.textContent = label;
-    // Mark visibly stale if it's been more than 12 hours since the scraper ran.
-    if (mins > 12 * 60) el.classList.add('stale');
-    else                el.classList.remove('stale');
+    if (mins > staleAfterMins) el.classList.add('stale');
+    else                       el.classList.remove('stale');
+
+    // Mirror onto the badge's outer container so the whole badge can colour-shift.
+    const badge = el.closest('.tt-badge');
+    if (badge) {
+      if (mins > staleAfterMins) badge.classList.add('stale-source');
+      else                       badge.classList.remove('stale-source');
+    }
   });
 }
 

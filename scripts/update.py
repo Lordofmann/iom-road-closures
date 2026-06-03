@@ -20,6 +20,7 @@ Run locally: python scripts/update.py
 from __future__ import annotations
 
 import hashlib
+import html as html_mod
 import json
 import os
 import re
@@ -49,7 +50,14 @@ NEWS_PATH = DATA_DIR / "news.json"
 ALERTS_PATH = DATA_DIR / "alerts.json"
 SCHEDULE_TT_PARSED_PATH = DATA_DIR / "schedule-tt-parsed.json"
 SCHEDULE_TT_OVERRIDE_PATH = DATA_DIR / "schedule-tt-manual-override.json"
+SCHEDULE_TT_LAST_APPLIED_PATH = DATA_DIR / "schedule-tt-last-applied.json"
 TT_PARSER_VERSION = "1.0"
+
+# Kill switch: setting this env var to a truthy value disables the Phase 4
+# apply step (parse + validate still run for observation). Useful if the
+# parser starts producing bad data and we need to halt live writes while
+# diagnosing, without reverting code.
+TT_AUTO_UPDATE_DISABLED_ENV = "IOM_TT_AUTO_UPDATE_DISABLED"
 
 USER_AGENT = (
     "Mozilla/5.0 (compatible; IOM-RoadClosures-Bot/1.0; "
@@ -612,7 +620,13 @@ def extract_tt_entries_from_index(html: str) -> list[dict]:
 
 
 def _parse_js_tt_entry(text: str) -> dict | None:
-    """Extract fields from a TT closures entry's JS object literal."""
+    """Extract fields from a TT closures entry's JS object literal.
+
+    HTML entities in string values (e.g. '&amp;' from the existing hand-written
+    activities) are decoded here so the in-memory representation is canonical
+    plain text. The renderer will encode them again on the way back out; doing
+    both sides keeps everything single-encoded and avoids '&amp;amp;'-style
+    double encoding when an entry survives the merge unchanged."""
     fields: dict = {}
     for key in (
         "event", "course", "date",
@@ -622,7 +636,19 @@ def _parse_js_tt_entry(text: str) -> dict | None:
     ):
         m = re.search(rf"\b{key}:\s*'([^']*)'", text)
         if m:
-            fields[key] = m.group(1)
+            raw = m.group(1)
+            # JS single-quoted string: undo \\ -> \ and \' -> '
+            raw = raw.replace("\\'", "'").replace("\\\\", "\\")
+            # HTML entities decoded recursively. Defensive: a buggy earlier
+            # apply could have left a value double-encoded (e.g. '&amp;amp;');
+            # recursive decode unwinds it cleanly. Stable for already-canonical
+            # values (a single & or '—' doesn't decode further).
+            while True:
+                decoded = html_mod.unescape(raw)
+                if decoded == raw:
+                    break
+                raw = decoded
+            fields[key] = raw
     for key in ("restDay", "contingency", "pending"):
         if re.search(rf"\b{key}:\s*true\b", text):
             fields[key] = True
@@ -869,6 +895,221 @@ def write_tt_parsed_sidecar(
         "entries": parsed.get("entries", []),
     }
     SCHEDULE_TT_PARSED_PATH.write_text(json.dumps(payload, indent=2))
+
+
+# ----------------------------------------------------------------------------
+# TT Phase 4: apply the parsed schedule to the closures array in index.html
+#
+# Priority for any given date:
+#   1. Manual override file (data/schedule-tt-manual-override.json) - emergency
+#      lever to force a value when the parser is wrong. Per-date.
+#   2. For dates STRICTLY in the future: the parsed entry.
+#   3. For dates <= today: the current entry from the in-page array (past-day
+#      immutability - we never overwrite historical data).
+#   4. For future dates the parser DIDN'T find: keep the current entry.
+#   5. For future dates the parser found that don't exist in current: add them.
+#
+# No partial applies: if validation rejected the parse, the whole apply step
+# is skipped. The current array stays untouched.
+# ----------------------------------------------------------------------------
+
+# Field order matches the existing in-file style: identity -> first session ->
+# second session -> activity-and-flags. Renderer skips fields not in the dict.
+_TT_FIELD_ORDER_GROUPS = [
+    ["event", "course", "date"],
+    ["mountainCloses", "fullCloses", "reopen"],
+    ["secondMountain", "secondFull", "secondReopen"],
+    ["activity", "day", "restDay", "contingency", "pending"],
+]
+
+# Match the existing AUTO_TT_SCHEDULE markers and capture the content between
+# them. The header comment line ("AUTO_TT_SCHEDULE_START -- ...") is part of
+# group(1) and preserved; only the body is rewritten.
+_TT_SCHEDULE_BLOCK_RE = re.compile(
+    r"(//\s*AUTO_TT_SCHEDULE_START[^\n]*\n)(.*?)(\n\s*//\s*AUTO_TT_SCHEDULE_END)",
+    re.DOTALL,
+)
+
+
+def tt_auto_update_disabled() -> bool:
+    """Returns True if the kill-switch env var is set to a truthy value."""
+    v = (os.environ.get(TT_AUTO_UPDATE_DISABLED_ENV) or "").strip().lower()
+    return v in ("1", "true", "yes", "on")
+
+
+def load_tt_override() -> list[dict]:
+    """Read the optional manual override file. Returns [] if not present or
+    malformed. The override is the user's emergency lever - format mirrors the
+    parsed-entries shape exactly."""
+    if not SCHEDULE_TT_OVERRIDE_PATH.exists():
+        return []
+    try:
+        data = json.loads(SCHEDULE_TT_OVERRIDE_PATH.read_text())
+    except Exception as e:
+        log(f"  manual override file present but unparseable: {e}")
+        return []
+    entries = data.get("entries", [])
+    if not isinstance(entries, list):
+        return []
+    # defensive: every entry must at least have a date string
+    return [e for e in entries if isinstance(e, dict) and isinstance(e.get("date"), str)]
+
+
+def _render_tt_entry_as_js(entry: dict) -> str:
+    """Render one TT closures entry as a JS object literal matching the
+    existing in-file style: 2-space outer indent, 4-space continuation
+    indent, fields grouped by category."""
+    def fmt_field(field: str, value) -> str:
+        if isinstance(value, bool):
+            return f"{field}: {'true' if value else 'false'}"
+        # HTML-escape ampersands etc to match the existing &amp; convention,
+        # then escape single-quote + backslash for the JS single-quoted string.
+        s = html_mod.escape(str(value), quote=False)
+        s = s.replace("\\", "\\\\").replace("'", "\\'")
+        return f"{field}: '{s}'"
+
+    lines: list[str] = []
+    for group in _TT_FIELD_ORDER_GROUPS:
+        group_parts = [fmt_field(f, entry[f]) for f in group if f in entry]
+        if group_parts:
+            lines.append(", ".join(group_parts))
+
+    if not lines:
+        return ""
+    if len(lines) == 1:
+        return "  { " + lines[0] + " }"
+    body = ",\n    ".join(lines)
+    return "  { " + body + " }"
+
+
+def render_tt_block(entries: list[dict]) -> str:
+    """Render the full body that lives between AUTO_TT_SCHEDULE markers."""
+    # Evergreen header comments rewritten each apply so the wording stays
+    # accurate (the pre-Phase-4 placeholder text drops out on first apply).
+    header = (
+        "  //   Managed by scripts/update.py. The block between these markers is\n"
+        "  //   overwritten by the scraper when a parsed-and-validated iomttraces\n"
+        "  //   schedule becomes available. Hand-edits inside this block survive\n"
+        "  //   only until the next successful auto-update. Use\n"
+        "  //   data/schedule-tt-manual-override.json to force a specific entry.\n"
+        "  //   Pre-TT, Southern 100 and Manx GP entries live OUTSIDE these\n"
+        "  //   markers and are never touched by the parser.\n"
+    )
+    rendered = [s for s in (_render_tt_entry_as_js(e) for e in entries) if s]
+    return header + ",\n".join(rendered) + ","
+
+
+def merge_tt_entries(
+    current: list[dict],
+    parsed: list[dict],
+    override: list[dict],
+    today_iso: str,
+) -> list[dict]:
+    """Combine current + parsed + override following the priority rules above.
+    Returns the final list sorted by date."""
+    today_dt = datetime.strptime(today_iso, "%Y-%m-%d").date()
+    current_by_date = {e["date"]: e for e in current if e.get("date")}
+    parsed_by_date  = {e["date"]: e for e in parsed  if e.get("date")}
+    override_by_date = {e["date"]: e for e in override if e.get("date")}
+
+    all_dates = set(current_by_date) | set(parsed_by_date) | set(override_by_date)
+    result: list[dict] = []
+    for d in sorted(all_dates):
+        try:
+            d_dt = datetime.strptime(d, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+
+        if d in override_by_date:
+            result.append(override_by_date[d])
+            continue
+        if d_dt <= today_dt:
+            # Past-day immutability - parser/override never overwrites history
+            if d in current_by_date:
+                result.append(current_by_date[d])
+            continue
+        # Future date
+        if d in parsed_by_date:
+            result.append(parsed_by_date[d])
+        elif d in current_by_date:
+            result.append(current_by_date[d])
+    return result
+
+
+def patch_html_tt_schedule(html: str, new_block: str) -> str:
+    """Replace the content between AUTO_TT_SCHEDULE_START and AUTO_TT_SCHEDULE_END.
+    Returns the html unchanged if markers are missing (defensive)."""
+    if not _TT_SCHEDULE_BLOCK_RE.search(html):
+        return html
+    return _TT_SCHEDULE_BLOCK_RE.sub(
+        lambda m: m.group(1) + new_block + m.group(3), html
+    )
+
+
+# ----------------------------------------------------------------------------
+# TT Phase 5: "last verified" badge timestamp
+#
+# Each successful validation (status="ok") refreshes the timestamp the page's
+# freshness label is computed against. Storage is a tiny standalone JSON so
+# the page's JS can fetch it cheaply on load (same pattern as alerts.json) and
+# the freshness label stays honest between HTML rewrites.
+# ----------------------------------------------------------------------------
+
+def load_tt_last_applied() -> dict:
+    if not SCHEDULE_TT_LAST_APPLIED_PATH.exists():
+        return {}
+    try:
+        return json.loads(SCHEDULE_TT_LAST_APPLIED_PATH.read_text())
+    except Exception:
+        return {}
+
+
+def write_tt_last_applied(payload: dict) -> None:
+    DATA_DIR.mkdir(exist_ok=True)
+    SCHEDULE_TT_LAST_APPLIED_PATH.write_text(json.dumps(payload, indent=2))
+
+
+_TT_BADGE_BLOCK_RE = re.compile(
+    r"(<!-- AUTO_TT_BADGE_START -->)(.*?)(<!-- AUTO_TT_BADGE_END -->)",
+    re.DOTALL,
+)
+
+
+def render_tt_badge(has_validated_baseline: bool) -> str:
+    """Generate the HTML body for the AUTO_TT_BADGE block.
+
+    Two static shapes - chosen by whether a baseline validation has ever
+    succeeded. The freshness span is NOT given a timestamp here: doing so
+    would change every cron run and bust deploy-gating. Instead the page's
+    updateFreshnessLabels() JS fetches data/schedule-tt-last-applied.json on
+    load and fills in the relative-time label from `last_ok_validation`.
+    Marker: data-freshness-source='tt-schedule' tells the JS where to look.
+    """
+    if has_validated_baseline:
+        return (
+            '<!-- AUTO_TT_BADGE_START -->\n'
+            '<div class="tt-badge">'
+            'TT schedule auto-imported <span class="freshness" '
+            'data-freshness-source="tt-schedule" data-stale-after-mins="1440">recently</span>'
+            ' from <a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">iomttraces.com</a>. '
+            'Always verify with <strong>01624&nbsp;685888</strong>.'
+            '</div>\n'
+            '<!-- AUTO_TT_BADGE_END -->'
+        )
+    return (
+        '<!-- AUTO_TT_BADGE_START -->\n'
+        '<div class="tt-badge">'
+        'TT schedule auto-update is enabled but has not yet established a '
+        'verified baseline. Always verify with <strong>01624&nbsp;685888</strong>.'
+        '</div>\n'
+        '<!-- AUTO_TT_BADGE_END -->'
+    )
+
+
+def patch_html_tt_badge(html: str, badge_html: str) -> str:
+    if not _TT_BADGE_BLOCK_RE.search(html):
+        return html
+    return _TT_BADGE_BLOCK_RE.sub(badge_html, html)
 
 
 # ----------------------------------------------------------------------------
@@ -1434,6 +1675,108 @@ def main() -> int:
     except Exception as e:
         log(f"  schedule-tt-parsed.json write error: {e}")
 
+    # --- 2c. TT Phase 4: apply parsed schedule to closures array ---
+    # Runs only when: validation said OK AND the kill-switch env var is unset.
+    # On a successful apply we update data/schedule-tt-last-applied.json (the
+    # badge's freshness source) and, if the closures block actually changed,
+    # raise a tier-auto alert with the per-day diff so users see what moved.
+    tt_schedule_applied = False         # signals deploy gate to rewrite index.html
+    tt_phase4_alerts: list[dict] = []   # alerts to merge into the cache below
+    tt_last_applied = load_tt_last_applied()
+    today_iso = now.strftime("%Y-%m-%d")
+    nowstamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    if tt_auto_update_disabled():
+        log(f"  TT auto-update DISABLED via ${TT_AUTO_UPDATE_DISABLED_ENV}; "
+            f"skipping apply step")
+    elif tt_validation and tt_validation.get("status") == "ok":
+        try:
+            override_entries = load_tt_override()
+            if override_entries:
+                log(f"  manual override file has {len(override_entries)} entries (will take precedence)")
+            current_tt = extract_tt_entries_from_index(original_html)
+            merged = merge_tt_entries(
+                current_tt,
+                tt_parsed.get("entries", []),
+                override_entries,
+                today_iso,
+            )
+            new_block = render_tt_block(merged)
+            candidate_html = patch_html_tt_schedule(original_html, new_block)
+
+            # Detect whether anything actually changed in the rendered TT block.
+            # We compare body-vs-body (the regex captures group 2). If the body
+            # is byte-identical, no rewrite is needed and no alert is raised.
+            current_match = _TT_SCHEDULE_BLOCK_RE.search(original_html)
+            candidate_match = _TT_SCHEDULE_BLOCK_RE.search(candidate_html)
+            body_before = current_match.group(2) if current_match else ""
+            body_after = candidate_match.group(2) if candidate_match else ""
+
+            if body_before != body_after:
+                # Compare in-memory dicts (canonical, entity-decoded) to find
+                # which dates actually changed semantically. An empty diff
+                # despite a body difference means the body changed only at the
+                # encoding/whitespace level (e.g. an old buggy double-encoded
+                # value just got rewritten to its canonical form) - safe to
+                # rewrite, but no user-facing alert is warranted.
+                cur_by_date = {e["date"]: e for e in current_tt}
+                new_by_date = {e["date"]: e for e in merged}
+                changed_dates: list[str] = []
+                for d, ne in new_by_date.items():
+                    ce = cur_by_date.get(d)
+                    if ce != ne:
+                        changed_dates.append(d)
+                changed_dates.sort()
+                tt_schedule_applied = True
+                if changed_dates:
+                    log(f"  TT block CHANGED on {len(changed_dates)} day(s): {changed_dates}")
+                    tt_phase4_alerts.append({
+                        "id": "tt-schedule-applied-" + nowstamp,
+                        "tier": "auto",
+                        "text": (
+                            f"TT schedule auto-updated from iomttraces "
+                            f"({len(changed_dates)} day{'s' if len(changed_dates)!=1 else ''} changed: "
+                            f"{', '.join(changed_dates)})"
+                        ),
+                        "source_name": "iomttraces.com",
+                        "source_url": IOMTT_SCHEDULE_URL,
+                        "timestamp": nowstamp,
+                        "first_seen": nowstamp,
+                        "implies_schedule_change": True,
+                        "event": "tt",
+                        "note": (
+                            "The route checker has been updated with these times. "
+                            "Always verify against the official source or the "
+                            "Road Information Hotline (01624 685888) before setting off."
+                        ),
+                    })
+                else:
+                    log("  TT block body re-rendered (encoding-level only, no semantic change, no alert)")
+            else:
+                log("  TT block unchanged - no rewrite needed")
+
+            # Refresh the badge timestamp on EVERY successful validation,
+            # whether or not the block changed. This is what makes the page's
+            # "last verified X ago" label honest even on no-op runs.
+            tt_last_applied = {
+                "last_ok_validation": nowstamp,
+                "last_actual_change": (
+                    nowstamp if tt_schedule_applied
+                    else tt_last_applied.get("last_actual_change")
+                ),
+                "entries_count": len(merged),
+                "kill_switch_active": False,
+            }
+            write_tt_last_applied(tt_last_applied)
+            log(f"  schedule-tt-last-applied.json refreshed ({nowstamp})")
+        except Exception as e:
+            log(f"  TT apply error: {e}")
+    else:
+        reason = (
+            tt_validation.get("status") if tt_validation else "no validation result"
+        )
+        log(f"  TT apply skipped (validation status: {reason})")
+
     # --- 3. Southern 100 alerts (first user of the trust-tiered alerts system) ---
     today_iso = now.strftime("%Y-%m-%d")
     event_dates = extract_event_dates_from_index(original_html)
@@ -1441,6 +1784,12 @@ def main() -> int:
     log(f"  events running today ({today_iso}): {sorted(running_today) or 'none'}")
 
     fresh_alerts = fetch_southern100_alerts(event_dates, now)
+    # Phase 4 may have queued an alert when the TT block actually changed.
+    # Merge them into the same fresh-alerts stream so the cache/display logic
+    # treats them identically to S100 watcher items.
+    if tt_phase4_alerts:
+        fresh_alerts = list(fresh_alerts) + tt_phase4_alerts
+        log(f"  + {len(tt_phase4_alerts)} TT auto-update alert(s) queued")
     old_alerts, _old_last_fetch = load_alerts_cache()
     log(f"  alerts cache had {len(old_alerts)} items before merge")
     merged_alerts = merge_alerts_into_cache(old_alerts, fresh_alerts, now)
@@ -1466,9 +1815,20 @@ def main() -> int:
         displayed_signature(old_displayed_alerts) != displayed_signature(displayed_alerts)
     )
 
+    # Phase 5 badge: only changes state when transitioning between
+    # "no baseline yet" <-> "baseline established". The freshness label inside
+    # the badge is filled in by JS from a sidecar JSON file, so it does NOT
+    # trigger a rewrite on every cron run.
+    tt_has_baseline = bool(tt_last_applied.get("last_ok_validation"))
+    candidate_badge_html = render_tt_badge(tt_has_baseline)
+    current_badge_match = _TT_BADGE_BLOCK_RE.search(original_html)
+    current_badge_html = current_badge_match.group(0) if current_badge_match else ""
+    tt_badge_changed = current_badge_html != candidate_badge_html
+
     log(
         f"  display_changed={display_changed} cache_changed={cache_changed} "
-        f"schedule_changed={schedule_changed} alerts_display_changed={alerts_display_changed}"
+        f"schedule_changed={schedule_changed} alerts_display_changed={alerts_display_changed} "
+        f"tt_schedule_applied={tt_schedule_applied} tt_badge_changed={tt_badge_changed}"
     )
 
     # Persist news cache when its content has changed (so rolling history survives)
@@ -1492,8 +1852,12 @@ def main() -> int:
     log("  alerts.json updated (last_fetch refreshed)")
 
     # Only rewrite index.html when the page visitors see would actually change.
-    # Three independent signals can trigger a rewrite; any one is enough.
-    if display_changed or schedule_changed or alerts_display_changed:
+    # Independent signals each trigger a rewrite; any one is enough.
+    needs_rewrite = (
+        display_changed or schedule_changed or alerts_display_changed
+        or tt_schedule_applied or tt_badge_changed
+    )
+    if needs_rewrite:
         news_html = render_news_block(headlines, schedule_changed, now)
         alerts_html = render_alerts_block(
             displayed_alerts, now.strftime("%Y-%m-%dT%H:%M:%SZ"), now
@@ -1501,6 +1865,20 @@ def main() -> int:
         timestamp = now.strftime("%d %B %Y, %H:%M UTC")
         new_html = patch_html(original_html, news_html, timestamp)
         new_html = patch_html_alerts(new_html, alerts_html)
+        # Phase 4: rewrite the TT closures block if the merged result differs.
+        if tt_schedule_applied:
+            merged_for_block = merge_tt_entries(
+                extract_tt_entries_from_index(original_html),
+                tt_parsed.get("entries", []),
+                load_tt_override(),
+                today_iso,
+            )
+            new_html = patch_html_tt_schedule(new_html, render_tt_block(merged_for_block))
+        # Phase 5: rewrite the badge block when its content changed (rare -
+        # only on the first-ever successful apply, or if markers were edited
+        # by hand and need re-syncing).
+        if tt_badge_changed:
+            new_html = patch_html_tt_badge(new_html, candidate_badge_html)
         HTML_PATH.write_text(new_html, encoding="utf-8")
         log(f"  index.html updated at {timestamp} (a deploy will follow)")
     else:
