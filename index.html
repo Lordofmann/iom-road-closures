@@ -1234,7 +1234,7 @@ const circuits = {
           },
           south_coast: {
             severity: 'partial',
-            detour: 'Approach Douglas via the NSC (National Sports Centre) junction &mdash; turn off the A5 New Castletown Road before Quarterbridge to join Peel Road into town &mdash; then continue on the A2 coast road via Onchan and Laxey to the southern edge of Ramsey. Town centre is on the closed course.',
+            detour: 'Approach Douglas via the Cooil roundabout or NSC junction (turn off the A5 New Castletown Road before Quarterbridge), then continue on the A2 coast road via Onchan and Laxey to the southern edge of Ramsey. Town centre is on the closed course.',
             alternative: 'Steam Railway to Douglas, then Manx Electric Tramway to the southern edge of Ramsey.'
           },
           west: {
@@ -1251,7 +1251,7 @@ const circuits = {
       // the NSC junction northbound and Old Castletown Road southbound.
       'south_coast|south_urban': {
         severity: 'minor',
-        detour: 'Quarterbridge is on the closed Mountain Course, so the natural A5 approach is cut off. <strong>Going north (towards Douglas/Onchan):</strong> turn off the A5 New Castletown Road at the <strong>NSC (National Sports Centre) junction</strong> before Quarterbridge &mdash; that connects through to Peel Road on the Douglas-town side and into the centre. The Cooil roundabout further south is an earlier turn-off if you miss the NSC. <strong>Going south (leaving Douglas/Onchan):</strong> exit via Old Castletown Road / Oatlands Road instead of Quarterbridge.',
+        detour: 'Quarterbridge is on the closed Mountain Course, so the natural A5 approach is cut off. <strong>Going north (towards Douglas/Onchan):</strong> heading up the A5 New Castletown Road, there are two turn-offs before Quarterbridge. The <strong>Cooil roundabout</strong> comes first &mdash; turn right (Ferry Terminal direction) to bypass via the back roads. If you continue past Cooil, the <strong>NSC (National Sports Centre) junction</strong> is the next option before Quarterbridge; it connects through to Peel Road on the Douglas-town side and into the centre. <strong>Going south (leaving Douglas/Onchan):</strong> exit via Old Castletown Road / Oatlands Road instead of Quarterbridge.',
         alternative: 'Steam Railway runs Douglas &harr; Castletown &harr; Port St Mary &harr; Port Erin through most closures.'
       },
       // Existing south -> west / east / onCourse rules, replicated mechanically
@@ -1275,7 +1275,7 @@ const circuits = {
       },
       'south_coast|east': {
         severity: 'minor',
-        detour: 'Approach Douglas via the NSC junction (turn off the A5 New Castletown Road before Quarterbridge), then continue on the A2 coast road via Onchan to Laxey. Entirely off-course.',
+        detour: 'Approach Douglas via the Cooil roundabout or NSC junction (turn off the A5 New Castletown Road before Quarterbridge), then continue on the A2 coast road via Onchan to Laxey. Entirely off-course.',
         alternative: 'Manx Electric Tramway from Douglas Promenade to Laxey throughout closures.'
       },
       'west|east': {
@@ -1654,9 +1654,13 @@ function classifyForCircuit(from, to, circuit, circuitId) {
                       circuit.crossings[toZone + '|' + fromZone]
                     )) || null;
   if (crossing) {
-    return makeVerdict(circuitId, circuit, crossing,
-      from + ' is ' + zoneLabel(circuit, fromZone) + '; ' +
-      to   + ' is ' + zoneLabel(circuit, toZone)   + '.');
+    // No auto-generated `why` text on cross-zone verdicts: a sentence of the
+    // form "X is <zone label>; Y is <zone label>." reads as jargon (especially
+    // when a place name appears inside the zone label), and the detour text
+    // immediately below already explains the geography in plain English. The
+    // renderer skips the .why paragraph when it's absent. Edge-place and
+    // same-zone verdicts still get their own (cleaner) why text.
+    return makeVerdict(circuitId, circuit, crossing, '');
   }
 
   // Defensive fallback — no crossing rule defined for this pair of zones
