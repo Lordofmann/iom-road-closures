@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-03T11:16:52Z",
+  "last_fetch": "2026-06-03T14:11:54Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Jamie Coward happy with progress so far on TT return",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-coward-happy-with-progress-so-far-on-tt-return/",
+      "first_seen": "2026-06-03T14:11:54Z",
+      "source_date": "Rider was due to race for Team ILR in 2026"
+    },
     {
       "title": "Franco Bourne planning TT return after missing debut",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/franco-bourne-planning-tt-return-after-missing-debut/",
@@ -114,12 +120,6 @@
       "title": "\"I've definitely been better\": Davey Todd gives condition update as Senior champion to miss TT 2026",
       "url": "https://www.manxradio.com/news/tt-news/ive-definitely-been-better-davey-todd-gives-condition-update-as-senior-champion-to-miss-tt-2026/",
       "first_seen": "2026-05-23T11:00:20Z",
-      "source_date": "UGGLY & CO Racing making debut at 2026 event"
-    },
-    {
-      "title": "2026 Pre-TT Classic Road Races to begin tonight",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/2026-pre-tt-classic-road-races-to-begin-tonight/",
-      "first_seen": "2026-05-22T14:47:31Z",
       "source_date": "UGGLY & CO Racing making debut at 2026 event"
     }
   ]

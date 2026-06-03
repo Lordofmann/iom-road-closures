@@ -1707,21 +1707,18 @@ def patch_html_alerts(html: str, alerts_html: str) -> str:
 # ----------------------------------------------------------------------------
 
 NEWS_BLOCK_RE = re.compile(r"(<!-- AUTO_NEWS_START -->)(.*?)(<!-- AUTO_NEWS_END -->)", re.DOTALL)
+SCHEDULE_CHANGED_BLOCK_RE = re.compile(
+    r"(<!-- AUTO_SCHEDULE_CHANGED_START -->)(.*?)(<!-- AUTO_SCHEDULE_CHANGED_END -->)", re.DOTALL
+)
 LAST_UPDATED_RE = re.compile(r"(<!-- LAST_UPDATED -->)(.*?)(<!-- /LAST_UPDATED -->)", re.DOTALL)
 
 
-def render_news_block(items: list[dict], schedule_changed: bool, now: datetime) -> str:
+def render_news_block(items: list[dict], now: datetime) -> str:
+    """Render the Manx Radio news headlines block only.
+    The 'Heads-up: schedule may have changed' banner used to live here too
+    but is now in its own AUTO_SCHEDULE_CHANGED block so the two can sit in
+    different positions on the page."""
     parts: list[str] = ["<!-- AUTO_NEWS_START -->"]
-
-    if schedule_changed:
-        parts.append(
-            '<div class="schedule-changed">'
-            "<strong>Heads-up: the official schedule on iomttraces.com may have changed since this page was last verified.</strong> "
-            'Cross-check the dates and times below against '
-            '<a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">the official source</a> '
-            'or call the Road Information Hotline on <strong>01624&nbsp;685888</strong>.'
-            "</div>"
-        )
 
     if items:
         parts.append('<div class="auto-news">')
@@ -1753,10 +1750,34 @@ def render_news_block(items: list[dict], schedule_changed: bool, now: datetime) 
     return "\n".join(parts)
 
 
+def render_schedule_changed_block(schedule_changed: bool) -> str:
+    """Render the pale-red 'Heads-up' banner shown when the iomttraces hash
+    detector flags that the official schedule may have changed. Empty block
+    when no change is detected, so the section collapses on the page."""
+    parts: list[str] = ["<!-- AUTO_SCHEDULE_CHANGED_START -->"]
+    if schedule_changed:
+        parts.append(
+            '<div class="schedule-changed">'
+            "<strong>Heads-up: the official schedule on iomttraces.com may have changed since this page was last verified.</strong> "
+            'Cross-check the dates and times above against '
+            '<a href="https://www.iomttraces.com/racing/page/schedule/" target="_blank" rel="noopener">the official source</a> '
+            'or call the Road Information Hotline on <strong>01624&nbsp;685888</strong>.'
+            "</div>"
+        )
+    parts.append("<!-- AUTO_SCHEDULE_CHANGED_END -->")
+    return "\n".join(parts)
+
+
 def patch_html(html: str, news_html: str, timestamp: str) -> str:
     new_html = NEWS_BLOCK_RE.sub(news_html, html)
     new_html = LAST_UPDATED_RE.sub(f"<!-- LAST_UPDATED -->{timestamp}<!-- /LAST_UPDATED -->", new_html)
     return new_html
+
+
+def patch_html_schedule_changed(html: str, sc_html: str) -> str:
+    if not SCHEDULE_CHANGED_BLOCK_RE.search(html):
+        return html
+    return SCHEDULE_CHANGED_BLOCK_RE.sub(sc_html, html)
 
 
 # ----------------------------------------------------------------------------
@@ -2056,13 +2077,15 @@ def main() -> int:
         or tt_schedule_applied or tt_badge_changed
     )
     if needs_rewrite:
-        news_html = render_news_block(headlines, schedule_changed, now)
+        news_html = render_news_block(headlines, now)
+        sc_html = render_schedule_changed_block(schedule_changed)
         alerts_html = render_alerts_block(
             displayed_alerts, now.strftime("%Y-%m-%dT%H:%M:%SZ"), now
         )
         timestamp = now.strftime("%d %B %Y, %H:%M UTC")
         new_html = patch_html(original_html, news_html, timestamp)
         new_html = patch_html_alerts(new_html, alerts_html)
+        new_html = patch_html_schedule_changed(new_html, sc_html)
         # Phase 4: rewrite the TT closures block if the merged result differs.
         if tt_schedule_applied:
             merged_for_block = merge_tt_entries(
