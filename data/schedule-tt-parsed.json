@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-03T14:18:21Z",
+  "fetched_at": "2026-06-03T17:49:12Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2026,
@@ -8,20 +8,20 @@
     "no closure times or rest marker for 2026-05-26 (likely a past day with results displayed)",
     "no closure times or rest marker for 2026-05-27 (likely a past day with results displayed)",
     "no closure times or rest marker for 2026-05-29 (likely a past day with results displayed)",
-    "no closure times or rest marker for 2026-05-30 (likely a past day with results displayed)",
     "no closure times or rest marker for 2026-05-31 (likely a past day with results displayed)",
-    "no closure times or rest marker for 2026-06-02 (likely a past day with results displayed)",
-    "no closure times or rest marker for 2026-06-03 (likely a past day with results displayed)"
+    "no closure times or rest marker for 2026-06-02 (likely a past day with results displayed)"
   ],
   "validation": {
     "status": "ok",
     "reasons": [],
     "diff_summary": {
-      "entries_parsed": 6,
+      "entries_parsed": 8,
       "entries_in_current_array": 14,
       "past_days_skipped": [
         "2026-05-28",
-        "2026-06-01"
+        "2026-05-30",
+        "2026-06-01",
+        "2026-06-03"
       ],
       "differences": [],
       "missing_future_days": [],
@@ -42,6 +42,14 @@
     {
       "event": "tt",
       "course": "mountain",
+      "date": "2026-05-30",
+      "day": "Sat \u2014 Race Day 1",
+      "postponed": true,
+      "activity": "Race postponed"
+    },
+    {
+      "event": "tt",
+      "course": "mountain",
       "date": "2026-06-01",
       "day": "Mon",
       "restDay": true,
@@ -50,10 +58,20 @@
     {
       "event": "tt",
       "course": "mountain",
+      "date": "2026-06-03",
+      "day": "Wed \u2014 Race Day 4",
+      "postponed": true,
+      "activity": "Race postponed"
+    },
+    {
+      "event": "tt",
+      "course": "mountain",
       "date": "2026-06-04",
       "day": "Thu",
-      "restDay": true,
-      "activity": "Rest day"
+      "mountainCloses": "09:00",
+      "fullCloses": "10:00",
+      "reopen": "18:00",
+      "activity": "Schedule update issued"
     },
     {
       "event": "tt",
@@ -63,7 +81,7 @@
       "mountainCloses": "09:00",
       "fullCloses": "10:00",
       "reopen": "21:30",
-      "activity": "Monster Energy Supersport TT Race 2"
+      "activity": "Free Practice [1 lap]"
     },
     {
       "event": "tt",
@@ -73,15 +91,17 @@
       "mountainCloses": "09:00",
       "fullCloses": "10:00",
       "reopen": "21:30",
-      "activity": "Milwaukee Senior TT"
+      "activity": "Carole Nash Sportbike TT Race 2"
     },
     {
       "event": "tt",
       "course": "mountain",
       "date": "2026-06-07",
-      "day": "Sun",
-      "activity": "Contingency day \u2014 only used if rescheduling needed",
-      "contingency": true
+      "day": "Sun \u2014 Race Day 7",
+      "mountainCloses": "11:30",
+      "fullCloses": "12:30",
+      "reopen": "18:30",
+      "activity": "Carole Nash Sportbike TT Race 2"
     }
   ]
 }

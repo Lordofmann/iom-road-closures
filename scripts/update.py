@@ -445,12 +445,19 @@ def _clean_tt_activity(chunk: str) -> str:
 def _parse_tt_schedule_cell(text: str) -> dict:
     """Parse the schedule-detail cell into a partial closures-array entry.
 
-    Returns a dict that may contain any of: is_rest (bool), mountainCloses,
-    fullCloses, reopen, secondMountain, secondFull, secondReopen, activity.
+    Returns a dict that may contain any of: is_rest (bool), is_postponed (bool),
+    mountainCloses, fullCloses, reopen, secondMountain, secondFull,
+    secondReopen, activity.
 
-    The walker is tolerant: unrecognised chunks are ignored, RACE POSTPONED
-    markers are dropped, and a cell with no time tokens at all (typical for a
-    past day whose results have replaced the schedule) returns {}.
+    The walker is tolerant: unrecognised chunks are ignored, trailing
+    RACE POSTPONED race-name fragments are dropped, and a cell with no time
+    tokens at all (typical for a past day whose results have replaced the
+    schedule) returns {}.
+
+    A cell whose dominant content is "RACE POSTPONED" - typically a day that
+    used to be a race day but was just postponed - returns is_postponed=True
+    so the apply step can mark it postponed=true (course NOT closed that day)
+    instead of silently dropping it as if it were a past-day-with-results.
     """
     text = (text or "").strip()
     info: dict = {}
@@ -459,6 +466,16 @@ def _parse_tt_schedule_cell(text: str) -> dict:
     if re.fullmatch(r"\s*Rest\s+Day\s*", text, re.IGNORECASE):
         info["is_rest"] = True
         info["activity"] = "Rest day"
+        return info
+
+    # Postponement: the dominant cell content is "RACE POSTPONED". We require
+    # the whole cell to match (case-insensitive, optional whitespace) so we
+    # don't false-fire on cells where "RACE POSTPONED" is just a trailing
+    # fragment after the day's real schedule (which the existing chunk loop
+    # below already handles).
+    if re.fullmatch(r"\s*RACE\s+POSTPONED\s*", text, re.IGNORECASE):
+        info["is_postponed"] = True
+        info["activity"] = "Race postponed"
         return info
 
     # Find every "HH:MM – " marker; chunks run from one marker to the next
@@ -612,14 +629,27 @@ def parse_tt_schedule(html: str) -> dict:
                 out["entries"].append(entry)
                 continue
 
+            # Race postponed: explicit signal that the course is NOT closed
+            # this day. Schema gets one new boolean (postponed: true) which
+            # statusAt() / dayCardHTML() in index.html treat identically to
+            # a rest day for closure purposes. Critically we emit an entry
+            # rather than silently dropping, so the merge step knows the
+            # parser saw the day and can update today's closures.
+            if cell_info.get("is_postponed"):
+                entry["postponed"] = True
+                entry["activity"] = cell_info.get("activity") or "Race postponed"
+                out["entries"].append(entry)
+                continue
+
             for k in ("mountainCloses", "fullCloses", "reopen",
                       "secondMountain", "secondFull", "secondReopen", "activity"):
                 if cell_info.get(k) is not None:
                     entry[k] = cell_info[k]
 
-            # If no times and no rest flag, this is a mutated past-day cell
-            # (results/links replacing schedule). Record a warning and skip.
-            if not any(entry.get(k) for k in ("mountainCloses", "fullCloses", "reopen", "restDay")):
+            # If no times and no rest / postponed flag, this is a mutated
+            # past-day cell (results/links replacing the schedule). Record
+            # a warning and skip.
+            if not any(entry.get(k) for k in ("mountainCloses", "fullCloses", "reopen", "restDay", "postponed")):
                 out["warnings"].append(
                     f"no closure times or rest marker for {iso_date} "
                     f"(likely a past day with results displayed)"
@@ -711,7 +741,7 @@ def _parse_js_tt_entry(text: str) -> dict | None:
                     break
                 raw = decoded
             fields[key] = raw
-    for key in ("restDay", "contingency", "pending"):
+    for key in ("restDay", "contingency", "pending", "postponed"):
         if re.search(rf"\b{key}:\s*true\b", text):
             fields[key] = True
     return fields if fields.get("date") else None
@@ -981,7 +1011,7 @@ _TT_FIELD_ORDER_GROUPS = [
     ["event", "course", "date"],
     ["mountainCloses", "fullCloses", "reopen"],
     ["secondMountain", "secondFull", "secondReopen"],
-    ["activity", "day", "restDay", "contingency", "pending"],
+    ["activity", "day", "restDay", "contingency", "pending", "postponed"],
 ]
 
 # Match the existing AUTO_TT_SCHEDULE markers and capture the content between
@@ -1085,12 +1115,38 @@ def merge_tt_entries(
         if d in override_by_date:
             result.append(override_by_date[d])
             continue
-        if d_dt <= today_dt:
-            # Past-day immutability - parser/override never overwrites history
+
+        if d_dt < today_dt:
+            # Strictly past: full immutability. The historical record never
+            # gets overwritten, regardless of what the parser produces. This
+            # protects data for days whose iomttraces row has been replaced
+            # with results.
             if d in current_by_date:
                 result.append(current_by_date[d])
             continue
-        # Future date
+
+        if d_dt == today_dt:
+            # Today: the parser is allowed to overwrite ONLY when it produced
+            # an entry with an explicit non-closure signal (restDay /
+            # contingency / postponed). A parser that silently dropped today
+            # - which is what happens when the cell has been overwritten with
+            # mid-day results - must NOT erase the closure. This is the
+            # critical case for same-day postponements: iomttraces says
+            # "RACE POSTPONED" today, the parser now picks that up as
+            # postponed=true, and we want to flip the closure off.
+            parsed_today = parsed_by_date.get(d)
+            has_explicit_signal = bool(parsed_today) and (
+                parsed_today.get("restDay")
+                or parsed_today.get("contingency")
+                or parsed_today.get("postponed")
+            )
+            if has_explicit_signal:
+                result.append(parsed_today)
+            elif d in current_by_date:
+                result.append(current_by_date[d])
+            continue
+
+        # Future date - parser wins
         if d in parsed_by_date:
             result.append(parsed_by_date[d])
         elif d in current_by_date:
