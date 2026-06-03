@@ -1170,25 +1170,36 @@ const circuits = {
 
   // === SNAEFELL MOUNTAIN COURSE (TT + Manx Grand Prix) ===
   // A huge loop covering most of the major A-roads. Splits the island into:
-  //   - south:   the A5/A7 south coast cluster (Douglas, Castletown, PE/PSM, airport...)
-  //   - west:    Foxdale + St John's + Peel (reachable via the A24/A27 off-course corridor)
-  //   - east:    Laxey on the A2 coast road
-  //   - onCourse: places on the closed course with no detour
-  // Ramsey is the edge case: town centre is on the course but the southern edge is
-  // reachable from the east (Laxey) and south (via Douglas) on the A2 coast road.
+  //   - south_coast:  Castletown / Ballasalla / Airport / PE / PSM (A5/A7 south
+  //                   of Quarterbridge — approaches Douglas via the A5 northbound)
+  //   - south_urban:  Douglas + Onchan (in or around Douglas, north of
+  //                   Quarterbridge — A5 northbound enters here)
+  //   - west:         Foxdale + St John's + Peel (reachable via the A24/A27 off-course corridor)
+  //   - east:         Laxey on the A2 coast road
+  //   - onCourse:     places on the closed course with no detour
+  // The split between south_coast and south_urban captures the Quarterbridge
+  // nuance: the A5 New Castletown Road runs into Quarterbridge, which is on
+  // the closed course, so south_coast -> south_urban needs the NSC-junction
+  // bypass (northbound) and south_urban -> south_coast needs Old Castletown
+  // Road (southbound). Both directions covered in the crossing rule below.
+  // Ramsey is the edge case: town centre is on the course but the southern edge
+  // is reachable from the east (Laxey) and from south_urban / south_coast via
+  // the A2 coast road (with the south_coast leg needing the NSC step first).
   mountain: {
     name: 'Snaefell Mountain Course',
     short: 'Mountain Course',
     eventLabel: 'TT / Manx Grand Prix',
     zones: {
-      south: {
-        label: 'in the south of the Mountain Course (A5/A7 corridor)',
+      south_coast: {
+        label: 'on the south coast of the Mountain Course (A5/A7 corridor south of Quarterbridge)',
         places: [
-          'Douglas', 'Onchan',
           'Castletown', 'Ballasalla', 'Airport (Ronaldsway)',
           'Port Erin', 'Port St Mary'
-        ],
-        intraZoneNote: 'Note: to leave Douglas going south during a course closure, exit via Old Castletown Road / Oatlands Road instead of Quarterbridge (which is on the course).'
+        ]
+      },
+      south_urban: {
+        label: 'in or around Douglas (north of Quarterbridge)',
+        places: ['Douglas', 'Onchan']
       },
       west: {
         label: 'in the west of the Mountain Course (A24/A27 corridor)',
@@ -1216,10 +1227,15 @@ const circuits = {
             detour: 'A2 coast road from Laxey reaches the southern edge of Ramsey only &mdash; the town centre is on the closed course.',
             alternative: 'Manx Electric Tramway runs throughout closures.'
           },
-          south: {
+          south_urban: {
             severity: 'partial',
             detour: 'A2 coast road from Douglas via Onchan and Laxey to the southern edge of Ramsey. Town centre is on the closed course.',
             alternative: 'Manx Electric Tramway runs Douglas Promenade &rarr; Laxey &rarr; Ramsey throughout closures.'
+          },
+          south_coast: {
+            severity: 'partial',
+            detour: 'Approach Douglas via the NSC (National Sports Centre) junction &mdash; turn off the A5 New Castletown Road before Quarterbridge to join Peel Road into town &mdash; then continue on the A2 coast road via Onchan and Laxey to the southern edge of Ramsey. Town centre is on the closed course.',
+            alternative: 'Steam Railway to Douglas, then Manx Electric Tramway to the southern edge of Ramsey.'
           },
           west: {
             severity: 'closed',
@@ -1229,22 +1245,49 @@ const circuits = {
       }
     },
     crossings: {
-      'south|west': {
+      // Quarterbridge-bypass nuance: this is the headline geographic rule
+      // added in this change. South-coast places approach Douglas via the A5
+      // which runs into Quarterbridge (on the closed course); the bypass is
+      // the NSC junction northbound and Old Castletown Road southbound.
+      'south_coast|south_urban': {
+        severity: 'minor',
+        detour: 'Quarterbridge is on the closed Mountain Course, so the natural A5 approach is cut off. <strong>Going north (towards Douglas/Onchan):</strong> turn off the A5 New Castletown Road at the <strong>NSC (National Sports Centre) junction</strong> before Quarterbridge &mdash; that connects through to Peel Road on the Douglas-town side and into the centre. The Cooil roundabout further south is an earlier turn-off if you miss the NSC. <strong>Going south (leaving Douglas/Onchan):</strong> exit via Old Castletown Road / Oatlands Road instead of Quarterbridge.',
+        alternative: 'Steam Railway runs Douglas &harr; Castletown &harr; Port St Mary &harr; Port Erin through most closures.'
+      },
+      // Existing south -> west / east / onCourse rules, replicated mechanically
+      // for each new sub-zone. south_urban variants pick up the southbound
+      // Quarterbridge mention so a Douglas-rooted trip via the A5 also gets the
+      // right framing without depending on the south_coast|south_urban rule.
+      'south_urban|west': {
         severity: 'partial',
-        detour: 'A5 south to Ballasalla &rarr; A24 west to Foxdale &rarr; A27 north to St John\'s (continue last 3 mi of A1 west for Peel). Entirely off-course. Adds 20-40 minutes depending on the exact origin/destination.',
+        detour: 'Leave Douglas via Old Castletown Road / Oatlands Road (Quarterbridge is on the closed course), then A5 south to Ballasalla &rarr; A24 west to Foxdale &rarr; A27 north to St John\'s (continue last 3 mi of A1 west for Peel). Entirely off-course. Adds 20-40 minutes.',
         alternative: 'Steam Railway from the south coast into Douglas runs through closures.'
       },
-      'south|east': {
+      'south_coast|west': {
+        severity: 'partial',
+        detour: 'A24 west from Ballasalla to Foxdale &rarr; A27 north to St John\'s (continue last 3 mi of A1 west for Peel). Entirely off-course. Adds 20-40 minutes depending on the exact origin/destination.',
+        alternative: 'Steam Railway from the south coast into Douglas, then onward by road.'
+      },
+      'south_urban|east': {
         severity: 'minor',
         detour: 'A2 coast road via Onchan to Laxey &mdash; entirely off-course. No real detour, just the standard coast route.',
         alternative: 'Manx Electric Tramway runs Douglas Promenade &rarr; Onchan &rarr; Laxey throughout closures.'
+      },
+      'south_coast|east': {
+        severity: 'minor',
+        detour: 'Approach Douglas via the NSC junction (turn off the A5 New Castletown Road before Quarterbridge), then continue on the A2 coast road via Onchan to Laxey. Entirely off-course.',
+        alternative: 'Manx Electric Tramway from Douglas Promenade to Laxey throughout closures.'
       },
       'west|east': {
         severity: 'partial',
         detour: 'Long way: south via A27 + A24 to Douglas, then A2 coast road north to Laxey. Plan extra time.',
         alternative: 'Manx Electric Tramway from Douglas to Laxey once you reach Douglas.'
       },
-      'south|onCourse': {
+      'south_urban|onCourse': {
+        severity: 'closed',
+        detour: 'The destination is on the closed course &mdash; wait for the road to reopen.'
+      },
+      'south_coast|onCourse': {
         severity: 'closed',
         detour: 'The destination is on the closed course &mdash; wait for the road to reopen.'
       },
@@ -2086,16 +2129,20 @@ function runClassifierSelfCheck() {
     ['Douglas',      'Peel',         'billown', 'open',    'Both in NE zone (Billown doesn\'t affect)'],
     ['Ramsey',       'Castletown',   'billown', 'minor',   'NE → Castletown edge'],
     // Mountain Course closure scenarios
-    ['Douglas',      'Castletown',   'mountain','open',    'Both in south zone'],
-    ['Douglas',      'Port Erin',    'mountain','open',    'Both in south zone'],
-    ['Douglas',      'Peel',         'mountain','partial', 'south → west, long way via A24+A27'],
-    ['Douglas',      'Laxey',        'mountain','minor',   'south → east via A2 coast road'],
-    ['Douglas',      'Kirk Michael', 'mountain','closed',  'south → onCourse'],
+    ['Douglas',      'Castletown',   'mountain','minor',   'south_urban → south_coast: A5 crosses Quarterbridge, needs NSC bypass'],
+    ['Castletown',   'Douglas',      'mountain','minor',   'south_coast → south_urban: NSC junction northbound'],
+    ['Castletown',   'Onchan',       'mountain','minor',   'south_coast → south_urban: Onchan reached via Douglas, NSC needed'],
+    ['Castletown',   'Laxey',        'mountain','minor',   'south_coast → east: NSC + A2 coast road via Douglas'],
+    ['Douglas',      'Port Erin',    'mountain','minor',   'south_urban → south_coast: Quarterbridge southbound'],
+    ['Douglas',      'Peel',         'mountain','partial', 'south_urban → west, long way via Old Castletown Rd + A24+A27'],
+    ['Douglas',      'Laxey',        'mountain','minor',   'south_urban → east via A2 coast road'],
+    ['Douglas',      'Kirk Michael', 'mountain','closed',  'south_urban → onCourse'],
     ['Peel',         'Ramsey',       'mountain','closed',  'west → Ramsey edge (no west access)'],
     ['Laxey',        'Ramsey',       'mountain','partial', 'east → Ramsey southern edge'],
-    ['Douglas',      'Ramsey',       'mountain','partial', 'south → Ramsey southern edge via A2'],
+    ['Douglas',      'Ramsey',       'mountain','partial', 'south_urban → Ramsey southern edge via A2'],
     ['Kirk Michael', 'Ballaugh',     'mountain','closed',  'both on closed course'],
-    ['Castletown',   'Port St Mary', 'mountain','open',    'both in south zone'],
+    ['Castletown',   'Port St Mary', 'mountain','open',    'both in south_coast zone'],
+    ['Douglas',      'Onchan',       'mountain','open',    'both in south_urban zone (no Quarterbridge crossing)'],
     ['Foxdale',      'St John\'s',   'mountain','open',    'both in west zone'],
     ['Foxdale',      'Laxey',        'mountain','partial', 'west → east, long way']
   ];
