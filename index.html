@@ -1246,12 +1246,24 @@ const circuits = {
     },
     crossings: {
       // Quarterbridge-bypass nuance: this is the headline geographic rule
-      // added in this change. South-coast places approach Douglas via the A5
-      // which runs into Quarterbridge (on the closed course); the bypass is
-      // the NSC junction northbound and Old Castletown Road southbound.
+      // for south-coast <-> Douglas trips during Mountain Course closures.
+      // The classifier (classifyForCircuit, lookup order: fromZone|toZone
+      // FIRST, then toZone|fromZone) picks up whichever key matches the
+      // direction of travel, so we get direction-specific detour text for
+      // free by defining both keys explicitly.
+      //
+      // NORTHBOUND - south-coast places into Douglas/Onchan
+      // (e.g. Castletown -> Douglas).
       'south_coast|south_urban': {
         severity: 'minor',
-        detour: 'Quarterbridge is on the closed Mountain Course, so the natural A5 approach is cut off. <strong>Going north (towards Douglas/Onchan):</strong> heading up the A5 New Castletown Road, there are two turn-offs before Quarterbridge. The <strong>Cooil roundabout</strong> comes first &mdash; turn right (Ferry Terminal direction) to bypass via the back roads. If you continue past Cooil, the <strong>NSC (National Sports Centre) junction</strong> is the next option before Quarterbridge; it connects through to Peel Road on the Douglas-town side and into the centre. <strong>Going south (leaving Douglas/Onchan):</strong> exit via Old Castletown Road / Oatlands Road instead of Quarterbridge.',
+        detour: 'Quarterbridge is on the closed Mountain Course, so the direct A5 approach is cut off. Two ways in: at the <strong>Cooil roundabout</strong> turn right onto <strong>Kewaigue Hill road</strong>, which becomes <strong>Old Castletown Road</strong> and leads to South Quay into Douglas centre; or turn off the New Castletown Road at the <strong>NSC (National Sports Centre) junction</strong> before Quarterbridge, connecting through to Peel Road on the Douglas-town side.',
+        alternative: 'Steam Railway runs Douglas &harr; Castletown &harr; Port St Mary &harr; Port Erin through most closures.'
+      },
+      // SOUTHBOUND - leaving Douglas/Onchan for the south coast
+      // (e.g. Douglas -> Castletown).
+      'south_urban|south_coast': {
+        severity: 'minor',
+        detour: 'Quarterbridge roundabouts are part of the closed circuit, so don\'t exit that way. Leave Douglas via <strong>South Quay</strong> onto <strong>Old Castletown Road</strong>, through the <strong>Cooil roundabout</strong> onto the New Castletown Road heading south; or, depending where you are in Douglas, head out via <strong>Pulrose Road</strong> towards the <strong>NSC</strong> and join the A5 there.',
         alternative: 'Steam Railway runs Douglas &harr; Castletown &harr; Port St Mary &harr; Port Erin through most closures.'
       },
       // Existing south -> west / east / onCourse rules, replicated mechanically
