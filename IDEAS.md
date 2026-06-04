@@ -9,14 +9,14 @@ A running list of improvements I want to make to the IoM Road Closures app, coll
 Build a version where the app automatically detects changes to the official race schedule and updates the schedule data itself, so the schedule and the route checker results are always accurate — not just the news headlines.
 
 - **Source:** Me. This is the big one.
-- **Status:** Not started.
+- **Status:** **Shipped for TT (June 2026).** Phases 1–5 delivered: parser, validation gate, applier, visible "auto-imported on \[date]" badge, manual override file, kill-switch env var, POSTPONED recognition, CANCELLED recognition with tolerant predicate matching, and an unrecognised-state safety net that flags days for manual verification rather than silently keeping stale data. Race-season cron also bumped from 2× to 3× daily (06:00, 12:00, 17:00 UTC). **MGP and Southern 100 schedule-time auto-update are still unsolved** — see the entries further down for both.
 
 ## More frequent Manx Radio news updates
 
 The news currently refreshes twice a day. Increase that frequency so it feels closer to live, because some race news is time-critical and a twice-daily delay is too slow.
 
 - **Source:** Me.
-- **Status:** Not started.
+- **Status:** **Partially shipped (June 2026).** The race-season cron is now 3× daily (06:00, 12:00, 17:00 UTC) instead of 2× — primarily to tighten the TT auto-update lag, but every scrape also refreshes the Manx Radio news cache, so news lag dropped from ~11h to ~6h worst-case. To go further (hourly polling during race week, or RSS-based push) is still not done. Off-season is still 1× daily.
 
 ## Add Isle of Man car rallies and other motorsport road-closure events
 
@@ -55,7 +55,7 @@ Southern 100 Racing (the same organiser for the Pre-TT Billown, the Southern 100
 **Important limitation to be honest about:** The actual revised *times* inside Southern 100 articles are embedded as JPG images (e.g. `Saturday-23rd-May-2026-Afternoon.jpg`), not as HTML tables. We can detect that a revision happened and link the user to the article, but we cannot auto-extract the new times into the app's schedule data without OCR. So this feature is a smart "human, please look at this" alert — not an auto-sync of schedule data. Adding OCR would be a much bigger jump and is not in scope here.
 
 - **Source:** Me, after the Pre-TT Billown organisers posted a same-day schedule revision in May 2026 that we missed entirely.
-- **Status:** Investigated and pre-checked. RSS source confirmed working. Approach decided (RSS-based news watcher with keyword filter). Not yet built.
+- **Status:** **Shipped (May–June 2026).** Built as the trust-tier alerts system: WordPress RSS at `southern100.com/feed/` is polled every cron run, titles are matched against a conservative schedule-revision keyword set, new matches surface as a pinned amber "auto-detected — not yet verified" card at the top of the Now & today tab with a direct link to the article. Items auto-expire (extracted-date-from-title or 3-day fallback). The JPG-image-times caveat is still real — we detect the revision and link to the source, we do not auto-sync the new times into the closures array.
 
 ## Geographic nuance: Onchan → Douglas during Mountain Course closures
 
