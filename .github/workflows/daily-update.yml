@@ -2,8 +2,12 @@ name: Daily site update
 
 on:
   schedule:
-    # Twice daily during race season (May-August): 06:00 and 17:00 UTC
-    - cron: "0 6,17 * 5-8 *"
+    # Three times daily during race season (May-August): 06:00, 12:00 and 17:00 UTC.
+    # The 12:00 slot tightens the worst-case lag between an iomttraces update
+    # (typically mid-morning UK time) and the app reflecting it - the
+    # POSTPONED/CANCELLED scrambles in June 2026 sat unhandled for ~12h
+    # because the page was edited between the 06:00 and 17:00 runs.
+    - cron: "0 6,12,17 * 5-8 *"
     # Once daily outside race season: 06:00 UTC
     - cron: "0 6 * 1-4,9-12 *"
   workflow_dispatch:

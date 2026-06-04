@@ -1,27 +1,29 @@
 {
-  "fetched_at": "2026-06-03T19:59:29Z",
+  "fetched_at": "2026-06-04T08:15:28Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2026,
   "warnings": [
-    "no closure times or rest marker for 2026-05-25 (likely a past day with results displayed)",
-    "no closure times or rest marker for 2026-05-26 (likely a past day with results displayed)",
-    "no closure times or rest marker for 2026-05-27 (likely a past day with results displayed)",
-    "no closure times or rest marker for 2026-05-29 (likely a past day with results displayed)",
-    "no closure times or rest marker for 2026-05-31 (likely a past day with results displayed)",
-    "no closure times or rest marker for 2026-06-02 (likely a past day with results displayed)"
+    "2026-05-25: unrecognised cell content (0 result-link markers); safety net will flag for verification",
+    "2026-05-26: no closure times, 10 result-link markers present (likely past day with results displayed)",
+    "2026-05-27: no closure times, 30 result-link markers present (likely past day with results displayed)",
+    "2026-05-29: no closure times, 24 result-link markers present (likely past day with results displayed)",
+    "2026-05-31: no closure times, 4 result-link markers present (likely past day with results displayed)",
+    "2026-06-02: no closure times, 4 result-link markers present (likely past day with results displayed)"
   ],
   "validation": {
     "status": "ok",
     "reasons": [],
     "diff_summary": {
-      "entries_parsed": 8,
+      "entries_parsed": 9,
       "entries_in_current_array": 14,
       "past_days_skipped": [
+        "2026-05-25",
         "2026-05-28",
         "2026-05-30",
         "2026-06-01",
-        "2026-06-03"
+        "2026-06-03",
+        "2026-06-04"
       ],
       "differences": [],
       "missing_future_days": [],
@@ -31,6 +33,14 @@
     }
   },
   "entries": [
+    {
+      "event": "tt",
+      "course": "mountain",
+      "date": "2026-05-25",
+      "day": "Mon (Spring Bank Holiday)",
+      "_unrecognised_state": true,
+      "_cell_text_excerpt": "FREE PRACTICE UNTIMED SESSION QUALIFYING SESSION CANCELLED"
+    },
     {
       "event": "tt",
       "course": "mountain",
@@ -68,12 +78,8 @@
       "course": "mountain",
       "date": "2026-06-04",
       "day": "Thu",
-      "mountainCloses": "09:00",
-      "fullCloses": "10:00",
-      "reopen": "17:00",
-      "secondMountain": "stays closed",
-      "secondReopen": "18:00",
-      "activity": "RL360 Superstock TT Race 1"
+      "cancelled": true,
+      "activity": "Race cancelled"
     },
     {
       "event": "tt",

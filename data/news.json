@@ -1,7 +1,25 @@
 {
-  "last_fetch": "2026-06-03T14:18:21Z",
+  "last_fetch": "2026-06-04T08:15:28Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "No racing to take place",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/no-racing-to-take-place-today/",
+      "first_seen": "2026-06-04T08:15:28Z",
+      "source_date": "Rider was due to race for Team ILR in 2026"
+    },
+    {
+      "title": "Paralysed sidecar racer's team appeal for support to continue post-TT",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/paralysed-sidecar-racers-team-appeal-for-support-to-continue-post-tt/",
+      "first_seen": "2026-06-04T08:15:28Z",
+      "source_date": "Rider was due to race for Team ILR in 2026"
+    },
+    {
+      "title": "'We need to keep the spirit of the TT alive' says fan",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/we-need-to-keep-the-spirit-of-the-tt-alive-says-fan/",
+      "first_seen": "2026-06-04T08:15:28Z",
+      "source_date": "Rider was due to race for Team ILR in 2026"
+    },
     {
       "title": "Sidecars excluded from Southern 100",
       "url": "https://www.manxradio.com/news/isle-of-man-news/sidecars-excluded-from-southern-100/",
@@ -103,24 +121,6 @@
       "url": "https://www.manxradio.com/news/isle-of-man-news/spectators-warned-follow-instructions-of-marshals-as-tt-gets-underway/",
       "first_seen": "2026-05-25T16:06:52Z",
       "source_date": "Production for Hollywood film taking place at 2026 event"
-    },
-    {
-      "title": "Red flag halts untimed TT practice session",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/red-flag-halts-untimed-practice-session/",
-      "first_seen": "2026-05-25T16:06:52Z",
-      "source_date": "Production for Hollywood film taking place at 2026 event"
-    },
-    {
-      "title": "Pre-TT competitor dies following crash near Ballakeighan",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/pre-tt-competitor-dies-following-crash-near-ballakeighan/",
-      "first_seen": "2026-05-24T20:16:32Z",
-      "source_date": "UGGLY & CO Racing making debut at 2026 event"
-    },
-    {
-      "title": "Sunshine, speed and close racing at Pre-TT Classic opener",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/sunshine-speed-and-close-racing-at-pre-tt-classic-opener/",
-      "first_seen": "2026-05-24T11:00:32Z",
-      "source_date": "UGGLY & CO Racing making debut at 2026 event"
     }
   ]
 }

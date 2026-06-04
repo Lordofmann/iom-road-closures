@@ -435,6 +435,65 @@ def _phrase_is_full_course_closes(lower: str) -> bool:
         return False
     return ("close" in lower) or ("shut" in lower)
 
+
+# Disruption-keyword starts that may appear EITHER as a whole-cell dominant
+# signal (e.g. cell is `CANCELLED - <race name>`) OR as a trailing chunk
+# fragment after another chunk's time marker (e.g. `... 17:00 - All roads
+# open except Mountain Section CANCELLED - Sportbike TT ...`). The list is
+# matched as a string-startswith and is intentionally liberal on the family
+# of cancellation/abandonment words iomttraces has used or is plausibly
+# going to use.
+_TT_DISRUPTION_CHUNK_STARTS = (
+    "race postponed",
+    "racing postponed",
+    "cancelled",
+    "race cancelled",
+    "racing cancelled",
+    "abandoned",
+    "race abandoned",
+    "racing abandoned",
+)
+
+
+def _phrase_is_cancellation(text: str) -> bool:
+    """Detect cells whose DOMINANT content is a cancellation/abandonment.
+
+    Matches CANCELLED / RACE CANCELLED / RACING CANCELLED / ABANDONED and
+    similar (case-insensitive), provided the cell starts with the keyword
+    AND has no `HH:MM` time tokens. The time-token check is what stops us
+    cross-firing on a normal race-day cell whose schedule mentions a
+    cancellation in passing (those cells have closure times we want to
+    keep parsing). For the cancellation-as-trailing-fragment case the
+    chunk-walking loop has its own _TT_DISRUPTION_CHUNK_STARTS skip-list.
+    """
+    lower = text.strip().lower()
+    if re.search(r"\b\d{1,2}:\d{2}\b", lower):
+        return False
+    return any(lower.startswith(kw) for kw in (
+        "cancelled", "race cancelled", "racing cancelled",
+        "abandoned", "race abandoned", "racing abandoned",
+    ))
+
+
+# Result-link markers - the trailing-decoration phrases iomttraces uses on
+# cells whose schedule has been replaced with race results. Used by the
+# safety net in parse_tt_schedule() to distinguish "past-day results
+# displayed" (silently skip, no flag) from "unrecognised disruption
+# keyword" (emit sentinel so the merger can flag for verification).
+_TT_RESULT_LINK_MARKERS = (
+    "start list", "results", "lap by lap", "fast laps", "all laps",
+)
+
+
+def _count_result_link_markers(text: str) -> int:
+    """Count occurrences of result-link markers in the cell text. Used to
+    distinguish results-replaced cells (markers >= 2) from cells with an
+    unrecognised disruption keyword (markers < 2). Counts overlapping
+    occurrences so a cell mentioning 'Fast Laps - All Laps' 5 times scores
+    10 (heavily results-replaced) rather than 2."""
+    lower = text.lower()
+    return sum(lower.count(m) for m in _TT_RESULT_LINK_MARKERS)
+
 _MONTHS = {
     "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
     "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12,
@@ -532,6 +591,15 @@ def _parse_tt_schedule_cell(text: str) -> dict:
         info["activity"] = "Race postponed"
         return info
 
+    # Cancellation / abandonment: dominant content starts with a cancellation
+    # keyword and has no closure-time tokens. Unlike postponement these cells
+    # typically carry trailing content (the cancelled race name), so we use
+    # the looser predicate rather than a strict fullmatch.
+    if _phrase_is_cancellation(text):
+        info["is_cancelled"] = True
+        info["activity"] = "Race cancelled"
+        return info
+
     # Find every "HH:MM – " marker; chunks run from one marker to the next
     markers = list(re.finditer(r"(\d{1,2}):(\d{2})\s*[–—-]\s*", text))
     if not markers:
@@ -589,10 +657,13 @@ def _parse_tt_schedule_cell(text: str) -> dict:
                 info["secondFull"] = time_str
                 second_full_close_seen = True
             continue
-        # Race-postponed entries appear as time-less chunks tagged "RACE POSTPONED"
-        # at the start. Only skip those (don't false-trigger on chunks that
-        # mention "race postponed" elsewhere in trailing text).
-        if lower.startswith("race postponed"):
+        # Disruption-fragment chunks (RACE POSTPONED / CANCELLED / ABANDONED
+        # appearing as trailing text after another chunk's time marker, e.g.
+        # `... 17:00 - All roads ... RACE POSTPONED - Sportbike TT ...`) are
+        # skipped here so they don't false-match as activity candidates. The
+        # whole-cell variants of these phrases are handled by the early
+        # returns at the top of this function.
+        if any(lower.startswith(p) for p in _TT_DISRUPTION_CHUNK_STARTS):
             continue
         # Activity candidate. Must carry a "[N lap(s)]" annotation, otherwise
         # it's metadata (e.g. "Schedule update issued", "Notes") rather than
@@ -717,19 +788,58 @@ def parse_tt_schedule(html: str) -> dict:
                 out["entries"].append(entry)
                 continue
 
+            # Race cancelled / abandoned: same shape as postponed - explicit
+            # signal that the course is NOT closed this day. statusAt() and
+            # dayCardHTML() treat c.cancelled identically to c.restDay /
+            # c.postponed for closure purposes.
+            if cell_info.get("is_cancelled"):
+                entry["cancelled"] = True
+                entry["activity"] = cell_info.get("activity") or "Race cancelled"
+                out["entries"].append(entry)
+                continue
+
             for k in ("mountainCloses", "fullCloses", "reopen",
                       "secondMountain", "secondFull", "secondReopen", "activity"):
                 if cell_info.get(k) is not None:
                     entry[k] = cell_info[k]
 
-            # If no times and no rest / postponed flag, this is a mutated
-            # past-day cell (results/links replacing the schedule). Record
-            # a warning and skip.
-            if not any(entry.get(k) for k in ("mountainCloses", "fullCloses", "reopen", "restDay", "postponed")):
+            # If no times and no rest / postponed / cancelled flag, this is
+            # either a mutated past-day cell (results/links replacing the
+            # schedule - which we silently skip) or an unrecognised state
+            # like a brand new disruption keyword (which we emit as a
+            # sentinel for the merge step's safety net to flag for manual
+            # verification). The two cases are distinguished by counting
+            # result-link markers in the cell: results-replaced cells have
+            # 2 or more (usually many more), unrecognised cells have zero
+            # or one. See _count_result_link_markers and the discussion in
+            # merge_tt_entries.
+            if not any(entry.get(k) for k in ("mountainCloses", "fullCloses", "reopen", "restDay", "postponed", "cancelled")):
+                marker_count = _count_result_link_markers(cell_text)
+                if marker_count >= 2:
+                    # Results-replaced cell - historic data, parser silently
+                    # drops as before. No entry, no sentinel, no flag.
+                    out["warnings"].append(
+                        f"{iso_date}: no closure times, {marker_count} result-link "
+                        f"markers present (likely past day with results displayed)"
+                    )
+                    continue
+                # Unrecognised state - emit a sentinel entry so the merge
+                # step's safety net knows the cell content has changed to
+                # something we don't recognise. This prevents the merger
+                # from silently keeping stale "closed" data and instead
+                # flags the day for manual verification.
                 out["warnings"].append(
-                    f"no closure times or rest marker for {iso_date} "
-                    f"(likely a past day with results displayed)"
+                    f"{iso_date}: unrecognised cell content ({marker_count} "
+                    f"result-link markers); safety net will flag for verification"
                 )
+                out["entries"].append({
+                    "event": "tt",
+                    "course": "mountain",
+                    "date": iso_date,
+                    "day": day_info["day_label"],
+                    "_unrecognised_state": True,
+                    "_cell_text_excerpt": cell_text[:200],
+                })
                 continue
 
             out["entries"].append(entry)
@@ -817,7 +927,7 @@ def _parse_js_tt_entry(text: str) -> dict | None:
                     break
                 raw = decoded
             fields[key] = raw
-    for key in ("restDay", "contingency", "pending", "postponed"):
+    for key in ("restDay", "contingency", "pending", "postponed", "cancelled", "needsVerification"):
         if re.search(rf"\b{key}:\s*true\b", text):
             fields[key] = True
     return fields if fields.get("date") else None
@@ -1087,7 +1197,7 @@ _TT_FIELD_ORDER_GROUPS = [
     ["event", "course", "date"],
     ["mountainCloses", "fullCloses", "reopen"],
     ["secondMountain", "secondFull", "secondReopen"],
-    ["activity", "day", "restDay", "contingency", "pending", "postponed"],
+    ["activity", "day", "restDay", "contingency", "pending", "postponed", "cancelled", "needsVerification"],
 ]
 
 # Match the existing AUTO_TT_SCHEDULE markers and capture the content between
@@ -1194,40 +1304,89 @@ def merge_tt_entries(
 
         if d_dt < today_dt:
             # Strictly past: full immutability. The historical record never
-            # gets overwritten, regardless of what the parser produces. This
-            # protects data for days whose iomttraces row has been replaced
-            # with results.
+            # gets overwritten, regardless of what the parser produces.
+            # This protects data for days whose iomttraces row has been
+            # replaced with results or marked with disruption tags after
+            # the fact.
             if d in current_by_date:
                 result.append(current_by_date[d])
             continue
 
         if d_dt == today_dt:
-            # Today: the parser is allowed to overwrite ONLY when it produced
-            # an entry with an explicit non-closure signal (restDay /
-            # contingency / postponed). A parser that silently dropped today
-            # - which is what happens when the cell has been overwritten with
-            # mid-day results - must NOT erase the closure. This is the
-            # critical case for same-day postponements: iomttraces says
-            # "RACE POSTPONED" today, the parser now picks that up as
-            # postponed=true, and we want to flip the closure off.
+            # Today: the parser is allowed to overwrite ONLY when it
+            # produced an entry with an explicit non-closure signal
+            # (restDay / contingency / postponed / cancelled). A parser
+            # that silently dropped today - which is what happens when the
+            # cell has been overwritten with mid-day results - must NOT
+            # erase the closure. This is the critical case for same-day
+            # disruptions: iomttraces flips today to "RACE POSTPONED" or
+            # "CANCELLED", the parser picks that up, and the merge flips
+            # the closure off.
             parsed_today = parsed_by_date.get(d)
             has_explicit_signal = bool(parsed_today) and (
                 parsed_today.get("restDay")
                 or parsed_today.get("contingency")
                 or parsed_today.get("postponed")
+                or parsed_today.get("cancelled")
             )
             if has_explicit_signal:
                 result.append(parsed_today)
-            elif d in current_by_date:
+                continue
+            # Safety net: parser produced no entry OR produced a sentinel
+            # for an unrecognised cell state. Keep the current closure
+            # times (don't erase, the route checker needs SOMETHING to
+            # answer with) but flag for manual verification so a human
+            # can confirm. See the parser's _count_result_link_markers
+            # for the heuristic that decides "results-replaced (silent
+            # skip)" vs "unrecognised state (sentinel emitted)".
+            if (parsed_today and parsed_today.get("_unrecognised_state")
+                    and _safety_net_should_flag(current_by_date.get(d))):
+                flagged = dict(current_by_date[d])
+                flagged["needsVerification"] = True
+                flagged["_unrecognised_cell_excerpt"] = parsed_today.get("_cell_text_excerpt")
+                result.append(flagged)
+                continue
+            if d in current_by_date:
                 result.append(current_by_date[d])
             continue
 
-        # Future date - parser wins
-        if d in parsed_by_date:
-            result.append(parsed_by_date[d])
+        # Future date - parser wins, except when the parsed entry is a
+        # safety-net sentinel and the current array has closure data we
+        # need to defend.
+        parsed_future = parsed_by_date.get(d)
+        if parsed_future and parsed_future.get("_unrecognised_state"):
+            if _safety_net_should_flag(current_by_date.get(d)):
+                flagged = dict(current_by_date[d])
+                flagged["needsVerification"] = True
+                flagged["_unrecognised_cell_excerpt"] = parsed_future.get("_cell_text_excerpt")
+                result.append(flagged)
+                continue
+            # No closure data to defend - just keep current (or drop)
+            if d in current_by_date:
+                result.append(current_by_date[d])
+            continue
+        if parsed_future:
+            result.append(parsed_future)
         elif d in current_by_date:
             result.append(current_by_date[d])
     return result
+
+
+def _safety_net_should_flag(current_entry: dict | None) -> bool:
+    """The safety net only fires when there's something to defend - i.e. the
+    current array believes this date is a closed race day. If the current
+    entry is missing, has no closure times, or already carries a non-closure
+    flag (restDay/contingency/postponed/cancelled/pending), there's no
+    stale-closed risk and the safety net stays out of the way."""
+    if not current_entry:
+        return False
+    has_closure_times = any(current_entry.get(k) for k in (
+        "mountainCloses", "fullCloses", "reopen", "secondFull", "secondReopen",
+    ))
+    is_non_closure_day = any(current_entry.get(k) for k in (
+        "restDay", "contingency", "postponed", "cancelled", "pending",
+    ))
+    return has_closure_times and not is_non_closure_day
 
 
 def patch_html_tt_schedule(html: str, new_block: str) -> str:
@@ -2096,6 +2255,45 @@ def main() -> int:
                     })
                 else:
                     log("  TT block body re-rendered (encoding-level only, no semantic change, no alert)")
+
+                # Safety-net surfacing: any merged entry now carrying
+                # needsVerification=True means the parser saw an
+                # unrecognised cell state for a day the current array
+                # believes is a closed race day. We raise a separate
+                # tier-auto alert so the user sees a clear "verify this"
+                # signal rather than just letting the pill on the schedule
+                # card do the work alone.
+                verification_dates = sorted(
+                    e["date"] for e in merged if e.get("needsVerification")
+                )
+                if verification_dates:
+                    log(f"  TT safety-net flagged {len(verification_dates)} day(s) for verification: {verification_dates}")
+                    friendly_verify_dates = format_dates_friendly(verification_dates)
+                    tt_phase4_alerts.append({
+                        "id": "tt-needs-verification-" + nowstamp,
+                        "tier": "auto",
+                        "text": (
+                            f"TT schedule needs manual verification for "
+                            f"{len(verification_dates)} day{'s' if len(verification_dates)!=1 else ''} "
+                            f"({friendly_verify_dates}): iomttraces shows an "
+                            f"unrecognised cell state that the auto-updater "
+                            f"couldn't interpret"
+                        ),
+                        "source_name": "iomttraces.com",
+                        "source_url": IOMTT_SCHEDULE_URL,
+                        "timestamp": nowstamp,
+                        "first_seen": nowstamp,
+                        "implies_schedule_change": True,
+                        "event": "tt",
+                        "note": (
+                            "The route checker is still using the previous "
+                            "closure times for these dates. Open the source "
+                            "link to see what iomttraces now shows and update "
+                            "manually if needed. Always verify against the "
+                            "Road Information Hotline (01624 685888) before "
+                            "setting off."
+                        ),
+                    })
             else:
                 log("  TT block unchanged - no rewrite needed")
 
