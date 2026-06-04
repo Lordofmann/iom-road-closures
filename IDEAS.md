@@ -68,19 +68,22 @@ Possible model change when we do build it: Onchan likely needs its own treatment
 - **Source:** Surfaced while building the Castletown / Quarterbridge / NSC junction nuance in June 2026.
 - **Status:** Deferred pending verified local information on the correct bypass route. Not started.
 
-## Fill in Manx GP / Classic TT schedule entries (currently empty)
+## Fill in Manx GP / Classic TT session times (dates confirmed, times pending publication)
 
-The Manx Grand Prix and Classic TT run mid-to-late August on the same Snaefell Mountain Course as the TT. Our `closures` array currently has placeholder entries for the MGP date range (16–28 August 2026) tagged `pending: true` with no closure times — visitors querying any of those dates get "POSSIBLY — exact times not yet published" rather than a real answer. The official daily schedule needs to be entered manually.
+The Manx Grand Prix and Classic TT run mid-to-late August on the same Snaefell Mountain Course as the TT. **Dates are confirmed:** Manx Grand Prix 16–24 August 2026, Classic TT 19–28 August 2026 (the two events overlap). Our `closures` array correctly shows those dates with `pending: true` and no closure times, which is why visitors querying any of those dates get "POSSIBLY — exact times not yet published" rather than a real answer.
 
-**Auto-update is blocked.** `manxgrandprix.co.uk` hard-blocks scrapers (the 503-on-root, 404-on-specific-page pattern surfaced during the southern100.com investigation). The TT auto-update approach (`curl` + BeautifulSoup against a stable HTML schedule table) does not work against MGP. Three resolution paths in increasing ambition:
+**The reason the times are missing is NOT primarily the bot-block.** The organisers simply haven't published the detailed daily schedule yet. The official wording on the MGP site reads *"detailed schedule will be issued in due course, subject to road closure approval"* — there are no session times anywhere to scrape, on `manxgrandprix.co.uk` or anywhere else, because they don't exist yet. The placeholder `pending: true` entries are doing exactly what they should: warning users that times aren't yet published.
 
-1. **Manual encoding** from the official PDF / press release when the schedule is published. Reliable, but a yearly chore.
-2. **Headless-browser scraping** (Playwright / Puppeteer) — emulates a real Chrome session, bypasses the bot-block. Heavier dependency stack, bigger CI footprint, more failure modes, but plug-compatible with the existing parser/validator/applier architecture once the fetch is solved.
-3. **Cowork** (see next item) — same as headless-browser but human-like and able to read images too. Open question on unattended scheduling.
-4. **DOI data feed** — see the cross-cutting note in the matrix-boards entry above. Long-term north star.
+The `manxgrandprix.co.uk` bot-block (503-on-root, 404-on-specific-page pattern, surfaced during the southern100.com investigation) is a real but **secondary** issue. It only becomes relevant once a detailed schedule has been published and we want to auto-update against it. If we end up needing to bypass it then, the options remain Cowork (see next entry), headless-browser scraping (Playwright / Puppeteer), manual encoding from the official PDF, or — long-term — a DOI data feed (see the matrix-boards entry).
 
-- **Source:** Surfaced repeatedly during the TT auto-update work — MGP is the most conspicuous remaining gap once TT is automated.
-- **Status:** Not started. Becomes top priority as August 2026 approaches; before then, the placeholder `pending: true` entries are doing the right thing (warning users that times aren't published yet).
+**Action: revisit early July 2026.** At that point, check whether the detailed daily schedule has been published. Then assess two things together:
+
+(a) **Is it scrapeable?** Where exactly is the schedule (HTML table on a public page, a PDF, embedded image, gated content)? What's the format, and is the bot-block still in effect?
+
+(b) **Can we program an auto-update like we did for TT?** That depends on the answer to (a). If the schedule is in a tidy HTML table on a reachable page, the existing TT parser/validator/applier architecture extends to it almost mechanically (just a new parse_mgp_schedule, plus a parallel applier). If it's behind the bot-block or only in PDF, we either need a heavier fetch (headless browser, Cowork) or fall back to manual encoding.
+
+- **Source:** Surfaced repeatedly during the TT auto-update work, then re-scoped in June 2026 once we confirmed the dates are firm and the missing-times problem is upstream (no published schedule yet), not downstream (scraping blocked).
+- **Status:** Holding until early July 2026. Until then, the placeholder `pending: true` entries are doing the right thing.
 
 ## Investigate Cowork for the hard-to-scrape schedules
 
