@@ -282,6 +282,16 @@
     border-color: var(--tt-red);
     box-shadow: inset 4px 0 0 var(--tt-red), 0 0 0 1px rgba(216, 35, 42, 0.15);
   }
+  /* Brief attention-pull when the Schedule tab auto-scrolls to today's
+     entry (or the next upcoming day). Plays once then fades. */
+  .day-card.flash {
+    animation: dayCardFlash 1.8s ease-out;
+  }
+  @keyframes dayCardFlash {
+    0%   { background: var(--accent-soft); box-shadow: 0 0 0 3px var(--tt-red); }
+    60%  { background: var(--accent-soft); box-shadow: 0 0 0 3px var(--tt-red); }
+    100% { background: var(--bg);          box-shadow: 0 0 0 0 transparent; }
+  }
   .day-card .date { font-weight: 700; font-size: 1rem; line-height: 1.3; }
   .day-card .date small { display: block; color: var(--muted); font-weight: 500; font-size: 0.78rem; margin-top: 4px; }
   .day-card .times { font-size: 0.88rem; }
@@ -1789,7 +1799,10 @@ function dayCardHTML(c, isToday) {
   } else if (c.course === 'billown') {
     times = c.windows.map(w => `<div class="row"><span>Closed</span><span>${w.close} &mdash; ${w.reopen}</span></div>`).join('');
   }
-  return `<div class="day-card${isToday ? ' today' : ''}">
+  // data-date is the canonical anchor used by scrollToTodayInSchedule().
+  // Always set from c.date so every render path (initial load, filter
+  // click, scraper auto-update) produces a queryable attribute.
+  return `<div class="day-card${isToday ? ' today' : ''}" data-date="${c.date}">
     <div class="date">${fmtDate(c.date)}<small><span class="pill ${m.cls}">${m.short}</span></small>${c.day ? '<small>'+c.day+'</small>' : ''}</div>
     <div>
       <div class="times">${times}</div>
@@ -2081,11 +2094,65 @@ function checkRoute() {
     '</div>';
 }
 
+// ====== SCHEDULE TAB: scroll to today's entry on tab activation ======
+//
+// Finds the day-card whose data-date attribute matches today's ISO date.
+// Fallbacks:
+//   1. If today isn't in the schedule, scroll to the smallest data-date > today
+//      (the next upcoming race day).
+//   2. If no card has data-date >= today (whole season has passed, e.g. late
+//      autumn), do nothing - leave the page where it is.
+// Robustness: the lookup is by attribute, not position, so it survives both
+// the scraper's auto-updates to the closures array and the filter buttons
+// re-rendering the list.
+function scrollToTodayInSchedule() {
+  const list = document.getElementById('schedule-list');
+  if (!list) return;
+  const cards = list.querySelectorAll('.day-card[data-date]');
+  if (!cards.length) return;
+
+  const today = todayISO();
+  let target = null;
+
+  // 1. Exact match for today
+  for (const card of cards) {
+    if (card.getAttribute('data-date') === today) {
+      target = card;
+      break;
+    }
+  }
+
+  // 2. Otherwise: smallest date strictly after today
+  if (!target) {
+    let bestDate = null;
+    for (const card of cards) {
+      const d = card.getAttribute('data-date');
+      if (d > today && (bestDate === null || d < bestDate)) {
+        bestDate = d;
+        target = card;
+      }
+    }
+  }
+
+  // 3. Nothing matched - season over, leave page where it is
+  if (!target) return;
+
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  target.classList.add('flash');
+  setTimeout(() => target.classList.remove('flash'), 1800);
+}
+
 // ====== TAB NAVIGATION ======
 document.querySelectorAll('.nav button').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b === btn));
     document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === 'tab-' + btn.dataset.tab));
+    // After the Schedule tab is shown, jump to today's row (or next upcoming).
+    // requestAnimationFrame delays one frame so the section's display: flex
+    // has actually applied before scrollIntoView measures geometry.
+    if (btn.dataset.tab === 'schedule') {
+      requestAnimationFrame(scrollToTodayInSchedule);
+    }
   });
 });
 
@@ -2290,6 +2357,14 @@ renderGlossary();
 renderDiversions();
 renderRouteSelectors();
 updateFreshnessLabels();
+
+// Default the Route Checker date input to today's actual date. The HTML
+// attribute value="YYYY-MM-DD" is just a sensible fallback in case JS is
+// disabled; the JS overwrite is the live default.
+(function defaultRouteCheckerToToday() {
+  const dateInput = document.getElementById('date');
+  if (dateInput) dateInput.value = todayISO();
+})();
 </script>
 
 </body>
