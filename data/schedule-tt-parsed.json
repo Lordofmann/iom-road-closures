@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-04T22:13:35Z",
+  "fetched_at": "2026-06-05T16:34:29Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2026,
@@ -23,7 +23,8 @@
         "2026-05-30",
         "2026-06-01",
         "2026-06-03",
-        "2026-06-04"
+        "2026-06-04",
+        "2026-06-05"
       ],
       "differences": [],
       "missing_future_days": [],
@@ -86,8 +87,8 @@
       "course": "mountain",
       "date": "2026-06-05",
       "day": "Fri \u2014 Race Day 5 (TT Bank Holiday)",
-      "mountainCloses": "09:00",
-      "fullCloses": "10:00",
+      "mountainCloses": "10:00",
+      "fullCloses": "11:00",
       "reopen": "21:30",
       "activity": "Monster Energy Supersport TT Race 2"
     },
