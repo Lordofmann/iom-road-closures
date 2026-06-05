@@ -1,7 +1,25 @@
 {
-  "last_fetch": "2026-06-05T16:34:29Z",
+  "last_fetch": "2026-06-05T22:05:42Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Rider taken to Noble's Hospital after Senior TT red flag",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/rider-taken-to-nobles-hospital-after-senior-tt-red-flag/",
+      "first_seen": "2026-06-05T22:05:42Z",
+      "source_date": "Follows cancellation of class at TT 2026"
+    },
+    {
+      "title": "TT organisers announce revised Saturday race schedule",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-organisers-announce-revised-saturday-race-schedule/",
+      "first_seen": "2026-06-05T22:05:42Z",
+      "source_date": "Follows cancellation of class at TT 2026"
+    },
+    {
+      "title": "Red flag stops Senior TT race",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/red-flag-stops-senior-tt-race/",
+      "first_seen": "2026-06-05T22:05:42Z",
+      "source_date": "Follows cancellation of class at TT 2026"
+    },
     {
       "title": "Dunlop shatters records in Sportbike victory",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/dunlop-shatters-records-in-sportbike-victory/",
@@ -101,24 +119,6 @@
     {
       "title": "Franco Bourne planning TT return after missing debut",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/franco-bourne-planning-tt-return-after-missing-debut/",
-      "first_seen": "2026-06-03T11:16:52Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "No TT racing to take place",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/no-tt-racing-to-take-place-today/",
-      "first_seen": "2026-06-03T11:16:52Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "TT newcomer taken to Noble's after coming off at Kerrowmoar",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-newcomer-taken-to-nobles-after-coming-off-at-kerrowmoar/",
-      "first_seen": "2026-06-03T11:16:52Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "TT marshals urged to sign up early for contingency sessions",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-marshals-urged-to-sign-up-early-for-contingency-sessions/",
       "first_seen": "2026-06-03T11:16:52Z",
       "source_date": "Rider was due to race for Team ILR in 2026"
     }
