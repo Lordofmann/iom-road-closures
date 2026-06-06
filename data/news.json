@@ -1,7 +1,25 @@
 {
-  "last_fetch": "2026-06-05T22:05:42Z",
+  "last_fetch": "2026-06-06T12:00:54Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "TT 2026: Organisers provide updates on rider conditions",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-organisers-provide-updates-on-rider-conditions/",
+      "first_seen": "2026-06-06T12:00:54Z",
+      "source_date": "Follows cancellation of class at TT 2026"
+    },
+    {
+      "title": "Shooting live amongst riders was 'pretty exceptional' says star of TT film",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/shooting-live-amongst-riders-was-pretty-exceptional-says-star-of-tt-film/",
+      "first_seen": "2026-06-06T12:00:54Z",
+      "source_date": "Follows cancellation of class at TT 2026"
+    },
+    {
+      "title": "TT 2026: Delay confirmed ahead of Saturday racing",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-delay-confirmed-ahead-of-saturday-racing/",
+      "first_seen": "2026-06-06T12:00:54Z",
+      "source_date": "Follows cancellation of class at TT 2026"
+    },
     {
       "title": "Rider taken to Noble's Hospital after Senior TT red flag",
       "url": "https://www.manxradio.com/news/isle-of-man-news/rider-taken-to-nobles-hospital-after-senior-tt-red-flag/",
@@ -102,24 +120,6 @@
       "title": "Sidecars excluded from Southern 100",
       "url": "https://www.manxradio.com/news/isle-of-man-news/sidecars-excluded-from-southern-100/",
       "first_seen": "2026-06-03T14:18:21Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "TT Fan Park to reopen",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-fan-park-to-reopen/",
-      "first_seen": "2026-06-03T14:18:21Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "Jamie Coward happy with progress so far on TT return",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-coward-happy-with-progress-so-far-on-tt-return/",
-      "first_seen": "2026-06-03T14:11:54Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "Franco Bourne planning TT return after missing debut",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/franco-bourne-planning-tt-return-after-missing-debut/",
-      "first_seen": "2026-06-03T11:16:52Z",
       "source_date": "Rider was due to race for Team ILR in 2026"
     }
   ]

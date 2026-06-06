@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-05T22:05:42Z",
+  "fetched_at": "2026-06-06T12:00:54Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2026,
@@ -24,7 +24,8 @@
         "2026-06-01",
         "2026-06-03",
         "2026-06-04",
-        "2026-06-05"
+        "2026-06-05",
+        "2026-06-06"
       ],
       "differences": [],
       "missing_future_days": [],
@@ -97,8 +98,7 @@
       "course": "mountain",
       "date": "2026-06-06",
       "day": "Sat \u2014 Race Day 6",
-      "mountainCloses": "09:00",
-      "fullCloses": "10:00",
+      "fullCloses": "15:00",
       "reopen": "21:30",
       "activity": "Milwaukee Senior TT"
     },
