@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-06T12:00:54Z",
+  "fetched_at": "2026-06-06T20:47:17Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2026,
@@ -9,7 +9,8 @@
     "2026-05-27: no closure times, 30 result-link markers present (likely past day with results displayed)",
     "2026-05-29: no closure times, 24 result-link markers present (likely past day with results displayed)",
     "2026-05-31: no closure times, 4 result-link markers present (likely past day with results displayed)",
-    "2026-06-02: no closure times, 4 result-link markers present (likely past day with results displayed)"
+    "2026-06-02: no closure times, 4 result-link markers present (likely past day with results displayed)",
+    "2026-06-06: unrecognised cell content (0 result-link markers); safety net will flag for verification"
   ],
   "validation": {
     "status": "ok",
@@ -98,9 +99,8 @@
       "course": "mountain",
       "date": "2026-06-06",
       "day": "Sat \u2014 Race Day 6",
-      "fullCloses": "15:00",
-      "reopen": "21:30",
-      "activity": "Milwaukee Senior TT"
+      "_unrecognised_state": true,
+      "_cell_text_excerpt": "11:00 - Mountain Road Remains Closed CANCELLED - Carole Nash Sportbike TT Race 2 - [3 laps]"
     },
     {
       "event": "tt",

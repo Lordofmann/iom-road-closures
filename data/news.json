@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-06T12:00:54Z",
+  "last_fetch": "2026-06-06T20:47:17Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Remainder of TT 2026 cancelled",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/remainder-of-tt-2026-cancelled/",
+      "first_seen": "2026-06-06T20:47:17Z",
+      "source_date": "Follows cancellation of class at TT 2026"
+    },
     {
       "title": "TT 2026: Organisers provide updates on rider conditions",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-organisers-provide-updates-on-rider-conditions/",
@@ -114,12 +120,6 @@
       "title": "'We need to keep the spirit of the TT alive' says fan",
       "url": "https://www.manxradio.com/news/isle-of-man-news/we-need-to-keep-the-spirit-of-the-tt-alive-says-fan/",
       "first_seen": "2026-06-04T08:15:28Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "Sidecars excluded from Southern 100",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/sidecars-excluded-from-southern-100/",
-      "first_seen": "2026-06-03T14:18:21Z",
       "source_date": "Rider was due to race for Team ILR in 2026"
     }
   ]
