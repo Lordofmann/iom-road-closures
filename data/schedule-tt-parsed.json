@@ -1,34 +1,18 @@
 {
-  "fetched_at": "2026-06-07T20:54:03Z",
+  "fetched_at": "2026-06-08T17:40:39Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2026,
-  "warnings": [
-    "2026-05-25: unrecognised cell content (0 result-link markers); safety net will flag for verification",
-    "2026-05-26: no closure times, 10 result-link markers present (likely past day with results displayed)",
-    "2026-05-27: no closure times, 30 result-link markers present (likely past day with results displayed)",
-    "2026-05-29: no closure times, 24 result-link markers present (likely past day with results displayed)",
-    "2026-05-31: no closure times, 4 result-link markers present (likely past day with results displayed)",
-    "2026-06-02: no closure times, 4 result-link markers present (likely past day with results displayed)",
-    "2026-06-06: unrecognised cell content (0 result-link markers); safety net will flag for verification"
-  ],
+  "warnings": [],
   "validation": {
-    "status": "ok",
-    "reasons": [],
+    "status": "rejected",
+    "reasons": [
+      "parser returned 0 entries"
+    ],
     "diff_summary": {
-      "entries_parsed": 9,
+      "entries_parsed": 0,
       "entries_in_current_array": 14,
-      "past_days_skipped": [
-        "2026-05-25",
-        "2026-05-28",
-        "2026-05-30",
-        "2026-06-01",
-        "2026-06-03",
-        "2026-06-04",
-        "2026-06-05",
-        "2026-06-06",
-        "2026-06-07"
-      ],
+      "past_days_skipped": [],
       "differences": [],
       "missing_future_days": [],
       "new_future_days": [],
@@ -36,80 +20,5 @@
       "pct_fields_shifted_over_2h": 0.0
     }
   },
-  "entries": [
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-05-25",
-      "day": "Mon (Spring Bank Holiday)",
-      "_unrecognised_state": true,
-      "_cell_text_excerpt": "FREE PRACTICE UNTIMED SESSION QUALIFYING SESSION CANCELLED"
-    },
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-05-28",
-      "day": "Thu",
-      "restDay": true,
-      "activity": "Rest day"
-    },
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-05-30",
-      "day": "Sat \u2014 Race Day 1",
-      "postponed": true,
-      "activity": "Race postponed"
-    },
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-06-01",
-      "day": "Mon",
-      "restDay": true,
-      "activity": "Rest day"
-    },
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-06-03",
-      "day": "Wed \u2014 Race Day 4",
-      "postponed": true,
-      "activity": "Race postponed"
-    },
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-06-04",
-      "day": "Thu",
-      "cancelled": true,
-      "activity": "Race cancelled"
-    },
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-06-05",
-      "day": "Fri \u2014 Race Day 5 (TT Bank Holiday)",
-      "mountainCloses": "10:00",
-      "fullCloses": "11:00",
-      "reopen": "21:30",
-      "activity": "Monster Energy Supersport TT Race 2"
-    },
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-06-06",
-      "day": "Sat \u2014 Race Day 6",
-      "_unrecognised_state": true,
-      "_cell_text_excerpt": "11:00 - Mountain Road Remains Closed CANCELLED - Carole Nash Sportbike TT Race 2 - [3 laps]"
-    },
-    {
-      "event": "tt",
-      "course": "mountain",
-      "date": "2026-06-07",
-      "day": "Sun",
-      "activity": "Contingency day \u2014 only used if rescheduling needed",
-      "contingency": true
-    }
-  ]
+  "entries": []
 }

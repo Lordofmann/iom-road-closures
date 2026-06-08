@@ -1,7 +1,25 @@
 {
-  "last_fetch": "2026-06-06T20:47:17Z",
+  "last_fetch": "2026-06-08T17:40:39Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "TT rider 'suffered chest injuries in fatal crash'",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-rider-suffered-chest-injuries-in-fatal-crash/",
+      "first_seen": "2026-06-08T17:40:39Z",
+      "source_date": "Sidecar duo recovering after TT 2026 qualifying incident"
+    },
+    {
+      "title": "Shaun Parker fundraiser surpasses \u00a312k",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/shaun-parker-fundraiser-surpasses-12k/",
+      "first_seen": "2026-06-08T17:40:39Z",
+      "source_date": "Sidecar duo recovering after TT 2026 qualifying incident"
+    },
+    {
+      "title": "Ryan and Callum Crowe 'lucky' but not 'unscathed'",
+      "url": "https://www.manxradio.com/news/tt-news/ryan-and-callum-crowe-lucky-but-not-unscathed/",
+      "first_seen": "2026-06-08T17:40:39Z",
+      "source_date": "Sidecar duo recovering after TT 2026 qualifying incident"
+    },
     {
       "title": "Remainder of TT 2026 cancelled",
       "url": "https://www.manxradio.com/news/isle-of-man-news/remainder-of-tt-2026-cancelled/",
@@ -102,24 +120,6 @@
       "title": "Southern 100 sidecar exclusion 'absolutely devastating'",
       "url": "https://www.manxradio.com/news/isle-of-man-news/southern-100-sidecar-exclusion-absolutely-devastating/",
       "first_seen": "2026-06-04T22:13:35Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "No racing to take place",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/no-racing-to-take-place-today/",
-      "first_seen": "2026-06-04T08:15:28Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "Paralysed sidecar racer's team appeal for support to continue post-TT",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/paralysed-sidecar-racers-team-appeal-for-support-to-continue-post-tt/",
-      "first_seen": "2026-06-04T08:15:28Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "'We need to keep the spirit of the TT alive' says fan",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/we-need-to-keep-the-spirit-of-the-tt-alive-says-fan/",
-      "first_seen": "2026-06-04T08:15:28Z",
       "source_date": "Rider was due to race for Team ILR in 2026"
     }
   ]
