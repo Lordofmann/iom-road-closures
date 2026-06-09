@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-06-08T17:40:39Z",
+  "last_fetch": "2026-06-09T16:49:22Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Rhys Stephenson wins TT 'Star of Tomorrow' award",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/rhys-stephenson-wins-tt-star-of-tomorrow-award/",
+      "first_seen": "2026-06-09T16:49:22Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
+    {
+      "title": "Killed Pre-TT Classic racer 'appeared to lose control'",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/killed-pre-tt-classic-racer-appeared-to-lose-control/",
+      "first_seen": "2026-06-09T16:49:22Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
     {
       "title": "TT rider 'suffered chest injuries in fatal crash'",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-rider-suffered-chest-injuries-in-fatal-crash/",
@@ -107,18 +119,6 @@
     {
       "title": "Glover - Southern 100 sidecar suspension felt 'completely inevitable'",
       "url": "https://www.manxradio.com/news/isle-of-man-news/glover-southern-100-sidecar-suspension-felt-completely-inevitable/",
-      "first_seen": "2026-06-04T22:13:35Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "TT fan park closed after 'deterioration in ground conditions'",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-fan-park-closed-after-deterioration-in-ground-conditions/",
-      "first_seen": "2026-06-04T22:13:35Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "Southern 100 sidecar exclusion 'absolutely devastating'",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/southern-100-sidecar-exclusion-absolutely-devastating/",
       "first_seen": "2026-06-04T22:13:35Z",
       "source_date": "Rider was due to race for Team ILR in 2026"
     }
