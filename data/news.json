@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-09T16:49:22Z",
+  "last_fetch": "2026-06-10T18:10:09Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Jamie Cringle 'a couple of steps closer in the right direction' after TT crash",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-cringle-a-couple-of-steps-closer-in-the-right-direction-after-tt-crash/",
+      "first_seen": "2026-06-10T18:10:09Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
     {
       "title": "Rhys Stephenson wins TT 'Star of Tomorrow' award",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/rhys-stephenson-wins-tt-star-of-tomorrow-award/",
@@ -113,12 +119,6 @@
     {
       "title": "Southern 100 planning to run classic sidecars for 2026",
       "url": "https://www.manxradio.com/news/isle-of-man-news/southern-100-planning-to-run-classic-sidecars-for-2026/",
-      "first_seen": "2026-06-04T22:13:35Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "Glover - Southern 100 sidecar suspension felt 'completely inevitable'",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/glover-southern-100-sidecar-suspension-felt-completely-inevitable/",
       "first_seen": "2026-06-04T22:13:35Z",
       "source_date": "Rider was due to race for Team ILR in 2026"
     }
