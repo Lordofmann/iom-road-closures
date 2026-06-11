@@ -1,7 +1,25 @@
 {
-  "last_fetch": "2026-06-10T18:10:09Z",
+  "last_fetch": "2026-06-11T18:36:27Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Caomhan Canny hoping for TT return after 2026 withdrawal",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/caomhan-canny-hoping-for-tt-return-after-2026-withdrawal/",
+      "first_seen": "2026-06-11T18:36:27Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
+    {
+      "title": "Classic sidecars confirmed for 2026 Southern 100",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/classic-sidecars-confirmed-for-2026-southern-100/",
+      "first_seen": "2026-06-11T18:36:27Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
+    {
+      "title": "TT launches sustainability review into Sidecar class",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-launches-sustainability-review-into-sidecar-class/",
+      "first_seen": "2026-06-11T18:36:27Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
     {
       "title": "Jamie Cringle 'a couple of steps closer in the right direction' after TT crash",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-cringle-a-couple-of-steps-closer-in-the-right-direction-after-tt-crash/",
@@ -103,24 +121,6 @@
       "url": "https://www.manxradio.com/news/isle-of-man-news/50k-prize-pot-to-be-split-between-sidecar-competitors/",
       "first_seen": "2026-06-05T16:34:29Z",
       "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "Free sidecar entries at July ARA meeting",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/free-sidecar-entries-at-july-ara-meeting/",
-      "first_seen": "2026-06-05T16:34:29Z",
-      "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "Sidecars have 'been my life' says Lambert",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/sidecars-have-been-my-life-competitor/",
-      "first_seen": "2026-06-04T22:13:35Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
-    },
-    {
-      "title": "Southern 100 planning to run classic sidecars for 2026",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/southern-100-planning-to-run-classic-sidecars-for-2026/",
-      "first_seen": "2026-06-04T22:13:35Z",
-      "source_date": "Rider was due to race for Team ILR in 2026"
     }
   ]
 }
