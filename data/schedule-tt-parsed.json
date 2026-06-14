@@ -1,24 +1,14 @@
 {
-  "fetched_at": "2026-06-13T20:55:53Z",
+  "fetched_at": "2026-06-14T13:16:38Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
-  "year_detected": 2027,
-  "warnings": [],
+  "year_detected": null,
+  "warnings": [
+    "iomttraces page not fetched"
+  ],
   "validation": {
-    "status": "rejected",
-    "reasons": [
-      "parser returned 0 entries"
-    ],
-    "diff_summary": {
-      "entries_parsed": 0,
-      "entries_in_current_array": 14,
-      "past_days_skipped": [],
-      "differences": [],
-      "missing_future_days": [],
-      "new_future_days": [],
-      "max_shift_per_day_minutes": {},
-      "pct_fields_shifted_over_2h": 0.0
-    }
+    "status": "not_run",
+    "reasons": []
   },
   "entries": []
 }
