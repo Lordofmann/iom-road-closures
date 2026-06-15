@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-11T18:36:27Z",
+  "last_fetch": "2026-06-15T20:17:54Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "2026 Southern 100 Road Races schedule confirmed",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/2026-southern-100-road-races-schedule-confirmed/",
+      "first_seen": "2026-06-15T20:17:54Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
     {
       "title": "Caomhan Canny hoping for TT return after 2026 withdrawal",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/caomhan-canny-hoping-for-tt-return-after-2026-withdrawal/",
@@ -113,12 +119,6 @@
     {
       "title": "Dunlop delivers again to win Supersport TT Race 2",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/dunlop-delivers-again-to-win-supersport-tt-race-2/",
-      "first_seen": "2026-06-05T16:34:29Z",
-      "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "\u00a350K prize pot to be split between sidecar competitors",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/50k-prize-pot-to-be-split-between-sidecar-competitors/",
       "first_seen": "2026-06-05T16:34:29Z",
       "source_date": "Follows cancellation of class at TT 2026"
     }
