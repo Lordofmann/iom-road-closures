@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-16T19:56:38Z",
+  "last_fetch": "2026-06-20T12:25:43Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Hickman to make debut at Southern 100 Road Races",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/hickman-to-make-debut-at-southern-100-road-races/",
+      "first_seen": "2026-06-20T12:25:43Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
     {
       "title": "'It's important people can express views on sidecar review'",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/its-important-people-can-express-views-on-sidecar-review/",
@@ -113,12 +119,6 @@
     {
       "title": "TT organisers announce revised Saturday race schedule",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-organisers-announce-revised-saturday-race-schedule/",
-      "first_seen": "2026-06-05T22:05:42Z",
-      "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "Red flag stops Senior TT race",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/red-flag-stops-senior-tt-race/",
       "first_seen": "2026-06-05T22:05:42Z",
       "source_date": "Follows cancellation of class at TT 2026"
     }
