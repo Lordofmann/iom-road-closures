@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-20T12:25:43Z",
+  "last_fetch": "2026-06-22T12:43:39Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Erno Kostamo recovering in his home country",
+      "url": "https://www.manxradio.com/news/tt-news/erno-kostamo-recovering-in-his-home-country/",
+      "first_seen": "2026-06-22T12:43:39Z",
+      "source_date": "Twenty-year-old was youngest rider at 2026 event"
+    },
     {
       "title": "Hickman to make debut at Southern 100 Road Races",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/hickman-to-make-debut-at-southern-100-road-races/",
@@ -113,12 +119,6 @@
     {
       "title": "Rider taken to Noble's Hospital after Senior TT red flag",
       "url": "https://www.manxradio.com/news/isle-of-man-news/rider-taken-to-nobles-hospital-after-senior-tt-red-flag/",
-      "first_seen": "2026-06-05T22:05:42Z",
-      "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "TT organisers announce revised Saturday race schedule",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-organisers-announce-revised-saturday-race-schedule/",
       "first_seen": "2026-06-05T22:05:42Z",
       "source_date": "Follows cancellation of class at TT 2026"
     }
