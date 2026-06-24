@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-22T12:43:39Z",
+  "last_fetch": "2026-06-24T10:13:48Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Support for injured TT rider 'means everything'",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/support-for-injured-tt-rider-means-everything/",
+      "first_seen": "2026-06-24T10:13:48Z",
+      "source_date": ""
+    },
     {
       "title": "Erno Kostamo recovering in his home country",
       "url": "https://www.manxradio.com/news/tt-news/erno-kostamo-recovering-in-his-home-country/",
@@ -114,12 +120,6 @@
       "title": "TT 2026: Delay confirmed ahead of Saturday racing",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-delay-confirmed-ahead-of-saturday-racing/",
       "first_seen": "2026-06-06T12:00:54Z",
-      "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "Rider taken to Noble's Hospital after Senior TT red flag",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/rider-taken-to-nobles-hospital-after-senior-tt-red-flag/",
-      "first_seen": "2026-06-05T22:05:42Z",
       "source_date": "Follows cancellation of class at TT 2026"
     }
   ]
