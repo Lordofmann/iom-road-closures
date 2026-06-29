@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-24T10:13:48Z",
+  "last_fetch": "2026-06-29T15:31:24Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Final day to give views on future of sidecar racing",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/final-day-to-give-views-on-future-of-sidecar-racing/",
+      "first_seen": "2026-06-29T15:31:24Z",
+      "source_date": ""
+    },
     {
       "title": "Support for injured TT rider 'means everything'",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/support-for-injured-tt-rider-means-everything/",
@@ -113,12 +119,6 @@
     {
       "title": "Shooting live amongst riders was 'pretty exceptional' says star of TT film",
       "url": "https://www.manxradio.com/news/isle-of-man-news/shooting-live-amongst-riders-was-pretty-exceptional-says-star-of-tt-film/",
-      "first_seen": "2026-06-06T12:00:54Z",
-      "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "TT 2026: Delay confirmed ahead of Saturday racing",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-delay-confirmed-ahead-of-saturday-racing/",
       "first_seen": "2026-06-06T12:00:54Z",
       "source_date": "Follows cancellation of class at TT 2026"
     }
