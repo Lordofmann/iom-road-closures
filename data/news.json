@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-06-29T15:31:24Z",
+  "last_fetch": "2026-06-30T10:25:25Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Davey Todd to miss out on 2026 Southern 100",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/davey-todd-to-miss-out-on-2026-southern-100/",
+      "first_seen": "2026-06-30T10:25:25Z",
+      "source_date": ""
+    },
     {
       "title": "Final day to give views on future of sidecar racing",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/final-day-to-give-views-on-future-of-sidecar-racing/",
@@ -113,12 +119,6 @@
     {
       "title": "TT 2026: Organisers provide updates on rider conditions",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-organisers-provide-updates-on-rider-conditions/",
-      "first_seen": "2026-06-06T12:00:54Z",
-      "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "Shooting live amongst riders was 'pretty exceptional' says star of TT film",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/shooting-live-amongst-riders-was-pretty-exceptional-says-star-of-tt-film/",
       "first_seen": "2026-06-06T12:00:54Z",
       "source_date": "Follows cancellation of class at TT 2026"
     }
