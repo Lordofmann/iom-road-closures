@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-06-30T10:25:25Z",
+  "last_fetch": "2026-07-01T10:37:30Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Too soon to say if Finnish TT rider will have permanent vision problems",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/too-soon-to-say-if-finnish-tt-rider-will-have-permanent-vision-problems/",
+      "first_seen": "2026-07-01T10:37:30Z",
+      "source_date": ""
+    },
+    {
+      "title": "2026 Manx Grand Prix & Classic TT schedule unveiled",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/2026-manx-grand-prix-and-classic-tt-schedule-unveiled/",
+      "first_seen": "2026-07-01T10:37:30Z",
+      "source_date": ""
+    },
     {
       "title": "Davey Todd to miss out on 2026 Southern 100",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/davey-todd-to-miss-out-on-2026-southern-100/",
@@ -109,18 +121,6 @@
       "url": "https://www.manxradio.com/news/tt-news/ryan-and-callum-crowe-lucky-but-not-unscathed/",
       "first_seen": "2026-06-08T17:40:39Z",
       "source_date": "Sidecar duo recovering after TT 2026 qualifying incident"
-    },
-    {
-      "title": "Remainder of TT 2026 cancelled",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/remainder-of-tt-2026-cancelled/",
-      "first_seen": "2026-06-06T20:47:17Z",
-      "source_date": "Follows cancellation of class at TT 2026"
-    },
-    {
-      "title": "TT 2026: Organisers provide updates on rider conditions",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-2026-organisers-provide-updates-on-rider-conditions/",
-      "first_seen": "2026-06-06T12:00:54Z",
-      "source_date": "Follows cancellation of class at TT 2026"
     }
   ]
 }
