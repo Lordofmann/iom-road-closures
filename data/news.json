@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-07-01T10:37:30Z",
+  "last_fetch": "2026-07-01T14:09:00Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Jamie Cringle transferred back to UK for further treatment",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-cringle-transferred-back-to-uk-for-further-treatment/",
+      "first_seen": "2026-07-01T14:09:00Z",
+      "source_date": ""
+    },
+    {
+      "title": "Jamie Coward confirms withdrawal from Southern 100",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-coward-confirms-withdrawal-from-southern-100/",
+      "first_seen": "2026-07-01T14:09:00Z",
+      "source_date": ""
+    },
     {
       "title": "Too soon to say if Finnish TT rider will have permanent vision problems",
       "url": "https://www.manxradio.com/news/isle-of-man-news/too-soon-to-say-if-finnish-tt-rider-will-have-permanent-vision-problems/",
@@ -107,18 +119,6 @@
     {
       "title": "TT rider 'suffered chest injuries in fatal crash'",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-rider-suffered-chest-injuries-in-fatal-crash/",
-      "first_seen": "2026-06-08T17:40:39Z",
-      "source_date": "Sidecar duo recovering after TT 2026 qualifying incident"
-    },
-    {
-      "title": "Shaun Parker fundraiser surpasses \u00a312k",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/shaun-parker-fundraiser-surpasses-12k/",
-      "first_seen": "2026-06-08T17:40:39Z",
-      "source_date": "Sidecar duo recovering after TT 2026 qualifying incident"
-    },
-    {
-      "title": "Ryan and Callum Crowe 'lucky' but not 'unscathed'",
-      "url": "https://www.manxradio.com/news/tt-news/ryan-and-callum-crowe-lucky-but-not-unscathed/",
       "first_seen": "2026-06-08T17:40:39Z",
       "source_date": "Sidecar duo recovering after TT 2026 qualifying incident"
     }
