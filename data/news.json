@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-02T13:30:25Z",
+  "last_fetch": "2026-07-03T13:43:49Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Seeded riders confirmed for 2026 Supersport MGP",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/seeded-riders-confirmed-for-2026-supersport-mgp/",
+      "first_seen": "2026-07-03T13:43:49Z",
+      "source_date": ""
+    },
     {
       "title": "Sportbike MGP seeded riders announced",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/sportbike-mgp-seeded-riders-announced/",
@@ -113,12 +119,6 @@
     {
       "title": "Rhys Stephenson wins TT 'Star of Tomorrow' award",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/rhys-stephenson-wins-tt-star-of-tomorrow-award/",
-      "first_seen": "2026-06-09T16:49:22Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
-    },
-    {
-      "title": "Killed Pre-TT Classic racer 'appeared to lose control'",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/killed-pre-tt-classic-racer-appeared-to-lose-control/",
       "first_seen": "2026-06-09T16:49:22Z",
       "source_date": "Twenty-year-old was youngest rider at 2026 event"
     }
