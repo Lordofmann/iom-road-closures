@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-03T13:43:49Z",
+  "last_fetch": "2026-07-06T11:22:40Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "2026 Southern 100 Road Races to begin tonight",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/2026-southern-100-road-races-to-begin-tonight/",
+      "first_seen": "2026-07-06T11:22:40Z",
+      "source_date": ""
+    },
     {
       "title": "Seeded riders confirmed for 2026 Supersport MGP",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/seeded-riders-confirmed-for-2026-supersport-mgp/",
@@ -114,12 +120,6 @@
       "title": "Jamie Cringle 'a couple of steps closer in the right direction' after TT crash",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-cringle-a-couple-of-steps-closer-in-the-right-direction-after-tt-crash/",
       "first_seen": "2026-06-10T18:10:09Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
-    },
-    {
-      "title": "Rhys Stephenson wins TT 'Star of Tomorrow' award",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/rhys-stephenson-wins-tt-star-of-tomorrow-award/",
-      "first_seen": "2026-06-09T16:49:22Z",
       "source_date": "Twenty-year-old was youngest rider at 2026 event"
     }
   ]
