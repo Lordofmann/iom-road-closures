@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-06T11:22:40Z",
+  "last_fetch": "2026-07-07T14:08:11Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Dean Harrison sets the pace in opening S100 qualifying",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-sets-the-pace-in-opening-s100-qualifying/",
+      "first_seen": "2026-07-07T14:08:11Z",
+      "source_date": ""
+    },
     {
       "title": "2026 Southern 100 Road Races to begin tonight",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/2026-southern-100-road-races-to-begin-tonight/",
@@ -114,12 +120,6 @@
       "title": "TT launches sustainability review into Sidecar class",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-launches-sustainability-review-into-sidecar-class/",
       "first_seen": "2026-06-11T18:36:27Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
-    },
-    {
-      "title": "Jamie Cringle 'a couple of steps closer in the right direction' after TT crash",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-cringle-a-couple-of-steps-closer-in-the-right-direction-after-tt-crash/",
-      "first_seen": "2026-06-10T18:10:09Z",
       "source_date": "Twenty-year-old was youngest rider at 2026 event"
     }
   ]
