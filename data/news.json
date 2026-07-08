@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-07T14:08:11Z",
+  "last_fetch": "2026-07-08T09:21:01Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Roads at Billown to close this morning as Southern 100 continues",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/roads-at-billown-to-close-this-morning-as-southern-100-continues/",
+      "first_seen": "2026-07-08T09:21:01Z",
+      "source_date": ""
+    },
     {
       "title": "Dean Harrison sets the pace in opening S100 qualifying",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-sets-the-pace-in-opening-s100-qualifying/",
@@ -113,12 +119,6 @@
     {
       "title": "Classic sidecars confirmed for 2026 Southern 100",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/classic-sidecars-confirmed-for-2026-southern-100/",
-      "first_seen": "2026-06-11T18:36:27Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
-    },
-    {
-      "title": "TT launches sustainability review into Sidecar class",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tt-launches-sustainability-review-into-sidecar-class/",
       "first_seen": "2026-06-11T18:36:27Z",
       "source_date": "Twenty-year-old was youngest rider at 2026 event"
     }
