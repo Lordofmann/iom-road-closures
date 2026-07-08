@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-07-08T09:21:01Z",
+  "last_fetch": "2026-07-08T13:41:37Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Dean Harrison wins opening race of 2026 Southern 100",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-wins-opening-race-of-2026-southern-100/",
+      "first_seen": "2026-07-08T13:41:37Z",
+      "source_date": ""
+    },
+    {
+      "title": "Grant Thomson taken to Aintree after crash in Southern 100 qualifying",
+      "url": "https://www.manxradio.com/news/tt-news/thomson-taken-to-aintree-after-crash-in-southern-100-qualifying/",
+      "first_seen": "2026-07-08T13:41:37Z",
+      "source_date": ""
+    },
     {
       "title": "Roads at Billown to close this morning as Southern 100 continues",
       "url": "https://www.manxradio.com/news/isle-of-man-news/roads-at-billown-to-close-this-morning-as-southern-100-continues/",
@@ -108,18 +120,6 @@
       "title": "2026 Southern 100 Road Races schedule confirmed",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/2026-southern-100-road-races-schedule-confirmed/",
       "first_seen": "2026-06-15T20:17:54Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
-    },
-    {
-      "title": "Caomhan Canny hoping for TT return after 2026 withdrawal",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/caomhan-canny-hoping-for-tt-return-after-2026-withdrawal/",
-      "first_seen": "2026-06-11T18:36:27Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
-    },
-    {
-      "title": "Classic sidecars confirmed for 2026 Southern 100",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/classic-sidecars-confirmed-for-2026-southern-100/",
-      "first_seen": "2026-06-11T18:36:27Z",
       "source_date": "Twenty-year-old was youngest rider at 2026 event"
     }
   ]
