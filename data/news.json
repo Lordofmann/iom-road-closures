@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-09T14:33:43Z",
+  "last_fetch": "2026-07-09T18:45:56Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Harrison wins fourth Southern 100 solo championship with new lap record",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/harrison-wins-fourth-southern-100-solo-championship-with-new-lap-record/",
+      "first_seen": "2026-07-09T18:45:56Z",
+      "source_date": ""
+    },
     {
       "title": "Harrison wins Southern 100 Senior Race",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/harrison-wins-southern-100-senior-race/",
@@ -113,12 +119,6 @@
     {
       "title": "'It's important people can express views on sidecar review'",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/its-important-people-can-express-views-on-sidecar-review/",
-      "first_seen": "2026-06-16T19:56:38Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
-    },
-    {
-      "title": "Jamie Cringle thanks fans for support after TT crash",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-cringle-thanks-fans-for-support-after-tt-crash/",
       "first_seen": "2026-06-16T19:56:38Z",
       "source_date": "Twenty-year-old was youngest rider at 2026 event"
     }
