@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-11T12:56:25Z",
+  "last_fetch": "2026-07-12T08:58:06Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "2027 Pre-TT Classic and Southern 100 dates confirmed",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/2027-pre-tt-classic-and-southern-100-dates-confirmed/",
+      "first_seen": "2026-07-12T08:58:06Z",
+      "source_date": ""
+    },
     {
       "title": "Jamie Cringle back on Island to continue recovery",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-cringle-back-on-island-to-continue-recovery/",
@@ -114,12 +120,6 @@
       "title": "Erno Kostamo recovering in his home country",
       "url": "https://www.manxradio.com/news/tt-news/erno-kostamo-recovering-in-his-home-country/",
       "first_seen": "2026-06-22T12:43:39Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
-    },
-    {
-      "title": "Hickman to make debut at Southern 100 Road Races",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/hickman-to-make-debut-at-southern-100-road-races/",
-      "first_seen": "2026-06-20T12:25:43Z",
       "source_date": "Twenty-year-old was youngest rider at 2026 event"
     }
   ]
