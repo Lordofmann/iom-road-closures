@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-12T08:58:06Z",
+  "last_fetch": "2026-07-14T17:56:00Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Grant Thomson back on Island after Southern 100 crash",
+      "url": "https://www.manxradio.com/news/good-news/grant-thomson-back-on-island-after-southern-100-crash/",
+      "first_seen": "2026-07-14T17:56:00Z",
+      "source_date": ""
+    },
     {
       "title": "2027 Pre-TT Classic and Southern 100 dates confirmed",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/2027-pre-tt-classic-and-southern-100-dates-confirmed/",
@@ -115,12 +121,6 @@
       "url": "https://www.manxradio.com/news/isle-of-man-sport/support-for-injured-tt-rider-means-everything/",
       "first_seen": "2026-06-24T10:13:48Z",
       "source_date": ""
-    },
-    {
-      "title": "Erno Kostamo recovering in his home country",
-      "url": "https://www.manxradio.com/news/tt-news/erno-kostamo-recovering-in-his-home-country/",
-      "first_seen": "2026-06-22T12:43:39Z",
-      "source_date": "Twenty-year-old was youngest rider at 2026 event"
     }
   ]
 }
