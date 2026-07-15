@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-14T17:56:00Z",
+  "last_fetch": "2026-07-15T13:13:24Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Star-studded lineup expected at 2026 Classic TT",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/star-studded-lineup-expected-at-2026-classic-tt/",
+      "first_seen": "2026-07-15T13:13:24Z",
+      "source_date": ""
+    },
     {
       "title": "Grant Thomson back on Island after Southern 100 crash",
       "url": "https://www.manxradio.com/news/good-news/grant-thomson-back-on-island-after-southern-100-crash/",
@@ -114,12 +120,6 @@
       "title": "Final day to give views on future of sidecar racing",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/final-day-to-give-views-on-future-of-sidecar-racing/",
       "first_seen": "2026-06-29T15:31:24Z",
-      "source_date": ""
-    },
-    {
-      "title": "Support for injured TT rider 'means everything'",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/support-for-injured-tt-rider-means-everything/",
-      "first_seen": "2026-06-24T10:13:48Z",
       "source_date": ""
     }
   ]
