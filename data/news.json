@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-07-31T13:41:20Z",
+  "last_fetch": "2026-07-31T18:14:39Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "'Meaningful change' needed to ensure long-term future of sidecars at TT",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/meaningful-change-needed-to-ensure-long-term-future-of-sidecars-at-tt/",
+      "first_seen": "2026-07-31T18:14:39Z",
+      "source_date": ""
+    },
     {
       "title": "Star-studded lineup expected at 2026 Classic TT",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/star-studded-lineup-expected-at-2026-classic-tt/",
@@ -84,18 +90,6 @@
       "title": "Sportbike MGP seeded riders announced",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/sportbike-mgp-seeded-riders-announced/",
       "first_seen": "2026-07-02T13:30:25Z",
-      "source_date": ""
-    },
-    {
-      "title": "Jamie Cringle transferred back to UK for further treatment",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-cringle-transferred-back-to-uk-for-further-treatment/",
-      "first_seen": "2026-07-01T14:09:00Z",
-      "source_date": ""
-    },
-    {
-      "title": "Jamie Coward confirms withdrawal from Southern 100",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/jamie-coward-confirms-withdrawal-from-southern-100/",
-      "first_seen": "2026-07-01T14:09:00Z",
       "source_date": ""
     }
   ]
