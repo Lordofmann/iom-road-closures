@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-07T08:06:36Z",
+  "last_fetch": "2026-08-07T12:40:22Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Riders issue pleas for MGP and Classic TT rides",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/riders-issue-pleas-for-mgp-and-classic-tt-rides/",
+      "first_seen": "2026-08-07T12:40:22Z",
+      "source_date": "It's one of two new races coming in for 2026"
+    },
     {
       "title": "Classic TT: Stuart Hall to be first away for Lightweight race",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/classic-tt-stuart-hall-to-be-first-away-for-lightweight-race/",
@@ -90,12 +96,6 @@
       "title": "Grant Thomson taken to Aintree after crash in Southern 100 qualifying",
       "url": "https://www.manxradio.com/news/tt-news/thomson-taken-to-aintree-after-crash-in-southern-100-qualifying/",
       "first_seen": "2026-07-08T13:41:37Z",
-      "source_date": ""
-    },
-    {
-      "title": "Roads at Billown to close this morning as Southern 100 continues",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/roads-at-billown-to-close-this-morning-as-southern-100-continues/",
-      "first_seen": "2026-07-08T09:21:01Z",
       "source_date": ""
     }
   ]
