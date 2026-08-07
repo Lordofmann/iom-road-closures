@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-07T12:40:22Z",
+  "last_fetch": "2026-08-07T17:40:14Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Classic TT: 2026 Historic Junior seeded riders confirmed",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/classic-tt-2026-historic-junior-seeded-riders-confirmed/",
+      "first_seen": "2026-08-07T17:40:14Z",
+      "source_date": "It's one of two new races coming in for 2026"
+    },
     {
       "title": "Riders issue pleas for MGP and Classic TT rides",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/riders-issue-pleas-for-mgp-and-classic-tt-rides/",
@@ -84,18 +90,6 @@
       "title": "Championship day at the Southern 100",
       "url": "https://www.manxradio.com/news/isle-of-man-news/championship-day-at-the-southern-100/",
       "first_seen": "2026-07-09T10:18:37Z",
-      "source_date": ""
-    },
-    {
-      "title": "Dean Harrison wins opening race of 2026 Southern 100",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/dean-harrison-wins-opening-race-of-2026-southern-100/",
-      "first_seen": "2026-07-08T13:41:37Z",
-      "source_date": ""
-    },
-    {
-      "title": "Grant Thomson taken to Aintree after crash in Southern 100 qualifying",
-      "url": "https://www.manxradio.com/news/tt-news/thomson-taken-to-aintree-after-crash-in-southern-100-qualifying/",
-      "first_seen": "2026-07-08T13:41:37Z",
       "source_date": ""
     }
   ]
