@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-13T08:11:17Z",
+  "last_fetch": "2026-08-14T08:06:53Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Thompson 'confident' in MGP/Classic TT adaptability",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/thompson-confident-in-mgp-classic-tt-adaptability/",
+      "first_seen": "2026-08-14T08:06:53Z",
+      "source_date": "But organisers feeling positive ahead of 2026 event"
+    },
     {
       "title": "Aspects of Manx Grand Prix 'extremely challenging' to organise",
       "url": "https://www.manxradio.com/news/isle-of-man-news/aspects-of-manx-grand-prix-extremely-challenging-to-organise/",
@@ -96,12 +102,6 @@
       "title": "Star-studded lineup expected at 2026 Classic TT",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/star-studded-lineup-expected-at-2026-classic-tt/",
       "first_seen": "2026-07-15T13:13:24Z",
-      "source_date": ""
-    },
-    {
-      "title": "Grant Thomson back on Island after Southern 100 crash",
-      "url": "https://www.manxradio.com/news/good-news/grant-thomson-back-on-island-after-southern-100-crash/",
-      "first_seen": "2026-07-14T17:56:00Z",
       "source_date": ""
     }
   ]
