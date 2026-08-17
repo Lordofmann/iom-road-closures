@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-08-17T07:43:24Z",
+  "last_fetch": "2026-08-17T17:17:57Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Reports of people not listening to marshals on day one of MGP",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/reports-of-people-not-listening-to-marshals-on-day-one-of-mgp/",
+      "first_seen": "2026-08-17T17:17:57Z",
+      "source_date": "But organisers feeling positive ahead of 2026 event"
+    },
+    {
+      "title": "Qualifying session cancelled due to weather",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/qualifying-session-cancelled-due-to-weather/",
+      "first_seen": "2026-08-17T17:17:57Z",
+      "source_date": "But organisers feeling positive ahead of 2026 event"
+    },
     {
       "title": "MGP: Italian rider flown to Noble's following red flag",
       "url": "https://www.manxradio.com/news/tt-news/mgp-italian-rider-flown-to-nobles-following-red-flag/",
@@ -108,18 +120,6 @@
       "title": "Classic TT: McGuinness to lead out 2026 Historic Senior race",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/classic-tt-mcguinness-to-lead-out-2026-historic-senior-race/",
       "first_seen": "2026-08-04T13:48:22Z",
-      "source_date": ""
-    },
-    {
-      "title": "Sidecar competitor confident the class will return to the TT in 2027",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/sidecar-competitor-confident-the-class-will-return-to-the-tt-in-2027/",
-      "first_seen": "2026-08-03T10:32:45Z",
-      "source_date": ""
-    },
-    {
-      "title": "'Meaningful change' needed to ensure long-term future of sidecars at TT",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/meaningful-change-needed-to-ensure-long-term-future-of-sidecars-at-tt/",
-      "first_seen": "2026-07-31T18:14:39Z",
       "source_date": ""
     }
   ]
