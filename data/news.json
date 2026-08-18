@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-18T12:24:11Z",
+  "last_fetch": "2026-08-18T17:18:20Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "MGP: Qualifying session to go ahead as scheduled",
+      "url": "https://www.manxradio.com/news/tt-news/mgp-qualifying-session-to-go-ahead-as-scheduled/",
+      "first_seen": "2026-08-18T17:18:20Z",
+      "source_date": "But organisers feeling positive ahead of 2026 event"
+    },
     {
       "title": "MGP: Wednesday contingency schedule confirmed",
       "url": "https://www.manxradio.com/news/tt-news/mgp-wednesday-contingency-schedule-confirmed/",
@@ -114,12 +120,6 @@
       "title": "Red Devils to perform over Douglas",
       "url": "https://www.manxradio.com/news/isle-of-man-news/red-devils-to-perform-over-douglas/",
       "first_seen": "2026-08-09T12:29:12Z",
-      "source_date": "It's one of two new races coming in for 2026"
-    },
-    {
-      "title": "Classic TT: 2026 Historic Junior seeded riders confirmed",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/classic-tt-2026-historic-junior-seeded-riders-confirmed/",
-      "first_seen": "2026-08-07T17:40:14Z",
       "source_date": "It's one of two new races coming in for 2026"
     }
   ]
