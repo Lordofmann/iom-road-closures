@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-20T12:27:06Z",
+  "last_fetch": "2026-08-20T17:19:45Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "'Sam's character, determination and passion for the sport touched so many people'",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/sams-character-determination-and-passion-for-the-sport-touched-so-many-people/",
+      "first_seen": "2026-08-20T17:19:45Z",
+      "source_date": "Sam Naughton was killed in MGP qualifying yesterday"
+    },
     {
       "title": "Tributes paid to 'one of the very best'",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tributes-paid-to-one-of-the-very-best/",
@@ -114,12 +120,6 @@
       "title": "Businesses at Grandstand hopeful of breaking-even as weather disrupts racing",
       "url": "https://www.manxradio.com/news/isle-of-man-news/businesses-at-grandstand-hopeful-of-breaking-even-as-weather-disrupts-racing/",
       "first_seen": "2026-08-18T07:29:26Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Reports of people not listening to marshals on day one of MGP",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/reports-of-people-not-listening-to-marshals-on-day-one-of-mgp/",
-      "first_seen": "2026-08-17T17:17:57Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
   ]
