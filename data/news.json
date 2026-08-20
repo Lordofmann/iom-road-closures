@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-20T07:32:42Z",
+  "last_fetch": "2026-08-20T12:27:06Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Tributes paid to 'one of the very best'",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/tributes-paid-to-one-of-the-very-best/",
+      "first_seen": "2026-08-20T12:27:06Z",
+      "source_date": "Sam Naughton was killed in MGP qualifying yesterday"
+    },
     {
       "title": "Mountain Course to close at lunchtime for MGP/Classic TT contingency session",
       "url": "https://www.manxradio.com/news/isle-of-man-news/mountain-course-to-close-at-lunchtime-for-mgp-classic-tt-contingency-session/",
@@ -113,12 +119,6 @@
     {
       "title": "Reports of people not listening to marshals on day one of MGP",
       "url": "https://www.manxradio.com/news/isle-of-man-news/reports-of-people-not-listening-to-marshals-on-day-one-of-mgp/",
-      "first_seen": "2026-08-17T17:17:57Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Qualifying session cancelled due to weather",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/qualifying-session-cancelled-due-to-weather/",
       "first_seen": "2026-08-17T17:17:57Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
