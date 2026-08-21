@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-21T12:26:33Z",
+  "last_fetch": "2026-08-21T17:19:43Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Johnny Stewart tops MGP qualifying once more",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/johnny-stewart-tops-mgp-qualifying-once-more/",
+      "first_seen": "2026-08-21T17:19:43Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
     {
       "title": "MGP and Classic TT qualifying schedule revised following delays",
       "url": "https://www.manxradio.com/news/tt-news/mgp-and-classic-tt-qualifying-schedule-revised-following-delays/",
@@ -113,12 +119,6 @@
     {
       "title": "Charities offer helping hand to 2026 MGP/Classic TT newcomers",
       "url": "https://www.manxradio.com/news/isle-of-man-news/charities-offer-helping-hand-to-2026-mgp-classic-tt-newcomers/",
-      "first_seen": "2026-08-19T07:30:18Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Remainder of tonight's MGP/Classic TT qualifying cancelled",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/remainder-of-tonights-mgp-classic-tt-qualifying-cancelled/",
       "first_seen": "2026-08-19T07:30:18Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
