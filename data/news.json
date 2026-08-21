@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-08-20T17:19:45Z",
+  "last_fetch": "2026-08-21T07:34:25Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Stewart and Harrison first in MGP & Classic TT qualifying",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/stewart-and-harrison-first-in-mgp-and-classic-tt-qualifying/",
+      "first_seen": "2026-08-21T07:34:25Z",
+      "source_date": "Sam Naughton was killed in MGP qualifying yesterday"
+    },
+    {
+      "title": "MGP: Evening session called off due to wet roads",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/evening-session-called-off-due-to-wet-roads/",
+      "first_seen": "2026-08-21T07:34:25Z",
+      "source_date": "Sam Naughton was killed in MGP qualifying yesterday"
+    },
     {
       "title": "'Sam's character, determination and passion for the sport touched so many people'",
       "url": "https://www.manxradio.com/news/isle-of-man-news/sams-character-determination-and-passion-for-the-sport-touched-so-many-people/",
@@ -108,18 +120,6 @@
       "title": "MGP: Rain may affect evening qualifying session",
       "url": "https://www.manxradio.com/news/tt-news/mgp-rain-may-affect-evening-qualifying-session/",
       "first_seen": "2026-08-18T12:24:11Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "MGP: Roads due to close at 6pm",
-      "url": "https://www.manxradio.com/news/tt-news/mgp-roads-due-to-close-at-6pm/",
-      "first_seen": "2026-08-18T07:29:26Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Businesses at Grandstand hopeful of breaking-even as weather disrupts racing",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/businesses-at-grandstand-hopeful-of-breaking-even-as-weather-disrupts-racing/",
-      "first_seen": "2026-08-18T07:29:26Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
   ]
