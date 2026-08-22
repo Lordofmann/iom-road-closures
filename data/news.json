@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-08-21T17:19:43Z",
+  "last_fetch": "2026-08-22T07:23:10Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "MGP and Classic TT now scheduled to end on Tuesday due to weather forecast",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/mgp-and-classic-tt-now-scheduled-to-end-on-tuesday-due-to-weather-forecast/",
+      "first_seen": "2026-08-22T07:23:10Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
+    {
+      "title": "Three races to take place on opening race day at MGP and Classic TT",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/three-races-to-take-place-on-opening-race-day-at-mgp-and-classic-tt/",
+      "first_seen": "2026-08-22T07:23:10Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
     {
       "title": "Johnny Stewart tops MGP qualifying once more",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/johnny-stewart-tops-mgp-qualifying-once-more/",
@@ -107,18 +119,6 @@
     {
       "title": "Mountain Course to close twice",
       "url": "https://www.manxradio.com/news/isle-of-man-news/mountain-course-to-close-twice-today/",
-      "first_seen": "2026-08-19T07:30:18Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Rider dies following MGP qualifying incident",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/rider-dies-following-mgp-qualifying-incident/",
-      "first_seen": "2026-08-19T07:30:18Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Charities offer helping hand to 2026 MGP/Classic TT newcomers",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/charities-offer-helping-hand-to-2026-mgp-classic-tt-newcomers/",
       "first_seen": "2026-08-19T07:30:18Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
