@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-22T07:23:10Z",
+  "last_fetch": "2026-08-22T12:19:09Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "'As a rider I think the revised schedule is brilliant'",
+      "url": "https://www.manxradio.com/news/tt-news/as-a-rider-i-think-the-revised-schedule-is-brilliant/",
+      "first_seen": "2026-08-22T12:19:09Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
     {
       "title": "MGP and Classic TT now scheduled to end on Tuesday due to weather forecast",
       "url": "https://www.manxradio.com/news/isle-of-man-news/mgp-and-classic-tt-now-scheduled-to-end-on-tuesday-due-to-weather-forecast/",
@@ -114,12 +120,6 @@
       "title": "MGP: Revised running order for contingency session",
       "url": "https://www.manxradio.com/news/tt-news/mgp-revised-running-order-for-contingency-session/",
       "first_seen": "2026-08-19T12:24:28Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Mountain Course to close twice",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/mountain-course-to-close-twice-today/",
-      "first_seen": "2026-08-19T07:30:18Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
   ]
