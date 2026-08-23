@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-08-22T12:19:09Z",
+  "last_fetch": "2026-08-23T07:25:10Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Two Classic TT races on Sunday's schedule",
+      "url": "https://www.manxradio.com/news/tt-news/two-classic-tt-races-on-sundays-schedule/",
+      "first_seen": "2026-08-23T07:25:10Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
+    {
+      "title": "Classic TT: Jordan tops podium in Historic Junior",
+      "url": "https://www.manxradio.com/news/tt-news/classic-tt-jordan-tops-podium-in-historic-junior/",
+      "first_seen": "2026-08-23T07:25:10Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
     {
       "title": "'As a rider I think the revised schedule is brilliant'",
       "url": "https://www.manxradio.com/news/tt-news/as-a-rider-i-think-the-revised-schedule-is-brilliant/",
@@ -108,18 +120,6 @@
       "title": "Stewart and Anderson top MGP & Classic TT afternoon session",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/stewart-and-anderson-top-mgp-and-classic-tt-afternoon-session/",
       "first_seen": "2026-08-19T17:18:19Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Swiss Moto pays tribute to racer with 'extraordinary heart'",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/swiss-moto-pays-tribute-to-racer-with-extraordinary-heart/",
-      "first_seen": "2026-08-19T17:18:19Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "MGP: Revised running order for contingency session",
-      "url": "https://www.manxradio.com/news/tt-news/mgp-revised-running-order-for-contingency-session/",
-      "first_seen": "2026-08-19T12:24:28Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
   ]
