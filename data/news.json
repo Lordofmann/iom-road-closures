@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-08-24T07:50:06Z",
+  "last_fetch": "2026-08-24T12:27:28Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Johnny Stewart wins Junior Manx Grand Prix",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/johnny-stewart-wins-junior-manx-grand-prix/",
+      "first_seen": "2026-08-24T12:27:28Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
+    {
+      "title": "Junior MGP race red flagged",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/junior-mgp-race-red-flagged/",
+      "first_seen": "2026-08-24T12:27:28Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
     {
       "title": "Two wins for Michael Dunlop on second race day at MGP and Classic TT",
       "url": "https://www.manxradio.com/news/tt-news/two-wins-for-michael-dunlop-on-second-race-day-at-mgp-and-classic-tt/",
@@ -107,18 +119,6 @@
     {
       "title": "Mountain Course to close at lunchtime for MGP/Classic TT contingency session",
       "url": "https://www.manxradio.com/news/isle-of-man-news/mountain-course-to-close-at-lunchtime-for-mgp-classic-tt-contingency-session/",
-      "first_seen": "2026-08-20T07:32:42Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Manx MGP racer dies after qualifying incident",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/manx-mgp-racer-dies-after-qualifying-incident/",
-      "first_seen": "2026-08-20T07:32:42Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "ARA: \u201cWe mourn the loss of one of our own\u201d",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/ara-we-mourn-the-loss-of-one-of-our-own/",
       "first_seen": "2026-08-20T07:32:42Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
