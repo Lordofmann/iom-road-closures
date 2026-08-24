@@ -1,7 +1,19 @@
 {
-  "last_fetch": "2026-08-23T12:19:33Z",
+  "last_fetch": "2026-08-24T07:50:06Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Two wins for Michael Dunlop on second race day at MGP and Classic TT",
+      "url": "https://www.manxradio.com/news/tt-news/two-wins-for-michael-dunlop-on-second-race-day-at-mgp-and-classic-tt/",
+      "first_seen": "2026-08-24T07:50:06Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
+    {
+      "title": "Four races scheduled for penultimate day of racing at MGP and Classic TT",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/four-races-scheduled-for-penultimate-day-of-racing-at-mgp-and-classic-tt/",
+      "first_seen": "2026-08-24T07:50:06Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
     {
       "title": "\"It's madness, I love it!\": Double MGP victory for Johnny Stewart",
       "url": "https://www.manxradio.com/news/tt-news/its-madness-i-love-it-double-mgp-victory-for-johnny-stewart/",
@@ -108,18 +120,6 @@
       "title": "ARA: \u201cWe mourn the loss of one of our own\u201d",
       "url": "https://www.manxradio.com/news/isle-of-man-news/ara-we-mourn-the-loss-of-one-of-our-own/",
       "first_seen": "2026-08-20T07:32:42Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Manx Grand Prix pays tribute following death of rider",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/manx-grand-prix-pays-tribute-following-death-of-rider/",
-      "first_seen": "2026-08-19T17:18:19Z",
-      "source_date": "But organisers feeling positive ahead of 2026 event"
-    },
-    {
-      "title": "Tonight's MGP/Classic TT qualifying cancelled",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/tonights-mgp-classic-tt-qualifying-cancelled/",
-      "first_seen": "2026-08-19T17:18:19Z",
       "source_date": "But organisers feeling positive ahead of 2026 event"
     }
   ]
