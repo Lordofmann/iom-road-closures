@@ -1,7 +1,25 @@
 {
-  "last_fetch": "2026-08-24T17:22:13Z",
+  "last_fetch": "2026-08-25T07:35:53Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Final day of Classic TT",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/final-day-of-classic-tt/",
+      "first_seen": "2026-08-25T07:35:53Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
+    {
+      "title": "Hodson takes victory in Junior 600 Classic TT",
+      "url": "https://www.manxradio.com/news/tt-news/hodson-takes-victory-in-junior-600-classic-tt/",
+      "first_seen": "2026-08-25T07:35:53Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
+    {
+      "title": "MGP rider transferred to Liverpool following Black Dub crash",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/mgp-rider-transferred-to-liverpool-following-black-dub-crash/",
+      "first_seen": "2026-08-25T07:35:53Z",
+      "source_date": "MGP rider died in the 2026 event"
+    },
     {
       "title": "Johnny Stewart wins Senior Manx Grand Prix",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/johnny-stewart-wins-senior-manx-grand-prix/",
@@ -103,24 +121,6 @@
       "url": "https://www.manxradio.com/news/isle-of-man-news/daytime-mountain-course-closure-as-mgp-and-classic-tt-qualifying-continues/",
       "first_seen": "2026-08-21T12:26:33Z",
       "source_date": "UPDATE: Further 1-hour delay to today's qualifying"
-    },
-    {
-      "title": "Stewart and Harrison first in MGP & Classic TT qualifying",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/stewart-and-harrison-first-in-mgp-and-classic-tt-qualifying/",
-      "first_seen": "2026-08-21T07:34:25Z",
-      "source_date": "Sam Naughton was killed in MGP qualifying yesterday"
-    },
-    {
-      "title": "MGP: Evening session called off due to wet roads",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/evening-session-called-off-due-to-wet-roads/",
-      "first_seen": "2026-08-21T07:34:25Z",
-      "source_date": "Sam Naughton was killed in MGP qualifying yesterday"
-    },
-    {
-      "title": "'Sam's character, determination and passion for the sport touched so many people'",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/sams-character-determination-and-passion-for-the-sport-touched-so-many-people/",
-      "first_seen": "2026-08-20T17:19:45Z",
-      "source_date": "Sam Naughton was killed in MGP qualifying yesterday"
     }
   ]
 }

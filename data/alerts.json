@@ -1,5 +1,5 @@
 {
-  "last_fetch": "2026-08-24T17:22:13Z",
+  "last_fetch": "2026-08-25T07:35:53Z",
   "items": [
     {
       "id": "tt-schedule-applied-2026-06-03T12:24:43Z",
@@ -12,19 +12,6 @@
       "implies_schedule_change": true,
       "event": "tt",
       "note": "The route checker has been updated with these times. Always verify against the official source or the Road Information Hotline (01624 685888) before setting off."
-    },
-    {
-      "id": "s100-https://southern100.com/?p=12307",
-      "tier": "auto",
-      "text": "Revised Schedule for Saturday 23rd May (Afternoon)",
-      "source_name": "Southern 100",
-      "source_url": "https://southern100.com/revised-schedule-for-saturday-23rd-may-afternoon/",
-      "timestamp": "2026-05-23T09:14:19Z",
-      "first_seen": "2026-05-26T17:57:16Z",
-      "implies_schedule_change": true,
-      "event": "pre-tt",
-      "note": "Heads-up: this source publishes revised times as images, which we cannot read automatically. Open the source link to see the new times. Our route checker has <strong>not</strong> been updated for this revision.",
-      "expires_at": "2026-05-24T00:00:00Z"
     }
   ]
 }
