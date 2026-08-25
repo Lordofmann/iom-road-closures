@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-25T07:35:53Z",
+  "last_fetch": "2026-08-25T12:28:06Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Michael Dunlop wins Senior Classic TT",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-wins-senior-classic-tt/",
+      "first_seen": "2026-08-25T12:28:06Z",
+      "source_date": "Seven Mountain Course victories for Ballymoney man in 2026"
+    },
     {
       "title": "Final day of Classic TT",
       "url": "https://www.manxradio.com/news/isle-of-man-news/final-day-of-classic-tt/",
@@ -115,12 +121,6 @@
       "url": "https://www.manxradio.com/news/isle-of-man-news/fundraiser-launched-for-family-of-sam-naughton/",
       "first_seen": "2026-08-21T12:26:33Z",
       "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "Daytime Mountain Course closure as MGP and Classic TT qualifying continues",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/daytime-mountain-course-closure-as-mgp-and-classic-tt-qualifying-continues/",
-      "first_seen": "2026-08-21T12:26:33Z",
-      "source_date": "UPDATE: Further 1-hour delay to today's qualifying"
     }
   ]
 }
