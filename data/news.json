@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-25T12:28:06Z",
+  "last_fetch": "2026-08-26T07:37:40Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "'The year of John': Riders honour Morecambe Missile\u2019s 30 years career",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/the-year-of-john-riders-honour-morecambe-missiles-30-years-career/",
+      "first_seen": "2026-08-26T07:37:40Z",
+      "source_date": "Seven Mountain Course victories for Ballymoney man in 2026"
+    },
     {
       "title": "Michael Dunlop wins Senior Classic TT",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-wins-senior-classic-tt/",
@@ -113,12 +119,6 @@
     {
       "title": "MGP rider looking for bagpiper for race days",
       "url": "https://www.manxradio.com/news/tt-news/mgp-rider-looking-for-bagpiper-for-race-days/",
-      "first_seen": "2026-08-21T12:26:33Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "Fundraiser launched for family of Sam Naughton",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/fundraiser-launched-for-family-of-sam-naughton/",
       "first_seen": "2026-08-21T12:26:33Z",
       "source_date": "MGP rider died in the 2026 event"
     }
