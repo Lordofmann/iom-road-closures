@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-26T07:37:40Z",
+  "last_fetch": "2026-08-27T17:58:48Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "New app hopes to connect injured motorcycle riders",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/new-app-hopes-to-connect-injured-motorcycle-riders/",
+      "first_seen": "2026-08-27T17:58:48Z",
+      "source_date": "Seven Mountain Course victories for Ballymoney man in 2026"
+    },
     {
       "title": "'The year of John': Riders honour Morecambe Missile\u2019s 30 years career",
       "url": "https://www.manxradio.com/news/isle-of-man-news/the-year-of-john-riders-honour-morecambe-missiles-30-years-career/",
@@ -113,12 +119,6 @@
     {
       "title": "MGP and Classic TT qualifying schedule revised following delays",
       "url": "https://www.manxradio.com/news/tt-news/mgp-and-classic-tt-qualifying-schedule-revised-following-delays/",
-      "first_seen": "2026-08-21T12:26:33Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "MGP rider looking for bagpiper for race days",
-      "url": "https://www.manxradio.com/news/tt-news/mgp-rider-looking-for-bagpiper-for-race-days/",
       "first_seen": "2026-08-21T12:26:33Z",
       "source_date": "MGP rider died in the 2026 event"
     }
