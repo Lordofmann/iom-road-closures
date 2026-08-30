@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-08-28T19:09:07Z",
+  "last_fetch": "2026-08-30T12:26:43Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Former racer and travelling marshal celebrates 40 years on the Mountain Course",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/former-racer-and-travelling-marshal-celebrates-40-years-on-the-mountain-course/",
+      "first_seen": "2026-08-30T12:26:43Z",
+      "source_date": "Six Mountain Course victories for Ballymoney man in 2026"
+    },
     {
       "title": "TT racer to complete 'the lap he never got to finish'",
       "url": "https://www.manxradio.com/news/isle-of-man-news/tt-racer-to-complete-the-lap-he-never-got-to-finish/",
@@ -114,12 +120,6 @@
       "title": "Three races to take place on opening race day at MGP and Classic TT",
       "url": "https://www.manxradio.com/news/isle-of-man-news/three-races-to-take-place-on-opening-race-day-at-mgp-and-classic-tt/",
       "first_seen": "2026-08-22T07:23:10Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "Johnny Stewart tops MGP qualifying once more",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/johnny-stewart-tops-mgp-qualifying-once-more/",
-      "first_seen": "2026-08-21T17:19:43Z",
       "source_date": "MGP rider died in the 2026 event"
     }
   ]
