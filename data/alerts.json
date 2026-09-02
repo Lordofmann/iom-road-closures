@@ -1,17 +1,4 @@
 {
-  "last_fetch": "2026-09-01T06:19:23Z",
-  "items": [
-    {
-      "id": "tt-schedule-applied-2026-06-03T12:24:43Z",
-      "tier": "auto",
-      "text": "TT schedule auto-updated from iomttraces (3 days changed: 4th, 5th and 6th of June)",
-      "source_name": "iomttraces.com",
-      "source_url": "https://www.iomttraces.com/racing/page/schedule/",
-      "timestamp": "2026-06-03T12:24:43Z",
-      "first_seen": "2026-06-03T12:24:43Z",
-      "implies_schedule_change": true,
-      "event": "tt",
-      "note": "The route checker has been updated with these times. Always verify against the official source or the Road Information Hotline (01624 685888) before setting off."
-    }
-  ]
+  "last_fetch": "2026-09-02T10:59:50Z",
+  "items": []
 }
