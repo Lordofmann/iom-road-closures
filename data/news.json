@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-09-02T10:59:50Z",
+  "last_fetch": "2026-09-03T10:58:29Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Chairman 'really proud' of MGP Supporters Club legacy",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/chairman-really-proud-of-mgp-supporters-club-legacy/",
+      "first_seen": "2026-09-03T10:58:29Z",
+      "source_date": "Six Mountain Course victories for Ballymoney man in 2026"
+    },
     {
       "title": "MGP Supporters Club to begin winding down process",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/mgp-supporters-club-to-begin-winding-down-process/",
@@ -114,12 +120,6 @@
       "title": "Classic TT: Jordan tops podium in Historic Junior",
       "url": "https://www.manxradio.com/news/tt-news/classic-tt-jordan-tops-podium-in-historic-junior/",
       "first_seen": "2026-08-23T07:25:10Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "'As a rider I think the revised schedule is brilliant'",
-      "url": "https://www.manxradio.com/news/tt-news/as-a-rider-i-think-the-revised-schedule-is-brilliant/",
-      "first_seen": "2026-08-22T12:19:09Z",
       "source_date": "MGP rider died in the 2026 event"
     }
   ]
