@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-09-05T10:20:40Z",
+  "last_fetch": "2026-09-07T12:06:54Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "MGP organisers ACU respond to accusations of 'hollow promises' following rider's death",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/mgp-organisers-acu-respond-to-accusations-of-hollow-promises-following-riders-death/",
+      "first_seen": "2026-09-07T12:06:54Z",
+      "source_date": "Six Mountain Course victories for Ballymoney man in 2026"
+    },
     {
       "title": "Former TT rider's family at risk of losing house after rejected insurance pay out",
       "url": "https://www.manxradio.com/news/isle-of-man-news/former-tt-riders-family-at-risk-of-losing-house-after-rejected-insurance-pay-out/",
@@ -114,12 +120,6 @@
       "title": "\"It's madness, I love it!\": Double MGP victory for Johnny Stewart",
       "url": "https://www.manxradio.com/news/tt-news/its-madness-i-love-it-double-mgp-victory-for-johnny-stewart/",
       "first_seen": "2026-08-23T12:19:33Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "Two Classic TT races on Sunday's schedule",
-      "url": "https://www.manxradio.com/news/tt-news/two-classic-tt-races-on-sundays-schedule/",
-      "first_seen": "2026-08-23T07:25:10Z",
       "source_date": "MGP rider died in the 2026 event"
     }
   ]
