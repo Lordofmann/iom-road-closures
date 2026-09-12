@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-09-10T11:00:14Z",
+  "last_fetch": "2026-09-12T10:26:31Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Supertwins removed from TT roster",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/supertwins-removed-from-tt-roster/",
+      "first_seen": "2026-09-12T10:26:31Z",
+      "source_date": ""
+    },
     {
       "title": "'Perfect': Racer's verdict after sidecars get TT return go-ahead",
       "url": "https://www.manxradio.com/news/isle-of-man-news/perfect-racers-verdict-after-sidecars-get-tt-return-go-ahead/",
@@ -113,12 +119,6 @@
     {
       "title": "Johnny Stewart wins Senior Manx Grand Prix",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/johnny-stewart-wins-senior-manx-grand-prix/",
-      "first_seen": "2026-08-24T17:22:13Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "McGuiness wins Classic TT Historic Senior",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/mcguiness-wins-classic-tt-historic-senior/",
       "first_seen": "2026-08-24T17:22:13Z",
       "source_date": "MGP rider died in the 2026 event"
     }
