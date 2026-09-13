@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-09-12T10:26:31Z",
+  "last_fetch": "2026-09-13T11:29:18Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Supertwins to remain eligible for Manx Grand Prix in 2027",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/supertwins-to-remain-eligible-for-manx-grand-prix-in-2027/",
+      "first_seen": "2026-09-13T11:29:18Z",
+      "source_date": ""
+    },
     {
       "title": "Supertwins removed from TT roster",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/supertwins-removed-from-tt-roster/",
@@ -114,12 +120,6 @@
       "title": "MGP rider transferred to Liverpool following Black Dub crash",
       "url": "https://www.manxradio.com/news/isle-of-man-news/mgp-rider-transferred-to-liverpool-following-black-dub-crash/",
       "first_seen": "2026-08-25T07:35:53Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "Johnny Stewart wins Senior Manx Grand Prix",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/johnny-stewart-wins-senior-manx-grand-prix/",
-      "first_seen": "2026-08-24T17:22:13Z",
       "source_date": "MGP rider died in the 2026 event"
     }
   ]
