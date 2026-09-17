@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-09-13T11:29:18Z",
+  "last_fetch": "2026-09-17T11:22:57Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Date confirmed for funeral of Sam Naughton",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/date-confirmed-for-funeral-of-sam-naughton/",
+      "first_seen": "2026-09-17T11:22:57Z",
+      "source_date": ""
+    },
     {
       "title": "Supertwins to remain eligible for Manx Grand Prix in 2027",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/supertwins-to-remain-eligible-for-manx-grand-prix-in-2027/",
@@ -113,12 +119,6 @@
     {
       "title": "Hodson takes victory in Junior 600 Classic TT",
       "url": "https://www.manxradio.com/news/tt-news/hodson-takes-victory-in-junior-600-classic-tt/",
-      "first_seen": "2026-08-25T07:35:53Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "MGP rider transferred to Liverpool following Black Dub crash",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/mgp-rider-transferred-to-liverpool-following-black-dub-crash/",
       "first_seen": "2026-08-25T07:35:53Z",
       "source_date": "MGP rider died in the 2026 event"
     }
