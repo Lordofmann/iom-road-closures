@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-09-17T11:22:57Z",
+  "last_fetch": "2026-09-19T10:39:46Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "TT 2027 race schedule announced",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/tt-2027-race-schedule-announced/",
+      "first_seen": "2026-09-19T10:39:46Z",
+      "source_date": ""
+    },
     {
       "title": "Date confirmed for funeral of Sam Naughton",
       "url": "https://www.manxradio.com/news/isle-of-man-news/date-confirmed-for-funeral-of-sam-naughton/",
@@ -113,12 +119,6 @@
     {
       "title": "Final day of Classic TT",
       "url": "https://www.manxradio.com/news/isle-of-man-news/final-day-of-classic-tt/",
-      "first_seen": "2026-08-25T07:35:53Z",
-      "source_date": "MGP rider died in the 2026 event"
-    },
-    {
-      "title": "Hodson takes victory in Junior 600 Classic TT",
-      "url": "https://www.manxradio.com/news/tt-news/hodson-takes-victory-in-junior-600-classic-tt/",
       "first_seen": "2026-08-25T07:35:53Z",
       "source_date": "MGP rider died in the 2026 event"
     }
