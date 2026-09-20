@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-09-19T10:39:46Z",
+  "last_fetch": "2026-09-20T11:02:22Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Manx Grand Prix 2027 newcomer applications open",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/manx-grand-prix-2027-newcomer-applications-open/",
+      "first_seen": "2026-09-20T11:02:22Z",
+      "source_date": ""
+    },
     {
       "title": "TT 2027 race schedule announced",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/tt-2027-race-schedule-announced/",
@@ -115,12 +121,6 @@
       "url": "https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-wins-senior-classic-tt/",
       "first_seen": "2026-08-25T12:28:06Z",
       "source_date": "Seven Mountain Course victories for Ballymoney man in 2026"
-    },
-    {
-      "title": "Final day of Classic TT",
-      "url": "https://www.manxradio.com/news/isle-of-man-news/final-day-of-classic-tt/",
-      "first_seen": "2026-08-25T07:35:53Z",
-      "source_date": "MGP rider died in the 2026 event"
     }
   ]
 }
