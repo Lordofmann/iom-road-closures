@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-09-20T11:02:22Z",
+  "fetched_at": "2026-09-21T12:29:43Z",
   "source_url": "https://www.iomttraces.com/racing/page/schedule/",
   "parser_version": "1.0",
   "year_detected": 2027,
@@ -16,7 +16,7 @@
   "validation": {
     "status": "rejected",
     "reasons": [
-      "parsed dates (2027-06-05 - 2027-06-12) span the wrong year for today (2026-09-20)"
+      "parsed dates (2027-06-05 - 2027-06-12) span the wrong year for today (2026-09-21)"
     ],
     "diff_summary": {
       "entries_parsed": 8,
