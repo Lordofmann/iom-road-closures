@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-09-20T11:02:22Z",
+  "last_fetch": "2026-09-23T11:12:37Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "'Long road to recovery' after Classic TT crash, says Johnson",
+      "url": "https://www.manxradio.com/news/isle-of-man-sport/long-road-to-recovery-after-classic-tt-crash-says-johnson/",
+      "first_seen": "2026-09-23T11:12:37Z",
+      "source_date": ""
+    },
     {
       "title": "Manx Grand Prix 2027 newcomer applications open",
       "url": "https://www.manxradio.com/news/isle-of-man-news/manx-grand-prix-2027-newcomer-applications-open/",
@@ -114,12 +120,6 @@
       "title": "'The year of John': Riders honour Morecambe Missile\u2019s 30 years career",
       "url": "https://www.manxradio.com/news/isle-of-man-news/the-year-of-john-riders-honour-morecambe-missiles-30-years-career/",
       "first_seen": "2026-08-26T07:37:40Z",
-      "source_date": "Seven Mountain Course victories for Ballymoney man in 2026"
-    },
-    {
-      "title": "Michael Dunlop wins Senior Classic TT",
-      "url": "https://www.manxradio.com/news/isle-of-man-sport/michael-dunlop-wins-senior-classic-tt/",
-      "first_seen": "2026-08-25T12:28:06Z",
       "source_date": "Seven Mountain Course victories for Ballymoney man in 2026"
     }
   ]
