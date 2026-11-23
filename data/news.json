@@ -1,7 +1,13 @@
 {
-  "last_fetch": "2026-11-21T14:27:51Z",
+  "last_fetch": "2026-11-23T17:47:32Z",
   "schedule_changed": true,
   "headlines": [
+    {
+      "title": "Clerk of the Course steps down",
+      "url": "https://www.manxradio.com/news/isle-of-man-news/clerk-of-the-course-steps-down/",
+      "first_seen": "2026-11-23T17:47:32Z",
+      "source_date": "Thompson first took charge of the event in 2012"
+    },
     {
       "title": "Peter Hickman takes fifth win in Macau",
       "url": "https://www.manxradio.com/news/isle-of-man-sport/peter-hickman-takes-fifth-win-in-macau/",
